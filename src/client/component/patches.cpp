@@ -79,36 +79,39 @@ namespace patches
 	public:
 		void post_unpack() override
 		{
-			if (game::environment::is_mp())
-			{
-				return;
-			}
-
 			// Increment ref-count on these
 			LoadLibraryA("PhysXDevice64.dll");
 			LoadLibraryA("PhysXUpdateLoader64.dll");
 
+			// Unlock fps in main menu
+			utils::hook::set<BYTE>(SELECT_VALUE(0x140144F5B, 0x140213C3B), 0xEB);
+
+			// Patch Dvar_Command to print out values how CoD4 does it
+			utils::hook::jump(SELECT_VALUE(0x1402FB4C0, 0x1403D31C0), dvar_command_patch);
+
+			// Fix mouse lag
+			utils::hook::nop(SELECT_VALUE(0x14038FAFF, 0x1404DB1AF), 6);
+			scheduler::loop([]()
+			{
+				SetThreadExecutionState(ES_DISPLAY_REQUIRED);
+			}, scheduler::pipeline::main);
+		}
+
+		static void patch_mp()
+		{
 			// Unlock fps
 			utils::hook::call(0x1403CF8CA, register_com_maxfps_stub);
-
-			// Unlock fps in main menu
-			utils::hook::set<BYTE>(0x140213C3B, 0xEB);
 
 			// Unlock cg_fov
 			utils::hook::call(0x140014F66, register_cg_fov_stub);
 
 			// Unlock cg_fovscale
 			utils::hook::call(0x140014F9B, register_fovscale_stub);
+		}
 
-			// Patch Dvar_Command to print out values how CoD4 does it
-			utils::hook::jump(0x1403D31C0, dvar_command_patch);
+		static void patch_sp()
+		{
 
-			// Fix mouse lag
-			utils::hook::nop(0x1404DB1AF, 6);
-			scheduler::loop([]()
-			{
-				SetThreadExecutionState(ES_DISPLAY_REQUIRED);
-			}, scheduler::pipeline::main);
 		}
 	};
 }
