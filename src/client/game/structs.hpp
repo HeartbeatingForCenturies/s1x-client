@@ -699,16 +699,6 @@ namespace game
 		dvar_limits domain;
 	};
 
-	struct client_t
-	{
-
-	};
-
-	struct gentity_s
-	{
-		
-	};
-
 	struct Material
 	{
 		const char* name;
@@ -737,4 +727,35 @@ namespace game
 		Material* glowMaterial;
 		Glyph* glyphs;
 	};
+
+	struct client_t
+	{
+
+	};
+
+	namespace mp
+	{
+		struct gentity_s
+		{
+
+		};
+	}
+
+	namespace sp
+	{
+		struct gclient_s
+		{
+			
+		};
+
+		struct gentity_s
+		{
+			int number;
+		};
+
+		struct playerState_s
+		{
+
+		};
+	}
 }

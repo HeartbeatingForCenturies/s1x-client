@@ -307,7 +307,7 @@ namespace command
 
 		static void add_commands_sp()
 		{
-
+			
 		}
 
 		static void add_commands_mp()

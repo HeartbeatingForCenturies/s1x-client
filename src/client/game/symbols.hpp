@@ -23,9 +23,13 @@ namespace game
 	WEAK symbol<void(int localClientNum, int controllerIndex, const char* buffer,
 		void(int, int, const char*))> Cbuf_ExecuteBufferInternal{ 0x1402ED9A0, 0x1403AEE80 };
 
+	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{ 0x1401A3050, 0x1400EE500 };
+
 	WEAK symbol<dvar_t* (const char* name)> Dvar_FindVar{ 0x140370860, 0x1404BF8B0 };
 	WEAK symbol<void(char* buffer, int index)> Dvar_GetCombinedString{ 0x1402FB590, 0x1403D3290 };
 	WEAK symbol<void(const char* dvar, const char* buffer)> Dvar_SetCommand{ 0x1403730D0, 0x1404C2520 };
+	WEAK symbol<void(dvar_t* dvar, const char* string)> Dvar_SetString{ 0x140373DE0, 0x1404C3610 };
+	WEAK symbol<void(const char*, const char*, DvarSetSource)> Dvar_SetFromStringByNameFromSource{ 0x1403737D0, 0x1404C2E40 };
 	WEAK symbol<const char* (dvar_t* dvar, dvar_value value)> Dvar_ValueToString{ 0x140374E10, 0x1404C47B0 };
 
 	WEAK symbol<dvar_t* (const char* dvarName, bool value, unsigned int flags, const char* description)>
@@ -36,6 +40,8 @@ namespace game
 		const char* description)> Dvar_RegisterFloat{ 0x140371C20, 0x1404C0FB0 };
 	WEAK symbol<dvar_t* (const char* dvarName, int value, int min, int max, unsigned int flags, const char* desc)>
 		Dvar_RegisterInt{ 0x140371CF0, 0x1404C1080 };
+	WEAK symbol<dvar_t* (const char* dvarName, const char* value, unsigned int flags, const char* description)>
+		Dvar_RegisterString{ 0x140372050, 0x1404C1450 };
 	WEAK symbol<dvar_t* (const char* dvarName, float x, float y, float z, float w, float min, float max,
 		unsigned int flags, const char* description)> Dvar_RegisterVec4{ 0x140372430, 0x1404C1800 };
 
@@ -60,7 +66,7 @@ namespace game
 	WEAK symbol<void(int, int, const char*)> SV_GameSendServerCommand{ 0, 0x14043E120 };
 	WEAK symbol<const char* (int clientNum)> SV_GetGuid{ 0, 0x14043E1E0 };
 	WEAK symbol<void(int clientNum, const char* reason)> SV_KickClientNum{ 0, 0x1404377A0 };
-	WEAK symbol<bool()> SV_Loaded{ 0, 0x14043FA50 };
+	WEAK symbol<bool()> SV_Loaded{ 0x1403F42C0, 0x14043FA50 };
 	WEAK symbol<bool(const char* map) >SV_MapExists{ 0, 0x140437800 };
 	WEAK symbol<void(int localClientNum, const char* map)> SV_StartMap{ 0, 0x140438320 };
 	WEAK symbol<void(int localClientNum, const char* map, bool migrate)> SV_StartMapForParty{ 0, 0x140438490 };
@@ -82,8 +88,16 @@ namespace game
 	WEAK symbol<int> dvarCount{ 0x14A7BFF34, 0x14B32AA30 };
 	WEAK symbol<dvar_t*> sortedDvars{ 0x14A7BFF50, 0x14B32AA50 };
 
-	WEAK symbol<gentity_s> g_entities{ 0x143C26DC0, 0x144758C70 };
-
 	WEAK symbol<int> svs_numclients{ 0, 0x1496C4B0C };
 	WEAK symbol<client_t> svs_clients{ 0, 0x1496C4B10 };
+
+	namespace mp
+	{
+		WEAK symbol<gentity_s> g_entities{ 0, 0x144758C70 };
+	}
+
+	namespace sp
+	{
+		WEAK symbol<gentity_s> g_entities{ 0x143C26DC0, 0 };
+	}
 }

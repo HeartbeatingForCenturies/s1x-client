@@ -19,6 +19,17 @@ namespace patches
 			return game::Dvar_FindVar("name")->current.string;
 		}
 
+		utils::hook::detour dvar_register_string_hook;
+
+		game::dvar_t* dvar_register_string(const char* name, const char* value, unsigned int flags, const char* description)
+		{
+			if (name == "name"s)
+			{
+				flags = 0x1;
+			}
+			return dvar_register_string_hook.invoke<game::dvar_t*>(name, value, flags, description);
+		}
+
 		game::dvar_t* register_com_maxfps_stub(const char* name, int /*value*/, int /*min*/, int /*max*/,
 			const unsigned int /*flags*/,
 			const char* description)
@@ -83,8 +94,20 @@ namespace patches
 			LoadLibraryA("PhysXDevice64.dll");
 			LoadLibraryA("PhysXUpdateLoader64.dll");
 
+			// Edit dvars on create
+			dvar_register_string_hook.create(SELECT_VALUE(0x140372050, 0x1404C1450), &dvar_register_string);
+
 			// Unlock fps in main menu
 			utils::hook::set<BYTE>(SELECT_VALUE(0x140144F5B, 0x140213C3B), 0xEB);
+
+			// Unlock fps
+			utils::hook::call(SELECT_VALUE(0x1402F8726, 0x1403CF8CA), register_com_maxfps_stub);
+
+			// Unlock cg_fov
+			utils::hook::call(SELECT_VALUE(0x1400EF830, 0x140014F66), register_cg_fov_stub);
+
+			// Unlock cg_fovscale
+			utils::hook::call(SELECT_VALUE(0x140227599, 0x140014F9B), register_fovscale_stub);
 
 			// Patch Dvar_Command to print out values how CoD4 does it
 			utils::hook::jump(SELECT_VALUE(0x1402FB4C0, 0x1403D31C0), dvar_command_patch);
@@ -95,18 +118,21 @@ namespace patches
 			{
 				SetThreadExecutionState(ES_DISPLAY_REQUIRED);
 			}, scheduler::pipeline::main);
+
+			if (game::environment::is_sp())
+			{
+				patch_sp();
+			}
+			else
+			{
+				patch_mp();
+			}
 		}
 
 		static void patch_mp()
 		{
-			// Unlock fps
-			utils::hook::call(0x1403CF8CA, register_com_maxfps_stub);
-
-			// Unlock cg_fov
-			utils::hook::call(0x140014F66, register_cg_fov_stub);
-
-			// Unlock cg_fovscale
-			utils::hook::call(0x140014F9B, register_fovscale_stub);
+			// Use name dvar
+			live_get_local_client_name_hook.create(0x1404D47F0, &live_get_local_client_name);
 		}
 
 		static void patch_sp()
