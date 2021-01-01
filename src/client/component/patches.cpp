@@ -133,6 +133,9 @@ namespace patches
 		{
 			// Use name dvar
 			live_get_local_client_name_hook.create(0x1404D47F0, &live_get_local_client_name);
+
+			utils::hook::set<uint8_t>(0x1400058C0, 0xC3); // ValidateMetaData
+			utils::hook::set<uint8_t>(0x140005B10, 0xC3); // ^
 		}
 
 		static void patch_sp()

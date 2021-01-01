@@ -728,6 +728,26 @@ namespace game
 		Glyph* glyphs;
 	};
 
+	enum GfxDrawSceneMethod
+	{
+		GFX_DRAW_SCENE_STANDARD = 0x0,
+	};
+
+	enum MaterialTechniqueType
+	{
+		TECHNIQUE_UNLIT = 8,
+		TECHNIQUE_EMISSIVE = 9,
+		TECHNIQUE_LIT = 13,
+	};
+
+	struct GfxDrawMethod_s
+	{
+		int drawScene;
+		int baseTechType;
+		int emissiveTechType;
+		int forceTechType;
+	};
+
 	struct client_t
 	{
 
