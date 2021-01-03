@@ -25,6 +25,10 @@ namespace game
 
 	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{ 0x1401A3050, 0x1400EE500 };
 
+	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)> DB_EnumXAssets_FastFile{ 0x14017D7C0, 0x14026EC10 };
+	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{ 0x140151C20, 0x140240DF0 };
+	WEAK symbol<void(const char** zoneNames, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{ 0x1402F8B50, 0x140270F30 };
+
 	WEAK symbol<dvar_t* (const char* name)> Dvar_FindVar{ 0x140370860, 0x1404BF8B0 };
 	WEAK symbol<void(char* buffer, int index)> Dvar_GetCombinedString{ 0x1402FB590, 0x1403D3290 };
 	WEAK symbol<void(const char* dvar, const char* buffer)> Dvar_SetCommand{ 0x1403730D0, 0x1404C2520 };
@@ -91,6 +95,9 @@ namespace game
 
 	WEAK symbol<int> svs_numclients{ 0, 0x1496C4B0C };
 	WEAK symbol<client_t> svs_clients{ 0, 0x1496C4B10 };
+
+	WEAK symbol<void*> DB_XAssetPool{ 0x140804690, 0x1409B40D0 };
+	WEAK symbol<int> g_poolSize{ 0x140804140, 0x1409B4B90 };
 
 	WEAK symbol<GfxDrawMethod_s> gfxDrawMethod{ 0x14CDFAFE8, 0x14D80FD98 };
 

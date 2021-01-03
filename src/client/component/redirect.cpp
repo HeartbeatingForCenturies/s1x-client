@@ -20,7 +20,7 @@ namespace redirect
 
 			auto* arguments = const_cast<char*>(utils::string::va("%s%s%s", self.get_path().data(),
 			                                                      (singleplayer ? " -singleplayer" : " -multiplayer"), 
-                                                                  (mode.empty() ? "" : (" +"s + mode).data())));
+				                                                  (mode.empty() ? "" : (" +"s + mode).data())));
 			CreateProcessA(self.get_path().data(), arguments, nullptr, nullptr, false, NULL, nullptr, nullptr,
 			               &startup_info, &process_info);
 
