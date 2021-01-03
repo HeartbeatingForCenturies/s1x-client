@@ -782,6 +782,31 @@ namespace game
 		ASSET_TYPE_COUNT = 0x44,
 	};
 
+	enum GfxDrawSceneMethod
+	{
+		GFX_DRAW_SCENE_STANDARD = 0x0,
+	};
+
+	enum MaterialTechniqueType
+	{
+		TECHNIQUE_UNLIT = 8,
+		TECHNIQUE_EMISSIVE = 9,
+		TECHNIQUE_LIT = 13,
+	};
+
+	struct GfxDrawMethod_s
+	{
+		int drawScene;
+		int baseTechType;
+		int emissiveTechType;
+		int forceTechType;
+	};
+
+	struct Material
+	{
+		const char* name;
+	};
+
 	struct Glyph
 	{
 		unsigned short letter;
@@ -804,31 +829,6 @@ namespace game
 		Material* material;
 		Material* glowMaterial;
 		Glyph* glyphs;
-	};
-
-	enum GfxDrawSceneMethod
-	{
-		GFX_DRAW_SCENE_STANDARD = 0x0,
-	};
-
-	struct Material
-	{
-		const char* name;
-	};
-
-	enum MaterialTechniqueType
-	{
-		TECHNIQUE_UNLIT = 8,
-		TECHNIQUE_EMISSIVE = 9,
-		TECHNIQUE_LIT = 13,
-	};
-
-	struct GfxDrawMethod_s
-	{
-		int drawScene;
-		int baseTechType;
-		int emissiveTechType;
-		int forceTechType;
 	};
 
 	union XAssetHeader

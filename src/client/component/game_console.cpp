@@ -76,10 +76,10 @@ namespace game_console
 
 			printf("%s\n", data.data());
 
-			if (con.output.size() > 1024)
-			{
-				con.output.pop_front();
-			}
+			//if (con.output.size() > 512)
+			//{
+			//	con.output.pop_front();
+			//}
 		}
 
 		void toggle_console()
@@ -662,6 +662,10 @@ namespace game_console
 		va_end(args);
 		std::cout << buffer;
 		con.output.push_back(buffer);
+		if (con.output.size() > 512)
+		{
+			con.output.pop_front();
+		}
 		return result;
 	}
 
