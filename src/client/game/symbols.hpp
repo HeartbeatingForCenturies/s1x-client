@@ -23,6 +23,8 @@ namespace game
 	WEAK symbol<void(int localClientNum, int controllerIndex, const char* buffer,
 		void(int, int, const char*))> Cbuf_ExecuteBufferInternal{ 0x1402ED9A0, 0x1403AEE80 };
 
+	WEAK symbol<bool()> CL_IsCgameInitialized{ 0x140136560, 0x1401FD510 };
+
 	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{ 0x1401A3050, 0x1400EE500 };
 
 	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)> DB_EnumXAssets_FastFile{ 0x14017D7C0, 0x14026EC10 };
@@ -98,6 +100,7 @@ namespace game
 
 	WEAK symbol<void*> DB_XAssetPool{ 0x140804690, 0x1409B40D0 };
 	WEAK symbol<int> g_poolSize{ 0x140804140, 0x1409B4B90 };
+	WEAK symbol<const char*> g_assetNames{ 0x140803C90 , 0x1409B3180 };
 
 	WEAK symbol<GfxDrawMethod_s> gfxDrawMethod{ 0x14CDFAFE8, 0x14D80FD98 };
 

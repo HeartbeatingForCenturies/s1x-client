@@ -6,6 +6,8 @@
 #include "game/dvars.hpp"
 #include "scheduler.hpp"
 
+#include "dvars.hpp"
+
 #include <utils/hook.hpp>
 
 namespace patches
@@ -19,22 +21,11 @@ namespace patches
 			return game::Dvar_FindVar("name")->current.string;
 		}
 
-		utils::hook::detour dvar_register_string_hook;
-
-		game::dvar_t* dvar_register_string(const char* name, const char* value, unsigned int flags, const char* description)
-		{
-			if (name == "name"s)
-			{
-				flags = 0x1;
-			}
-			return dvar_register_string_hook.invoke<game::dvar_t*>(name, value, flags, description);
-		}
-
 		game::dvar_t* register_com_maxfps_stub(const char* name, int /*value*/, int /*min*/, int /*max*/,
 			const unsigned int /*flags*/,
 			const char* description)
 		{
-			return game::Dvar_RegisterInt(name, 125, 0, 1000, 0x1, description);
+			return game::Dvar_RegisterInt(name, 0, 0, 1000, 0x1, description);
 		}
 
 		game::dvar_t* register_cg_fov_stub(const char* name, float value, float min, float /*max*/,
@@ -94,8 +85,7 @@ namespace patches
 			LoadLibraryA("PhysXDevice64.dll");
 			LoadLibraryA("PhysXUpdateLoader64.dll");
 
-			// Edit dvars on create
-			dvar_register_string_hook.create(SELECT_VALUE(0x140372050, 0x1404C1450), &dvar_register_string);
+			dvars::override::Dvar_RegisterString("name", "Unknown Soldier", 1);
 
 			// Unlock fps in main menu
 			utils::hook::set<BYTE>(SELECT_VALUE(0x140144F5B, 0x140213C3B), 0xEB);
