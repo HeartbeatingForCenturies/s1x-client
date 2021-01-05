@@ -87,12 +87,12 @@ namespace utils::hook
 
 	asmjit::Error assembler::call(void* target)
 	{
-		return Assembler::call(target);
+		return Assembler::call(size_t(target));
 	}
 
 	asmjit::Error assembler::jmp(void* target)
 	{
-		return Assembler::jmp(target);
+		return Assembler::jmp(size_t(target));
 	}
 
 	detour::detour(const size_t place, void* target) : detour(reinterpret_cast<void*>(place), target)

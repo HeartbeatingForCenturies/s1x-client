@@ -29,3 +29,7 @@
 [submodule "deps/discord-rpc"]
 	path = deps/discord-rpc
 	url = https://github.com/discord/discord-rpc.git
+[submodule "deps/asmjit"]
+	path = deps/asmjit
+	url = https://github.com/Joelrau/asmjit.git
+	branch = old-state
