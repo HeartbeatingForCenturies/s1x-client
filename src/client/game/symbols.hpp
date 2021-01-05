@@ -25,7 +25,7 @@ namespace game
 
 	WEAK symbol<bool()> CL_IsCgameInitialized{ 0x140136560, 0x1401FD510 };
 
-	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{ 0x1401A3050, 0x1400EE500 };
+	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{ 0x1400EE500, 0x1401A3050 };
 
 	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)> DB_EnumXAssets_FastFile{ 0x14017D7C0, 0x14026EC10 };
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{ 0x140151C20, 0x140240DF0 };
@@ -57,6 +57,10 @@ namespace game
 
 	WEAK symbol<Material* (const char* material)> Material_RegisterHandle{ 0x1404919D0, 0x1405AFBE0 };
 
+	WEAK symbol<void(netsrc_t, netadr_s*, const char*)> NET_OutOfBandPrint{ 0, 0x1403DADC0 };
+	WEAK symbol<void(netsrc_t sock, int length, const void* data, const netadr_s* to)> NET_SendLoopPacket{ 0, 0x1403DAF80 };
+	WEAK symbol<bool(const char* s, game::netadr_s* a)> NET_StringToAdr{ 0, 0x1403DB070 };
+
 	WEAK symbol<void(float x, float y, float width, float height, float s0, float t0, float s1, float t1,
 		float* color, Material* material)> R_AddCmdDrawStretchPic{ 0x1404A2580, 0x1405C0CB0 };
 	WEAK symbol<void(const char*, int, Font_s*, float, float, float, float, float, float*, int)> R_AddCmdDrawText{ 0x1404A2BF0, 0x1405C1320 };
@@ -69,8 +73,12 @@ namespace game
 
 	WEAK symbol<ScreenPlacement* ()> ScrPlace_GetViewPlacement{ 0x14014FA70, 0x14023CB50 };
 
+	WEAK symbol<void(const char* text_in)> SV_Cmd_TokenizeString{ 0, 0x1403B0640 };
+	WEAK symbol<void()> SV_Cmd_EndTokenizedString{ 0, 0x1403B0600 };
+
+	WEAK symbol<void(netadr_s* from)> SV_DirectConnect{ 0, 0x1404397A0 };
 	WEAK symbol<void(int localClientNum)> SV_FastRestart{ 0, 0x1404374E0 };
-	WEAK symbol<void(int, int, const char*)> SV_GameSendServerCommand{ 0, 0x14043E120 };
+	WEAK symbol<void(int, int, const char*)> SV_GameSendServerCommand{ 0x1403F3A70, 0x14043E120 };
 	WEAK symbol<const char* (int clientNum)> SV_GetGuid{ 0, 0x14043E1E0 };
 	WEAK symbol<void(int clientNum, const char* reason)> SV_KickClientNum{ 0, 0x1404377A0 };
 	WEAK symbol<bool()> SV_Loaded{ 0x1403F42C0, 0x14043FA50 };
@@ -78,7 +86,9 @@ namespace game
 	WEAK symbol<void(int localClientNum, const char* map)> SV_StartMap{ 0, 0x140438320 };
 	WEAK symbol<void(int localClientNum, const char* map, bool migrate)> SV_StartMapForParty{ 0, 0x140438490 };
 
+	WEAK symbol<HANDLE(int folder, const char* baseFileName)> Sys_CreateFile{ 0x14037BCA0, 0x1404CC8A0 };
 	WEAK symbol<bool()> Sys_IsDatabaseReady2{ 0x1402FF980, 0x1403E1840 };
+	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{ 0x14038E720, 0x1404D8460 };
 	WEAK symbol<void()> Sys_ShowConsole{ 0x14038FA90, 0x1404D98B0 };
 
 	/***************************************************************

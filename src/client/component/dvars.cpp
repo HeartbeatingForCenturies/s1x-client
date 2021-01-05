@@ -4,6 +4,8 @@
 
 #include "game/game.hpp"
 
+#include <utils/hook.hpp>
+
 namespace dvars
 {
 	namespace override

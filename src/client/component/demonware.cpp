@@ -386,9 +386,7 @@ namespace demonware
 			auto lsg_server = register_server("aw-pc-lobby.prod.demonware.net");
 			auto auth_server = register_server("aw-pc-auth3.prod.demonware.net");
 
-			// TODO:
-
-			/*auth_server->register_service<bdDediAuth>();
+			auth_server->register_service<bdDediAuth>();
 			auth_server->register_service<bdSteamAuth>();
 			auth_server->register_service<bdDediRSAAuth>();
 
@@ -400,7 +398,7 @@ namespace demonware
 			lsg_server->register_service<bdBandwidthTest>();
 			lsg_server->register_service<bdGroup>();
 			lsg_server->register_service<bdAnticheat>();
-			lsg_server->register_service<bdRelayService>();*/
+			lsg_server->register_service<bdRelayService>();
 		}
 
 		void post_load() override

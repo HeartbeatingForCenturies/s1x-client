@@ -5,9 +5,10 @@
 #include "game/game.hpp"
 #include "game/dvars.hpp"
 #include "scheduler.hpp"
-
 #include "dvars.hpp"
+#include "fastfiles.hpp"
 
+#include <utils/string.hpp>
 #include <utils/hook.hpp>
 
 namespace patches
@@ -19,6 +20,22 @@ namespace patches
 		const char* live_get_local_client_name()
 		{
 			return game::Dvar_FindVar("name")->current.string;
+		}
+
+		utils::hook::detour com_register_dvars_hook;
+
+		void com_register_dvars()
+		{
+			if (game::environment::is_mp())
+			{
+				// Make name save
+				game::Dvar_RegisterString("name", "Unknown Soldier", 0x1, "Player name.");
+
+				// Disable data validation error popup
+				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, 0, "");
+			}
+
+			return com_register_dvars_hook.invoke<void>();
 		}
 
 		game::dvar_t* register_com_maxfps_stub(const char* name, int /*value*/, int /*min*/, int /*max*/,
@@ -74,6 +91,11 @@ namespace patches
 
 			return 0;
 		}
+
+		void missing_content_error_stub(int /*mode*/, const char* /*message*/)
+		{
+			game::Com_Error(game::ERR_DROP, utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile()));
+		}
 	}
 
 	class component final : public component_interface
@@ -85,7 +107,8 @@ namespace patches
 			LoadLibraryA("PhysXDevice64.dll");
 			LoadLibraryA("PhysXUpdateLoader64.dll");
 
-			dvars::override::Dvar_RegisterString("name", "Unknown Soldier", 1);
+			// Register dvars
+			com_register_dvars_hook.create(SELECT_VALUE(0x1402F86F0, 0x1403CF7F0), &com_register_dvars);
 
 			// Unlock fps in main menu
 			utils::hook::set<BYTE>(SELECT_VALUE(0x140144F5B, 0x140213C3B), 0xEB);
@@ -101,6 +124,9 @@ namespace patches
 
 			// Patch Dvar_Command to print out values how CoD4 does it
 			utils::hook::jump(SELECT_VALUE(0x1402FB4C0, 0x1403D31C0), dvar_command_patch);
+
+			// Show missing fastfiles
+			utils::hook::call(SELECT_VALUE(0x1401817AF, 0x1402742A8), missing_content_error_stub);
 
 			// Fix mouse lag
 			utils::hook::nop(SELECT_VALUE(0x14038FAFF, 0x1404DB1AF), 6);
@@ -123,9 +149,6 @@ namespace patches
 		{
 			// Use name dvar
 			live_get_local_client_name_hook.create(0x1404D47F0, &live_get_local_client_name);
-
-			utils::hook::set<uint8_t>(0x1400058C0, 0xC3); // ValidateMetaData
-			utils::hook::set<uint8_t>(0x140005B10, 0xC3); // ^
 		}
 
 		static void patch_sp()

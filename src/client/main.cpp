@@ -4,6 +4,7 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 
+#include <utils/string.hpp>
 #include <utils/flags.hpp>
 #include <utils/io.hpp>
 

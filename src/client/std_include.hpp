@@ -45,7 +45,7 @@
 #include <VersionHelpers.h>
 #include <Psapi.h>
 #include <urlmon.h>
-//#include <atlbase.h>
+#include <atlbase.h>
 #include <iphlpapi.h>
 
 // min and max is required by gdi, therefore NOMINMAX won't work
@@ -86,6 +86,8 @@
 #include <asmjit/core/jitruntime.h>
 #include <asmjit/x86/x86assembler.h>
 
+#include <proto/auth.pb.h>
+
 #pragma warning(pop)
 #pragma warning(disable: 4100)
 
@@ -95,12 +97,5 @@
 #pragma comment(lib, "iphlpapi.lib")
 
 #include "resource.hpp"
-
-#include <game/game.hpp>
-#include <game/structs.hpp>
-
-#include <utils/string.hpp>
-#include <utils/flags.hpp>
-#include <utils/hook.hpp>
 
 using namespace std::literals;

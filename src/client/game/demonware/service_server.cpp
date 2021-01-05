@@ -138,11 +138,6 @@ namespace demonware
 			{
 				int size;
 				buffer.read_int32(&size);
-
-				if (buffer.size() == 96)
-				{
-					size = 0;
-				}
 				
 				if (size <= 0)
 				{

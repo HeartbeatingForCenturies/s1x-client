@@ -29,17 +29,17 @@ namespace command
 			}
 		}
 
-		void client_command(const int clientNum, void* a2)
+		void client_command(const int client_num, void* a2)
 		{
 			params_sv params = {};
 
 			const auto command = utils::string::to_lower(params[0]);
 			if (handlers_sv.find(command) != handlers_sv.end())
 			{
-				handlers_sv[command](clientNum, params);
+				handlers_sv[command](client_num, params);
 			}
 
-			client_command_hook.invoke<void>(clientNum, a2);
+			client_command_hook.invoke<void>(client_num, a2);
 		}
 
 		// Shamelessly stolen from Quake3
@@ -53,7 +53,7 @@ namespace command
 			}
 
 			static std::string comand_line_buffer = GetCommandLineA();
-			char* command_line = comand_line_buffer.data();
+			auto* command_line = comand_line_buffer.data();
 
 			auto& com_num_console_lines = *reinterpret_cast<int*>(0x141AE732C);
 			auto* com_console_lines = reinterpret_cast<char**>(0x141AE7330);
@@ -254,18 +254,6 @@ namespace command
 				*reinterpret_cast<int*>(1) = 0;
 			});
 
-			add("print", [](const params& params)
-			{
-				auto msg = params.join(1);
-				printf("%s\n", msg.data());
-			});
-
-			add("printError", [](const params& params)
-			{
-				auto msg = params.join(1);
-				game::Com_Error(game::ERR_DROP, "%s\n", msg.data());
-			});
-
 			add("dvarDump", []()
 			{
 				game_console::print(game_console::con_type_info,
@@ -307,7 +295,7 @@ namespace command
 
 		static void add_commands_sp()
 		{
-			
+
 		}
 
 		static void add_commands_mp()

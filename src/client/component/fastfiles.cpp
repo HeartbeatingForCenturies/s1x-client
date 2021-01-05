@@ -1,7 +1,6 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
-
-#include "game/game.hpp"
+#include "fastfiles.hpp"
 
 #include "command.hpp"
 #include "game_console.hpp"
@@ -11,6 +10,7 @@
 
 namespace fastfiles
 {
+	static std::string current_fastfile;
 	namespace
 	{
 		utils::hook::detour db_try_load_x_file_internal_hook;
@@ -18,19 +18,25 @@ namespace fastfiles
 		void db_try_load_x_file_internal(const char* zoneName, const int flags)
 		{
 			game_console::print(game_console::con_type_info, "Loading fastfile %s\n", zoneName);
+			current_fastfile = zoneName;
 			return db_try_load_x_file_internal_hook.invoke<void>(zoneName, flags);
 		}
+	}
 
-		void reallocate_asset_pool(const game::XAssetType type, const unsigned int new_size)
-		{
-			const size_t element_size = game::DB_GetXAssetTypeSize(type);
+	const char* get_current_fastfile()
+	{
+		return current_fastfile.data();
+	}
 
-			auto* new_pool = utils::memory::get_allocator()->allocate(new_size * element_size);
-			std::memmove(new_pool, game::DB_XAssetPool[type], game::g_poolSize[type] * element_size);
+	void reallocate_asset_pool(const game::XAssetType type, const unsigned int new_size)
+	{
+		const size_t element_size = game::DB_GetXAssetTypeSize(type);
 
-			game::DB_XAssetPool[type] = new_pool;
-			game::g_poolSize[type] = new_size;
-		}
+		auto* new_pool = utils::memory::get_allocator()->allocate(new_size * element_size);
+		std::memmove(new_pool, game::DB_XAssetPool[type], game::g_poolSize[type] * element_size);
+
+		game::DB_XAssetPool[type] = new_pool;
+		game::g_poolSize[type] = new_size;
 	}
 
 	class component final : public component_interface
