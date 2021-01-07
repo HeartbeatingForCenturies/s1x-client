@@ -89,6 +89,7 @@ namespace auth
 			}
 
 			const utils::info_string info_string{ std::string{params[2]} };
+
 			const auto steam_id = info_string.get("xuid");
 			const auto challenge = info_string.get("challenge");
 
@@ -104,8 +105,10 @@ namespace auth
 			const auto xuid = strtoull(steam_id.data(), nullptr, 16);
 			if (xuid != key.get_hash())
 			{
-				network::send(*from, "error", "XUID doesn't match the certificate!", '\n');
-				return;
+				// xuid is always 0
+				//MessageBoxA(nullptr, steam_id.data(), std::to_string(key.get_hash()).data(), 0);
+				//network::send(*from, "error", "XUID doesn't match the certificate!", '\n');
+				//return;
 			}
 
 			if (!key.is_valid() || !verify_message(key, challenge, info.signature()))
@@ -125,12 +128,11 @@ namespace auth
 				a.movaps(xmmword_ptr(rsp, 0x20), xmm0);
 
 				a.pushad64();
-				a.mov(rdx, rsi);
+				a.mov(rdx, rdi);
 				a.call_aligned(direct_connect);
 				a.popad64();
 
-				a.mov(eax, 0x140442317);
-				a.jmp(eax);
+				a.jmp(0x140442317);
 			});
 		}
 	}
@@ -165,8 +167,8 @@ namespace auth
 				utils::hook::jump(0x14053995F, 0x1405399A0);
 				utils::hook::jump(0x140539E70, 0x140539EB6);
 
-				//utils::hook::jump(0x1404421F6, get_direct_connect_stub(), true);
-				//utils::hook::call(0x140208C54, send_connect_data_stub);
+				utils::hook::jump(0x1404421F6, get_direct_connect_stub(), true);
+				utils::hook::call(0x140208C54, send_connect_data_stub);
 			}
 		}
 	};

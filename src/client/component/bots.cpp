@@ -1,0 +1,79 @@
+#include <std_include.hpp>
+#include "loader/component_loader.hpp"
+#include "command.hpp"
+#include "scheduler.hpp"
+#include "game/game.hpp"
+#include "party.hpp"
+
+#include <utils/string.hpp>
+
+namespace bots
+{
+	namespace
+	{
+		bool can_spawn()
+		{
+			// disable spawning for now, causes a crash if more than svs_numclients.
+
+			//const auto index = *game::mp::svs_numclients - 1;
+			//const auto cant = game::mp::svs_clients[index].header.state;
+			//if (cant)
+			//{
+				return false;
+			//}
+			//return true;
+		}
+
+		void add_bot()
+		{
+			if (!can_spawn())
+			{
+				return;
+			}
+
+			auto* bot_ent = game::SV_AddTestClient(0);
+			if (&bot_ent)
+			{
+				game::SV_SpawnTestClient(bot_ent);
+			}
+
+			// SV_BotGetRandomName
+			/*auto* bot_name = reinterpret_cast<const char* (*)()>(0x1404267E0)();
+			auto* bot_ent = game::SV_AddBot(bot_name);
+			if (&bot_ent)
+			{
+				game::SV_SpawnTestClient(bot_ent);
+			}*/
+		}
+	}
+
+	class component final : public component_interface
+	{
+	public:
+		void post_unpack() override
+		{
+			if (game::environment::is_sp())
+			{
+				return;
+			}
+
+			command::add("spawnBot", [](const command::params& params)
+			{
+				if (!game::SV_Loaded()) return;
+
+				auto num_bots = 1;
+				if (params.size() == 2)
+				{
+					num_bots = atoi(params.get(1));
+				}
+
+				for (auto i = 0; i < num_bots; i++)
+				{
+					scheduler::once(add_bot, scheduler::pipeline::server, 100ms * i);
+				}
+			});
+		}
+	};
+}
+
+REGISTER_COMPONENT(bots::component)

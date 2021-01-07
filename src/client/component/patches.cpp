@@ -22,6 +22,18 @@ namespace patches
 			return game::Dvar_FindVar("name")->current.string;
 		}
 
+		utils::hook::detour sv_kick_client_num_hook;
+
+		void sv_kick_client_num(const int clientNum, const char* reason)
+		{
+			// Don't kick bot to equalize team balance.
+			if (reason == "EXE_PLAYERKICKED_BOT_BALANCE"s)
+			{
+				return;
+			}
+			return sv_kick_client_num_hook.invoke<void>(clientNum, reason);
+		}
+
 		utils::hook::detour com_register_dvars_hook;
 
 		void com_register_dvars()
@@ -96,6 +108,18 @@ namespace patches
 		{
 			game::Com_Error(game::ERR_DROP, utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile()));
 		}
+
+		void bsp_sys_error_stub(const char* error, const char* arg1)
+		{
+			if (game::environment::is_dedi())
+			{
+				game::Sys_Error(error, arg1);
+			}
+			else
+			{
+				game::Com_Error(game::ERR_DROP, error, arg1);
+			}
+		}
 	}
 
 	class component final : public component_interface
@@ -149,6 +173,12 @@ namespace patches
 		{
 			// Use name dvar
 			live_get_local_client_name_hook.create(0x1404D47F0, &live_get_local_client_name);
+
+			// Patch SV_KickClientNum
+			sv_kick_client_num_hook.create(0x1404377A0, &sv_kick_client_num);
+
+			// patch "Couldn't find the bsp for this map." error to not be fatal in mp
+			utils::hook::call(0x14026E63B, bsp_sys_error_stub);
 		}
 
 		static void patch_sp()

@@ -36,7 +36,7 @@ namespace network
 			return true;
 		}
 
-		/*void handle_command_stub(utils::hook::assembler& a)
+		void handle_command_stub(utils::hook::assembler& a)
 		{
 			const auto return_unhandled = a.newLabel();
 
@@ -53,14 +53,13 @@ namespace network
 
 			// Command handled
 			a.popad64();
-			a.mov(eax, 0x14020AA0E);
-			a.jmp(eax);
+			a.mov(al, 1);
+			a.jmp(0x14020AA10);
 
 			a.bind(return_unhandled);
 			a.popad64();
-			a.mov(eax, 0x14020A19A);
-			a.jmp(eax);
-		}*/
+			a.jmp(0x14020A19A);
+		}
 
 		int net_compare_base_address(const game::netadr_s* a1, const game::netadr_s* a2)
 		{
@@ -102,6 +101,13 @@ namespace network
 	void on(const std::string& command, const callback& callback)
 	{
 		get_callbacks()[utils::string::to_lower(command)] = callback;
+	}
+
+	void dw_send_to(const unsigned int size, const char* src, game::netadr_s* a3)
+	{
+		sockaddr s = {};
+		game::NetadrToSockadr(a3, &s);
+		sendto(*game::query_socket, src, size - 2, 0, &s, 16);
 	}
 
 	void send(const game::netadr_s& address, const std::string& command, const std::string& data, const char separator)
@@ -156,34 +162,6 @@ namespace network
 		return "bad";
 	}
 
-	/*void set_xuid_config_string_stub(utils::hook::assembler& a)
-	{
-		const auto return_regular = a.newLabel();
-
-		a.mov(rax, ptr(rsp));
-		a.mov(r9, 0x); // This is the evil one :(
-		a.cmp(rax, r9);
-		a.jne(return_regular);
-
-		// Do the original work
-		a.call_aligned(return_regular);
-
-		// Jump to success branch
-		a.mov(rax, 0x);
-		a.mov(ptr(rsp), rax);
-
-		a.ret();
-
-		a.bind(return_regular);
-
-		a.sub(rsp, 0x38);
-		a.mov(eax, ptr(rcx));
-		a.mov(r9d, ptr(rcx, 4));
-		a.mov(r10, rdx);
-
-		a.jmp(0x1404B725D);
-	}*/
-
 	game::dvar_t* register_netport_stub(const char* dvarName, int value, int min, int max, unsigned int flags,
 		const char* description)
 	{
@@ -207,13 +185,14 @@ namespace network
 				}
 
 				// redirect dw_sendto to raw socket
-				utils::hook::jump(0x1404D850A, reinterpret_cast<void*>(0x1404D849A));
+				//utils::hook::jump(0x1404D850A, reinterpret_cast<void*>(0x1404D849A));
+				utils::hook::call(0x1404D851F, dw_send_to);
 
 				// intercept command handling
-				//utils::hook::jump(0x14020A175, utils::hook::assemble(handle_command_stub), true);
+				utils::hook::jump(0x14020A175, utils::hook::assemble(handle_command_stub), true);
 
 				// handle xuid without secure connection
-				//utils::hook::jump(0x1404B7250, utils::hook::assemble(set_xuid_config_string_stub), true);
+				utils::hook::nop(0x14043FFF8, 6);
 
 				utils::hook::jump(0x1403DA700, net_compare_address);
 				utils::hook::jump(0x1403DA750, net_compare_base_address);

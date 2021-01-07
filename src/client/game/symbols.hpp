@@ -10,6 +10,7 @@ namespace game
 
 	WEAK symbol<void(errorParm code, const char* message, ...)> Com_Error{ 0x1402F7570, 0x1403CE480 };
 	WEAK symbol<void()> Com_Frame_Try_Block_Function{ 0x1402F7E10, 0x1403CEF30 };
+	WEAK symbol<CodPlayMode()> Com_GetCurrentCoDPlayMode{ 0, 0x1404C9690 };
 	WEAK symbol<void()> Com_Quit_f{ 0x1402F9390, 0x1403D08C0 };
 
 	WEAK symbol<void(const char* cmdName, void(), cmd_function_s* allocedCmd)> Cmd_AddCommandInternal{ 0x1402EDDB0, 0x1403AF2C0 };
@@ -19,6 +20,7 @@ namespace game
 
 	WEAK symbol<void(const char* message)> Conbuf_AppendText{ 0x14038F220, 0x1404D9040 };
 
+	WEAK symbol<void(int localClientNum, void (*)(int localClientNum))> Cbuf_AddCall{ 0x1402ED820, 0x1403AECF0 };
 	WEAK symbol<void(int localClientNum, const char* text)> Cbuf_AddText{ 0x1402ED890, 0x1403AED70 };
 	WEAK symbol<void(int localClientNum, int controllerIndex, const char* buffer,
 		void(int, int, const char*))> Cbuf_ExecuteBufferInternal{ 0x1402ED9A0, 0x1403AEE80 };
@@ -26,6 +28,8 @@ namespace game
 	WEAK symbol<bool()> CL_IsCgameInitialized{ 0x140136560, 0x1401FD510 };
 
 	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{ 0x1400EE500, 0x1401A3050 };
+	WEAK symbol<void(int localClientNum, /*mp::cg_s**/void* cg, const char* dvar, const char* value)> CG_SetClientDvarFromServer
+	{ 0, 0x1401BF0A0 };
 
 	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)> DB_EnumXAssets_FastFile{ 0x14017D7C0, 0x14026EC10 };
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{ 0x140151C20, 0x140240DF0 };
@@ -33,6 +37,7 @@ namespace game
 
 	WEAK symbol<dvar_t* (const char* name)> Dvar_FindVar{ 0x140370860, 0x1404BF8B0 };
 	WEAK symbol<void(char* buffer, int index)> Dvar_GetCombinedString{ 0x1402FB590, 0x1403D3290 };
+	WEAK symbol<void(dvar_t* dvar, DvarSetSource source)> Dvar_Reset{ 0x140372950, 0x1404C1DB0 };
 	WEAK symbol<void(const char* dvar, const char* buffer)> Dvar_SetCommand{ 0x1403730D0, 0x1404C2520 };
 	WEAK symbol<void(dvar_t* dvar, const char* string)> Dvar_SetString{ 0x140373DE0, 0x1404C3610 };
 	WEAK symbol<void(const char*, const char*, DvarSetSource)> Dvar_SetFromStringByNameFromSource{ 0x1403737D0, 0x1404C2E40 };
@@ -53,9 +58,15 @@ namespace game
 
 	WEAK symbol<void()> G_Glass_Update{ 0x14021D540, 0x1402EDEE0 };
 
+	WEAK symbol<const char* (int, int, int)> Key_KeynumToString{ 0x14013F380, 0x140207C50 };
+
 	WEAK symbol<unsigned int(int)> Live_SyncOnlineDataFlags{ 0x1404459A0, 0x140562830 };
 
+	WEAK symbol<void(int clientNum, const char* menu, int a3, int a4, unsigned int a5)> LUI_OpenMenu{ 0, 0x14048E450 };
+
 	WEAK symbol<Material* (const char* material)> Material_RegisterHandle{ 0x1404919D0, 0x1405AFBE0 };
+
+	WEAK symbol<void(netadr_s*, sockaddr*)> NetadrToSockadr{ 0, 0x1404B6F10 };
 
 	WEAK symbol<void(netsrc_t, netadr_s*, const char*)> NET_OutOfBandPrint{ 0, 0x1403DADC0 };
 	WEAK symbol<void(netsrc_t sock, int length, const void* data, const netadr_s* to)> NET_SendLoopPacket{ 0, 0x1403DAF80 };
@@ -73,19 +84,38 @@ namespace game
 
 	WEAK symbol<ScreenPlacement* ()> ScrPlace_GetViewPlacement{ 0x14014FA70, 0x14023CB50 };
 
+	WEAK symbol<unsigned int()> Scr_AllocArray{ 0x140317C50, 0x1403F4280 };
+	WEAK symbol<const float* (const float* v)> Scr_AllocVector{ 0x140317D10, 0x1403F4370 };
+	WEAK symbol<const char* (int index)> Scr_GetString{ 0x14031C570, 0x1403F8C50 };
+	WEAK symbol<unsigned int()> Scr_GetInt{ 0x14031C1F0, 0x1403F88D0 };
+	WEAK symbol<float(int index)> Scr_GetFloat{ 0x14031C090, 0x1403F8820 };
+	WEAK symbol<int()> Scr_GetNumParam{ 0x14031C2A0, 0x1403F8980 };
+	WEAK symbol<void()> Scr_ClearOutParams{ 0x14031B7C0, 0x1403F8040 };
+
 	WEAK symbol<void(const char* text_in)> SV_Cmd_TokenizeString{ 0, 0x1403B0640 };
 	WEAK symbol<void()> SV_Cmd_EndTokenizedString{ 0, 0x1403B0600 };
 
+	WEAK symbol<mp::gentity_s* (const char* name)> SV_AddBot{ 0, 0x140438EC0 };
+	WEAK symbol<bool(int clientNum)> SV_BotIsBot{ 0, 0x140427300 };
+	WEAK symbol<mp::gentity_s* (int)> SV_AddTestClient{ 0, 0x140439190 };
+	WEAK symbol<bool(mp::gentity_s*)> SV_CanSpawnTestClient{ 0, 0x140439460 };
+	WEAK symbol<int(mp::gentity_s* ent)> SV_SpawnTestClient{ 0, 0x14043C750 };
+
+	WEAK symbol<void(mp::gentity_s*)> SV_AddEntity{ 0, 0x1403388B0 };
+
 	WEAK symbol<void(netadr_s* from)> SV_DirectConnect{ 0, 0x1404397A0 };
+	WEAK symbol<void(mp::client_t*, const char*, int)> SV_ExecuteClientCommand{ 0, 0x15121D8E6 };
 	WEAK symbol<void(int localClientNum)> SV_FastRestart{ 0, 0x1404374E0 };
 	WEAK symbol<void(int, int, const char*)> SV_GameSendServerCommand{ 0x1403F3A70, 0x14043E120 };
 	WEAK symbol<const char* (int clientNum)> SV_GetGuid{ 0, 0x14043E1E0 };
+	WEAK symbol<playerState_s* (int num)> SV_GetPlayerstateForClientNum{ 0x1403F3AB0, 0x14043E260 };
 	WEAK symbol<void(int clientNum, const char* reason)> SV_KickClientNum{ 0, 0x1404377A0 };
 	WEAK symbol<bool()> SV_Loaded{ 0x1403F42C0, 0x14043FA50 };
 	WEAK symbol<bool(const char* map) >SV_MapExists{ 0, 0x140437800 };
 	WEAK symbol<void(int localClientNum, const char* map)> SV_StartMap{ 0, 0x140438320 };
 	WEAK symbol<void(int localClientNum, const char* map, bool migrate)> SV_StartMapForParty{ 0, 0x140438490 };
 
+	WEAK symbol<void(const char* error, ...)> Sys_Error{ 0x14038C770, 0x1404D6260 };
 	WEAK symbol<HANDLE(int folder, const char* baseFileName)> Sys_CreateFile{ 0x14037BCA0, 0x1404CC8A0 };
 	WEAK symbol<bool()> Sys_IsDatabaseReady2{ 0x1402FF980, 0x1403E1840 };
 	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{ 0x14038E720, 0x1404D8460 };
@@ -105,8 +135,9 @@ namespace game
 	WEAK symbol<int> dvarCount{ 0x14A7BFF34, 0x14B32AA30 };
 	WEAK symbol<dvar_t*> sortedDvars{ 0x14A7BFF50, 0x14B32AA50 };
 
-	WEAK symbol<int> svs_numclients{ 0, 0x1496C4B0C };
-	WEAK symbol<client_t> svs_clients{ 0, 0x1496C4B10 };
+	WEAK symbol<const char*> command_whitelist{ 0x140808EF0, 0x1409B8DC0 };
+
+	WEAK symbol<SOCKET> query_socket{ 0, 0x14B5B9180 };
 
 	WEAK symbol<void*> DB_XAssetPool{ 0x140804690, 0x1409B40D0 };
 	WEAK symbol<int> g_poolSize{ 0x140804140, 0x1409B4B90 };
@@ -117,6 +148,10 @@ namespace game
 	namespace mp
 	{
 		WEAK symbol<gentity_s> g_entities{ 0, 0x144758C70 };
+		WEAK symbol<client_t> svs_clients{ 0, 0x1496C4B10 };
+		WEAK symbol<int> svs_numclients{ 0, 0x1496C4B0C };
+
+		WEAK symbol<int> sv_serverId_value{ 0, 0x1488A9A60 };
 	}
 
 	namespace sp

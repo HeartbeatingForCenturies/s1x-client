@@ -65,21 +65,23 @@ namespace game_console
 			matches.clear();
 		}
 
-		void print(const std::string& data)
+		void print_internal(const std::string& data)
 		{
 			if (con.visible_line_count > 0 && con.display_line_offset == (con.output.size() - con.visible_line_count))
 			{
 				con.display_line_offset++;
 			}
+			con.output.push_back(data.data());
+			if (con.output.size() > 512)
+			{
+				con.output.pop_front();
+			}
+		}
 
-			//con.output.push_back(data);
-
+		void print(const std::string& data)
+		{
+			//print_internal(data.data());
 			printf("%s\n", data.data());
-
-			//if (con.output.size() > 512)
-			//{
-			//	con.output.pop_front();
-			//}
 		}
 
 		void toggle_console()
@@ -661,11 +663,7 @@ namespace game_console
 		result = vsnprintf(buffer, 256, format, args);
 		va_end(args);
 		std::cout << buffer;
-		con.output.push_back(buffer);
-		if (con.output.size() > 512)
-		{
-			con.output.pop_front();
-		}
+		print_internal(buffer);
 		return result;
 	}
 

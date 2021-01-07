@@ -9,6 +9,17 @@ namespace game
 	typedef vec_t vec3_t[3];
 	typedef vec_t vec4_t[4];
 
+	enum CodPlayMode
+	{
+		CODPLAYMODE_NONE = 0x0,
+		CODPLAYMODE_SP = 0x1,
+		CODPLAYMODE_CORE = 0x2,
+		CODPLAYMODE_SURVIVAL = 0x3,
+		CODPLAYMODE_ZOMBIES = 0x4,
+		CODPLAYMODE_GOLIATH = 0x5,
+		CODPLAYMODE_COUNT = 0x6,
+	};
+
 	enum DWOnlineStatus
 	{
 		DW_LIVE_DISCONNECTED = 0x0,
@@ -876,14 +887,34 @@ namespace game
 		Material* material;
 	};
 
-	struct client_t
-	{
-
-	};
-
 	namespace mp
 	{
+		struct gclient_s
+		{
+
+		};
+
+		struct EntityState
+		{
+			
+		};
+
 		struct gentity_s
+		{
+			
+		};
+
+		struct playerState_s
+		{
+
+		};
+
+		struct clientHeader_t
+		{
+			
+		};
+
+		struct client_t
 		{
 			
 		};
@@ -906,4 +937,10 @@ namespace game
 
 		};
 	}
+
+	union playerState_s
+	{
+		sp::playerState_s* sp;
+		mp::playerState_s* mp;
+	};
 }

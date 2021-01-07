@@ -15,6 +15,9 @@ namespace dvars
 	extern game::dvar_t* con_inputDvarInactiveValueColor;
 	extern game::dvar_t* con_inputCmdMatchColor;
 
+	extern game::dvar_t* g_playerCollision;
+	extern game::dvar_t* g_playerEjection;
+
 	extern game::dvar_t* r_fullbright;
 
 	std::string dvar_get_vector_domain(const int components, const game::dvar_limits& domain);
