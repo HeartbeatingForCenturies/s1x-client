@@ -119,7 +119,7 @@ namespace binding
 			}
 
 			// write all bindings to config file
-			utils::hook::call(SELECT_VALUE(0x1, 0x1402081CB), key_write_bindings_to_buffer_stub);
+			utils::hook::call(SELECT_VALUE(0x14013F90B, 0x1402081CB), key_write_bindings_to_buffer_stub);
 
 			// links a custom command to an index
 			utils::hook::jump(SELECT_VALUE(0x1402EE5A0, 0x1403AFB50), key_get_binding_for_cmd_stub);
