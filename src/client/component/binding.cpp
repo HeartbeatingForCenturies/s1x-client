@@ -13,6 +13,11 @@ namespace binding
 
 		utils::hook::detour cl_execute_key_hook;
 
+		int get_num_keys()
+		{
+			return SELECT_VALUE(102, 104);
+		}
+
 		int key_write_bindings_to_buffer_stub(int /*localClientNum*/, char* buffer, const int buffer_size)
 		{
 			auto bytes_used = 0;
@@ -23,7 +28,7 @@ namespace binding
 				const auto* const key_button = game::Key_KeynumToString(key_index, 0, 1);
 				auto value = game::playerKeys->keys[key_index].binding;
 
-				if (value && value < 104)
+				if (value && value < get_num_keys())
 				{
 					const auto len = sprintf_s(&buffer[bytes_used], (buffer_size_align - bytes_used),
 						"bind %s \"%s\"\n", key_button, game::command_whitelist[value]);
@@ -35,9 +40,9 @@ namespace binding
 
 					bytes_used += len;
 				}
-				else if (value >= 100)
+				else if (value >= get_num_keys())
 				{
-					value -= 104;
+					value -= get_num_keys();
 					if (static_cast<size_t>(value) < custom_binds.size() && !custom_binds[value].empty())
 					{
 						const auto len = sprintf_s(&buffer[bytes_used], (buffer_size_align - bytes_used),
@@ -78,7 +83,7 @@ namespace binding
 		int key_get_binding_for_cmd_stub(const char* command)
 		{
 			// original binds
-			for (auto i = 0; i <= 104; i++)
+			for (auto i = 0; i <= get_num_keys(); i++)
 			{
 				if (game::command_whitelist[i] && !strcmp(command, game::command_whitelist[i]))
 				{
@@ -87,14 +92,14 @@ namespace binding
 			}
 
 			// custom binds
-			return 104 + get_binding_for_custom_command(command);
+			return get_num_keys() + get_binding_for_custom_command(command);
 		}
 
-		void cl_execute_key_stub(const int local_client_num, unsigned int key, const unsigned int down, const unsigned int time)
+		void cl_execute_key_stub(const int local_client_num, int key, const int down, const int time)
 		{
-			if (key >= 104)
+			if (key >= get_num_keys())
 			{
-				key -= 104;
+				key -= get_num_keys();
 
 				if (static_cast<size_t>(key) < custom_binds.size() && !custom_binds[key].empty())
 				{
