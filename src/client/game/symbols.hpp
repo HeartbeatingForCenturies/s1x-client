@@ -8,6 +8,8 @@ namespace game
 	 * Functions
 	 **************************************************************/
 
+	WEAK symbol<void(void*, void*)> AimAssist_AddToTargetList{ 0, 0x140001730 };
+
 	WEAK symbol<void(errorParm code, const char* message, ...)> Com_Error{ 0x1402F7570, 0x1403CE480 };
 	WEAK symbol<void()> Com_Frame_Try_Block_Function{ 0x1402F7E10, 0x1403CEF30 };
 	WEAK symbol<CodPlayMode()> Com_GetCurrentCoDPlayMode{ 0, 0x1404C9690 };
@@ -56,7 +58,19 @@ namespace game
 	WEAK symbol<dvar_t* (const char* dvarName, float x, float y, float z, float w, float min, float max,
 		unsigned int flags, const char* description)> Dvar_RegisterVec4{ 0x140372430, 0x1404C1800 };
 
+	WEAK symbol<DWOnlineStatus()> dwGetLogOnStatus{ 0, 0x14053CCB0 };
+
+	WEAK symbol<long long(const char* qpath, char** buffer)> FS_ReadFile{ 0x140362390, 0x1404AF380 };
+	WEAK symbol<void(void* buffer)> FS_FreeFile{ 0x140362380, 0x1404AF370 };
+
 	WEAK symbol<void()> G_Glass_Update{ 0x14021D540, 0x1402EDEE0 };
+
+	WEAK symbol<unsigned int(const char* name)> G_GetWeaponForName{ 0x140274590, 0x14033FF60 };
+	WEAK symbol<int(playerState_s* ps, unsigned int weapon, int dualWield, int startInAltMode, int, int, int, char, ...)>
+		G_GivePlayerWeapon{ 0x1402749B0, 0x140340470 };
+	WEAK symbol<void(playerState_s* ps, unsigned int weapon, int hadWeapon)> G_InitializeAmmo{ 0x1402217F0, 0x1402F22B0 };
+	WEAK symbol<void(int clientNum, unsigned int weapon)> G_SelectWeapon{ 0x140275380, 0x140340D50 };
+	WEAK symbol<int(playerState_s* ps, unsigned int weapon)> G_TakePlayerWeapon{ 0x1402754E0, 0x1403411D0 };
 
 	WEAK symbol<const char* (int, int, int)> Key_KeynumToString{ 0x14013F380, 0x140207C50 };
 

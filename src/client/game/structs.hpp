@@ -749,6 +749,21 @@ namespace game
 		dvar_limits domain;
 	};
 
+	enum connstate_t
+	{
+		CA_DISCONNECTED = 0x0,
+		CA_CINEMATIC = 0x1,
+		CA_LOGO = 0x2,
+		CA_CONNECTING = 0x3,
+		CA_CHALLENGING = 0x4,
+		CA_CONNECTED = 0x5,
+		CA_SENDINGSTATS = 0x6,
+		CA_SYNCHRONIZING_DATA = 0x7,
+		CA_LOADING = 0x8,
+		CA_PRIMED = 0x9,
+		CA_ACTIVE = 0xA,
+	};
+
 	enum DBSyncMode
 	{
 		DB_LOAD_ASYNC = 0x0,
@@ -896,13 +911,14 @@ namespace game
 
 		struct EntityState
 		{
-			
-		};
+			int entityNum;
+		}; // size = ?
 
 		struct gentity_s
 		{
-			
-		};
+			EntityState s;
+			char __pad[88];
+		}; // size = 92
 
 		struct playerState_s
 		{
@@ -911,13 +927,14 @@ namespace game
 
 		struct clientHeader_t
 		{
-			
-		};
+			int state;
+		}; // /size = ?
 
 		struct client_t
 		{
-			
-		};
+			clientHeader_t header;
+			char __pad[661300];
+		}; // size = 661304
 	}
 
 	namespace sp
