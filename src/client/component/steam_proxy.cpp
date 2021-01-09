@@ -21,7 +21,7 @@ namespace steam_proxy
 
 		bool is_disabled()
 		{
-			static const auto disabled = utils::flags::has_flag("no-steam");
+			static const auto disabled = utils::flags::has_flag("nosteam");
 			return disabled;
 		}
 	}

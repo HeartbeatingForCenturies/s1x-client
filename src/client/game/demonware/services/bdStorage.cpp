@@ -23,11 +23,11 @@ namespace demonware
 		this->register_service(11, &bdStorage::delete_user_file);
 		this->register_service(12, &bdStorage::get_user_file);
 
-		this->map_publisher_resource("motd-english\\.txt", DW_MOTD);
+		this->map_publisher_resource("motd-.*\\.txt", DW_MOTD);
 		this->map_publisher_resource("mm\\.cfg", DW_MM_CONFIG);
-		this->map_publisher_resource("playlists_tu22\\.aggr", DW_PLAYLISTS);
-		this->map_publisher_resource("social_tu22\\.cfg", DW_SOCIAL_CONFIG);
-		this->map_publisher_resource("entitlement_config\\.info", DW_ENTITLEMENT_CONFIG);
+		this->map_publisher_resource("playlists(_.+)?\\.aggr", DW_PLAYLISTS);
+		this->map_publisher_resource("social_[Tt][Uu][0-9]+\\.cfg", DW_SOCIAL_CONFIG);
+		this->map_publisher_resource("entitlement_config_[Tt][Uu][0-9]+\\.info", DW_ENTITLEMENT_CONFIG);
 
 		publisher_resources_.emplace_back(std::regex{"heatmap\\.raw"}, generate_heatmap());
 	}

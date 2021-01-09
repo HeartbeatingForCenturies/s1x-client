@@ -103,7 +103,7 @@ namespace network
 		get_callbacks()[utils::string::to_lower(command)] = callback;
 	}
 
-	void dw_send_to(const unsigned int size, const char* src, game::netadr_s* a3)
+	void dw_send_to_stub(const unsigned int size, const char* src, game::netadr_s* a3)
 	{
 		sockaddr s = {};
 		game::NetadrToSockadr(a3, &s);
@@ -186,7 +186,7 @@ namespace network
 
 				// redirect dw_sendto to raw socket
 				//utils::hook::jump(0x1404D850A, reinterpret_cast<void*>(0x1404D849A));
-				utils::hook::call(0x1404D851F, dw_send_to);
+				utils::hook::call(0x1404D851F, dw_send_to_stub);
 
 				// intercept command handling
 				utils::hook::jump(0x14020A175, utils::hook::assemble(handle_command_stub), true);
