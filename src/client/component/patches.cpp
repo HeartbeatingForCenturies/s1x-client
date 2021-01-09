@@ -5,8 +5,9 @@
 #include "game/game.hpp"
 #include "game/dvars.hpp"
 #include "scheduler.hpp"
-#include "dvars.hpp"
+#include "filesystem.hpp"
 #include "fastfiles.hpp"
+#include "dvars.hpp"
 
 #include <utils/string.hpp>
 #include <utils/hook.hpp>
@@ -41,7 +42,7 @@ namespace patches
 			if (game::environment::is_mp())
 			{
 				// Make name save
-				game::Dvar_RegisterString("name", "Unknown Soldier", 0x1, "Player name.");
+				game::Dvar_RegisterString("name", "Unknown Soldier", game::DVAR_FLAG_SAVED, "Player name.");
 
 				// Disable data validation error popup
 				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, 0, "");
@@ -54,14 +55,14 @@ namespace patches
 			const unsigned int /*flags*/,
 			const char* description)
 		{
-			return game::Dvar_RegisterInt(name, 0, 0, 1000, 0x1, description);
+			return game::Dvar_RegisterInt(name, 0, 0, 1000, game::DVAR_FLAG_SAVED, description);
 		}
 
 		game::dvar_t* register_cg_fov_stub(const char* name, float value, float min, float /*max*/,
 			const unsigned int flags,
 			const char* description)
 		{
-			return game::Dvar_RegisterFloat(name, value, min, 160, flags | 0x1, description);
+			return game::Dvar_RegisterFloat(name, value, min, 160, game::DVAR_FLAG_SAVED, description);
 		}
 
 		game::dvar_t* register_fovscale_stub(const char* name, float /*value*/, float /*min*/, float /*max*/,
@@ -69,7 +70,7 @@ namespace patches
 		                                     const char* desc)
 		{
 			// changed max value from 2.0f -> 5.0f and min value from 0.5f -> 0.1f
-			return game::Dvar_RegisterFloat(name, 1.0f, 0.1f, 5.0f, 0x1, desc);
+			return game::Dvar_RegisterFloat(name, 1.0f, 0.1f, 5.0f, game::DVAR_FLAG_SAVED, desc);
 		}
 
 		int dvar_command_patch() // game makes this return an int and compares with eax instead of al -_-
@@ -102,6 +103,34 @@ namespace patches
 			}
 
 			return 0;
+		}
+
+		const char* db_read_raw_file_stub(const char* filename, char* buf, int size)
+		{
+			std::string file_name = filename;
+			if (file_name.find(".cfg") == std::string::npos)
+			{
+				file_name.append(".cfg");
+			}
+
+			const auto file = filesystem::file(file_name);
+			if (file.exists())
+			{
+				snprintf(buf, size, "%s\n", file.get_buffer().data());
+				printf("%s\n", buf);
+				return buf;
+			}
+
+			// DB_ReadRawFile
+			return reinterpret_cast<const char*(*)(const char*, char*, int)>(SELECT_VALUE(0x140180E30, 0x140273080))(filename, buf, size);
+		}
+
+		void aim_assist_add_to_target_list(void* a1, void* a2)
+		{
+			if (!dvars::aimassist_enabled->current.enabled)
+				return;
+
+			game::AimAssist_AddToTargetList(a1, a2);
 		}
 
 		void missing_content_error_stub(int /*mode*/, const char* /*message*/)
@@ -152,6 +181,9 @@ namespace patches
 			// Show missing fastfiles
 			utils::hook::call(SELECT_VALUE(0x1401817AF, 0x1402742A8), missing_content_error_stub);
 
+			// Allow executing custom cfg files with the "exec" command
+			utils::hook::call(SELECT_VALUE(0x1402EE225, 0x1403AF7CD), db_read_raw_file_stub);
+
 			// Fix mouse lag
 			utils::hook::nop(SELECT_VALUE(0x14038FAFF, 0x1404DB1AF), 6);
 			scheduler::loop([]()
@@ -179,6 +211,12 @@ namespace patches
 
 			// patch "Couldn't find the bsp for this map." error to not be fatal in mp
 			utils::hook::call(0x14026E63B, bsp_sys_error_stub);
+
+			//client side aim assist dvar
+			dvars::aimassist_enabled = game::Dvar_RegisterBool("aimassist_enabled", true,
+				game::DvarFlags::DVAR_FLAG_SAVED,
+				"Enables aim assist for controllers");
+			utils::hook::call(0x140003609, aim_assist_add_to_target_list);
 		}
 
 		static void patch_sp()

@@ -2,6 +2,7 @@
 #include "loader/component_loader.hpp"
 #include "party.hpp"
 
+#include "dvars.hpp"
 #include "command.hpp"
 #include "network.hpp"
 #include "scheduler.hpp"
@@ -70,6 +71,40 @@ namespace party
 
 			return {};
 		}
+
+		int get_dvar_int(const std::string& dvar)
+		{
+			auto* dvar_value = game::Dvar_FindVar(dvar.data());
+			if (dvar_value && dvar_value->current.integer)
+			{
+				return dvar_value->current.integer;
+			}
+
+			return -1;
+		}
+
+		bool get_dvar_bool(const std::string& dvar)
+		{
+			auto* dvar_value = game::Dvar_FindVar(dvar.data());
+			if (dvar_value && dvar_value->current.enabled)
+			{
+				return dvar_value->current.enabled;
+			}
+
+			return false;
+		}
+
+		void didyouknow_stub(const char* dvar_name, const char* string)
+		{
+			if (!party::sv_motd.empty())
+			{
+				string = party::sv_motd.data();
+			}
+
+			// This function either does Dvar_SetString or Dvar_RegisterString for the given dvar
+			reinterpret_cast<void(*)(const char*, const char*)>(0x1404C39B0)(dvar_name, string);
+			party::sv_motd.clear();
+		}
 	}
 
 	int get_client_count()
@@ -77,10 +112,10 @@ namespace party
 		auto count = 0;
 		for (auto i = 0; i < *game::mp::svs_numclients; ++i)
 		{
-			//if (game::mp::svs_clients[i].header.state >= 3)
-			//{
-			//	++count;
-			//}
+			if (game::mp::svs_clients[i].header.state >= 3)
+			{
+				++count;
+			}
 		}
 
 		return count;
@@ -91,11 +126,11 @@ namespace party
 		auto count = 0;
 		for (auto i = 0; i < *game::mp::svs_numclients; ++i)
 		{
-			//if (game::mp::svs_clients[i].header.state >= 3 &&
-			//	game::mp::svs_clients[i].testClient != game::TC_NONE)
-			//{
-			//	++count;
-			//}
+			if (game::mp::svs_clients[i].header.state >= 3 &&
+				game::SV_BotIsBot(i))
+			{
+				++count;
+			}
 		}
 
 		return count;
@@ -146,10 +181,9 @@ namespace party
 				return;
 			}
 
-			// starting map doesn't work, only private match -> start
+			// starting map like this crashes the game.
 			printf("Starting map: %s\n", mapname.data());
 			game::SV_StartMapForParty(0, mapname.data(), true);
-			//game::SV_StartMap(0, mapname.data());
 		}
 	}
 
@@ -310,6 +344,8 @@ namespace party
 				printf("%s\n", message.data());
 			});
 
+			utils::hook::call(0x14048811C, didyouknow_stub); // allow custom didyouknow based on sv_motd
+
 			network::on("getInfo", [](const game::netadr_s& target, const std::string_view& data)
 			{
 				utils::info_string info{};
@@ -326,8 +362,6 @@ namespace party
 				info.set("sv_maxclients", utils::string::va("%i", *game::mp::svs_numclients));
 				info.set("protocol", utils::string::va("%i", PROTOCOL));
 				info.set("playmode", utils::string::va("%i", game::Com_GetCurrentCoDPlayMode()));
-				//info.set("shortversion", SHORTVERSION);
-				//info.set("hc", (Dvar::Var("g_hardcore").get<bool>() ? "1" : "0"));
 
 				network::send(target, "infoResponse", info.build(), '\n');
 			});
@@ -350,8 +384,17 @@ namespace party
 					return;
 				}
 
+				const auto gamename = info.get("gamename");
+				if (gamename != "S1"s)
+				{
+					const auto str = "Invalid gamename.";
+					printf("%s\n", str);
+					game::Com_Error(game::ERR_DROP, str);
+					return;
+				}
+
 				const auto playmode = info.get("playmode");
-				if (playmode.empty())
+				if (game::CodPlayMode(std::atoi(playmode.data())) != game::Com_GetCurrentCoDPlayMode())
 				{
 					const auto str = "Invalid playmode.";
 					printf("%s\n", str);
@@ -372,15 +415,6 @@ namespace party
 				if (gametype.empty())
 				{
 					const auto str = "Invalid gametype.";
-					printf("%s\n", str);
-					game::Com_Error(game::ERR_DROP, str);
-					return;
-				}
-
-				const auto gamename = info.get("gamename");
-				if (gamename != "S1"s)
-				{
-					const auto str = "Invalid gamename.";
 					printf("%s\n", str);
 					game::Com_Error(game::ERR_DROP, str);
 					return;

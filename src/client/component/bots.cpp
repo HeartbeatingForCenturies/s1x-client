@@ -13,15 +13,11 @@ namespace bots
 	{
 		bool can_spawn()
 		{
-			// disable spawning for now, causes a crash if more than svs_numclients.
-
-			//const auto index = *game::mp::svs_numclients - 1;
-			//const auto cant = game::mp::svs_clients[index].header.state;
-			//if (cant)
-			//{
-				return false;
-			//}
-			//return true;
+			if (party::get_client_count() < *game::mp::svs_numclients)
+			{
+				return true;
+			}
+			return false;
 		}
 
 		void add_bot()
