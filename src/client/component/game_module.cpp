@@ -69,9 +69,9 @@ namespace game_module
 
 		DWORD __stdcall get_module_file_name_w(HMODULE hmodule, const LPWSTR filename, const DWORD size)
 		{
-			if (!hmodule || utils::nt::library(hmodule) == get_game_module())
+			if (!hmodule)
 			{
-				hmodule = get_host_module();
+				hmodule = get_game_module();
 			}
 
 			return file_name_w_hook.invoke<DWORD>(hmodule, filename, size);
@@ -110,11 +110,7 @@ namespace game_module
 
 		void post_load() override
 		{
-#ifdef INJECT_HOST_AS_LIB
 			hook_module_resolving();
-#else
-			assert(get_host_module() == get_game_module());
-#endif
 		}
 	};
 }

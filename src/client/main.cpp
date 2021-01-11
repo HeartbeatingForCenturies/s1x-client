@@ -87,11 +87,7 @@ FARPROC load_binary(const launcher::mode mode)
 			"Failed to read game binary (%s)!\nPlease copy the s1-mod.exe into your Call of Duty: Advanced Warfare installation folder and run it from there.", binary.data()));
 	}
 
-#ifdef INJECT_HOST_AS_LIB
 	return loader.load_library(binary);
-#else
-	return loader.load(self, data);
-#endif
 }
 
 void remove_crash_file()
