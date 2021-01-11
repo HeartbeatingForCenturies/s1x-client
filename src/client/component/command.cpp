@@ -310,10 +310,13 @@ namespace command
 
 				auto ps = game::SV_GetPlayerstateForClientNum(0);
 				auto wp = game::G_GetWeaponForName(params.get(1));
-				if (game::G_GivePlayerWeapon(ps, wp, 0, 0, 0, 0, 0, 0))
+				if (wp)
 				{
-					game::G_InitializeAmmo(ps, wp, 0);
-					game::G_SelectWeapon(0, wp);
+					if (game::G_GivePlayerWeapon(ps, wp, 0, 0, 0, 0, 0, 0))
+					{
+						game::G_InitializeAmmo(ps, wp, 0);
+						game::G_SelectWeapon(0, wp);
+					}
 				}
 			});
 
@@ -332,7 +335,10 @@ namespace command
 
 				auto ps = game::SV_GetPlayerstateForClientNum(0);
 				auto wp = game::G_GetWeaponForName(params.get(1));
-				game::G_TakePlayerWeapon(ps, wp);
+				if (wp)
+				{
+					game::G_TakePlayerWeapon(ps, wp);
+				}
 			});
 		}
 
@@ -356,10 +362,13 @@ namespace command
 
 				auto ps = game::SV_GetPlayerstateForClientNum(client_num);
 				auto wp = game::G_GetWeaponForName(params.get(1));
-				if (game::G_GivePlayerWeapon(ps, wp, 0, 0, 0, 0, 0, 0))
+				if (wp)
 				{
-					game::G_InitializeAmmo(ps, wp, 0);
-					game::G_SelectWeapon(client_num, wp);
+					if (game::G_GivePlayerWeapon(ps, wp, 0, 0, 0, 0, 0, 0))
+					{
+						game::G_InitializeAmmo(ps, wp, 0);
+						game::G_SelectWeapon(client_num, wp);
+					}
 				}
 			});
 
@@ -379,7 +388,10 @@ namespace command
 
 				auto ps = game::SV_GetPlayerstateForClientNum(client_num);
 				auto wp = game::G_GetWeaponForName(params.get(1));
-				game::G_TakePlayerWeapon(ps, wp);
+				if (wp)
+				{
+					game::G_TakePlayerWeapon(ps, wp);
+				}
 			});
 		}
 	};
