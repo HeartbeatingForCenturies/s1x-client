@@ -194,13 +194,6 @@ void loader::load_tls(const utils::nt::library& target, const utils::nt::library
 		const auto tls_index = *reinterpret_cast<DWORD*>(target_tls->AddressOfIndex);
 		*reinterpret_cast<DWORD*>(source_tls->AddressOfIndex) = tls_index;
 
-		// I made sure it's large enough for IW6.
-		/*if (tls_size > TLS_PAYLOAD_SIZE)
-		{
-			throw std::runtime_error(utils::string::va(
-				"TLS data is of size 0x%X, but we have only reserved 0x%X bytes!", tls_size, TLS_PAYLOAD_SIZE));
-		}*/
-
 		DWORD old_protect;
 		VirtualProtect(PVOID(target_tls->StartAddressOfRawData),
 		               source_tls->EndAddressOfRawData - source_tls->StartAddressOfRawData, PAGE_READWRITE,

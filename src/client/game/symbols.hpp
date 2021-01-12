@@ -132,6 +132,7 @@ namespace game
 	WEAK symbol<void(const char* error, ...)> Sys_Error{ 0x14038C770, 0x1404D6260 };
 	WEAK symbol<HANDLE(int folder, const char* baseFileName)> Sys_CreateFile{ 0x14037BCA0, 0x1404CC8A0 };
 	WEAK symbol<bool()> Sys_IsDatabaseReady2{ 0x1402FF980, 0x1403E1840 };
+	WEAK symbol<int()> Sys_Milliseconds{ 0x14038E9F0, 0x1404D8730 };
 	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{ 0x14038E720, 0x1404D8460 };
 	WEAK symbol<void()> Sys_ShowConsole{ 0x14038FA90, 0x1404D98B0 };
 
