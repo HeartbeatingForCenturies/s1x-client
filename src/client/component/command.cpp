@@ -248,7 +248,7 @@ namespace command
 		static void add_commands_generic()
 		{
 			add("quit", game::Com_Quit_f);
-			add("hard_quit", utils::nt::raise_hard_exception);
+			add("quit_hard", utils::nt::raise_hard_exception);
 			add("crash", []()
 			{
 				*reinterpret_cast<int*>(1) = 0;
@@ -400,7 +400,7 @@ namespace command
 		{
 			client_command_hook.create(0x1402E98F0, &client_command);
 
-			add_sv("god", [&](const int client_num, const params_sv&)
+			add_sv("god", [](const int client_num, const params_sv&)
 			{
 				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
 				{
@@ -416,7 +416,7 @@ namespace command
 						: "^1off"));
 			});
 
-			add_sv("demigod", [&](const int client_num, const params_sv&)
+			add_sv("demigod", [](const int client_num, const params_sv&)
 			{
 				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
 				{
@@ -432,7 +432,7 @@ namespace command
 						: "^1off"));
 			});
 
-			add_sv("noclip", [&](const int client_num, const params_sv&)
+			add_sv("noclip", [](const int client_num, const params_sv&)
 			{
 				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
 				{
@@ -448,7 +448,7 @@ namespace command
 						: "^1off"));
 			});
 
-			add_sv("ufo", [&](const int client_num, const params_sv&)
+			add_sv("ufo", [](const int client_num, const params_sv&)
 			{
 				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
 				{
