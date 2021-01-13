@@ -209,10 +209,13 @@ namespace patches
 			// Patch SV_KickClientNum
 			sv_kick_client_num_hook.create(0x1404377A0, &sv_kick_client_num);
 
+			// block changing name in-game
+			utils::hook::set<uint8_t>(0x140438850, 0xC3);
+
 			// patch "Couldn't find the bsp for this map." error to not be fatal in mp
 			utils::hook::call(0x14026E63B, bsp_sys_error_stub);
 
-			//client side aim assist dvar
+			// client side aim assist dvar
 			dvars::aimassist_enabled = game::Dvar_RegisterBool("aimassist_enabled", true,
 				game::DvarFlags::DVAR_FLAG_SAVED,
 				"Enables aim assist for controllers");

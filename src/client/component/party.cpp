@@ -112,7 +112,7 @@ namespace party
 		auto count = 0;
 		for (auto i = 0; i < *game::mp::svs_numclients; ++i)
 		{
-			if (game::mp::svs_clients[i].header.state >= 3)
+			if (game::mp::svs_clients[i].header.state >= 1)
 			{
 				++count;
 			}
@@ -126,7 +126,7 @@ namespace party
 		auto count = 0;
 		for (auto i = 0; i < *game::mp::svs_numclients; ++i)
 		{
-			if (game::mp::svs_clients[i].header.state >= 3 &&
+			if (game::mp::svs_clients[i].header.state >= 1 &&
 				game::SV_BotIsBot(i))
 			{
 				++count;

@@ -902,23 +902,36 @@ namespace game
 		Material* material;
 	};
 
+	enum TestClientType
+	{
+		TC_NONE = 0x0,
+		TC_TEST_CLIENT = 0x1,
+		TC_BOT = 0x2,
+		TC_COUNT = 0x3,
+	};
+
 	namespace mp
 	{
 		struct gclient_s
 		{
-
-		};
+			char __pad0[21407];
+			int flags;
+		}; // size = ?
 
 		struct EntityState
 		{
-			int entityNum;
+			char entityNum;
 		}; // size = ?
 
 		struct gentity_s
 		{
 			EntityState s;
-			char __pad[88];
-		}; // size = 92
+			char __pad0[343];
+			gclient_s* client;
+			char __pad1[80];
+			int flags;
+			char __pad2[300];
+		}; // size = 736
 
 		struct playerState_s
 		{
@@ -928,12 +941,16 @@ namespace game
 		struct clientHeader_t
 		{
 			int state;
-		}; // /size = ?
+		}; // size = ?
 
 		struct client_t
 		{
 			clientHeader_t header;
-			char __pad[661300];
+			char __pad0[268972];
+			gentity_s* gentity;
+			char __pad1[616];
+			TestClientType testClient;
+			char __pad2[391700];
 		}; // size = 661304
 	}
 
@@ -941,12 +958,16 @@ namespace game
 	{
 		struct gclient_s
 		{
-			
+			char __pad[56135];
+			int flags; // 56136
 		};
 
 		struct gentity_s
 		{
-			
+			char __pad0[280];
+			gclient_s* client; // 280
+			char __pad1[76];
+			int flags; // 364
 		};
 
 		struct playerState_s

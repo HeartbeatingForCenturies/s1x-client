@@ -295,6 +295,60 @@ namespace command
 
 		static void add_commands_sp()
 		{
+			add("god", []()
+			{
+				if (!game::SV_Loaded())
+				{
+					return;
+				}
+
+				game::sp::g_entities[0].flags ^= 1;
+				game::CG_GameMessage(0, utils::string::va("godmode %s",
+					game::sp::g_entities[0].flags & 1
+					? "^2on"
+					: "^1off"));
+			});
+
+			add("demigod", []()
+			{
+				if (!game::SV_Loaded())
+				{
+					return;
+				}
+
+				game::sp::g_entities[0].flags ^= 2;
+				game::CG_GameMessage(0, utils::string::va("demigod mode %s",
+					game::sp::g_entities[0].flags & 2
+					? "^2on"
+					: "^1off"));
+			});
+
+			add("noclip", []()
+			{
+				if (!game::SV_Loaded())
+				{
+					return;
+				}
+
+				game::sp::g_entities[0].client->flags ^= 1;
+				game::CG_GameMessage(0, utils::string::va("noclip %s",
+					game::sp::g_entities[0].client->flags & 1
+					? "^2on"
+					: "^1off"));
+			});
+
+			add("ufo", []()
+			{
+				if (!game::SV_Loaded())
+				{
+					return;
+				}
+
+				game::sp::g_entities[0].client->flags ^= 2;
+				game::CG_GameMessage(
+					0, utils::string::va("ufo %s", game::sp::g_entities[0].client->flags & 2 ? "^2on" : "^1off"));
+			});
+
 			add("give", [](const params& params)
 			{
 				if (!game::SV_Loaded())
@@ -345,6 +399,70 @@ namespace command
 		static void add_commands_mp()
 		{
 			client_command_hook.create(0x1402E98F0, &client_command);
+
+			add_sv("god", [&](const int client_num, const params_sv&)
+			{
+				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
+				{
+					game::SV_GameSendServerCommand(client_num, 1, "f \"Cheats are not enabled on this server\"");
+					return;
+				}
+
+				game::mp::g_entities[client_num].flags ^= 1;
+				game::SV_GameSendServerCommand(client_num, 1,
+					utils::string::va("f \"godmode %s\"",
+						game::mp::g_entities[client_num].flags & 1
+						? "^2on"
+						: "^1off"));
+			});
+
+			add_sv("demigod", [&](const int client_num, const params_sv&)
+			{
+				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
+				{
+					game::SV_GameSendServerCommand(client_num, 1, "f \"Cheats are not enabled on this server\"");
+					return;
+				}
+
+				game::mp::g_entities[client_num].flags ^= 2;
+				game::SV_GameSendServerCommand(client_num, 2,
+					utils::string::va("f \"demigod mode %s\"",
+						game::mp::g_entities[client_num].flags & 1
+						? "^2on"
+						: "^1off"));
+			});
+
+			add_sv("noclip", [&](const int client_num, const params_sv&)
+			{
+				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
+				{
+					game::SV_GameSendServerCommand(client_num, 1, "f \"Cheats are not enabled on this server\"");
+					return;
+				}
+
+				game::mp::g_entities[client_num].client->flags ^= 1;
+				game::SV_GameSendServerCommand(client_num, 1,
+					utils::string::va("f \"noclip %s\"",
+						game::mp::g_entities[client_num].client->flags & 1
+						? "^2on"
+						: "^1off"));
+			});
+
+			add_sv("ufo", [&](const int client_num, const params_sv&)
+			{
+				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
+				{
+					game::SV_GameSendServerCommand(client_num, 1, "f \"Cheats are not enabled on this server\"");
+					return;
+				}
+
+				game::mp::g_entities[client_num].client->flags ^= 2;
+				game::SV_GameSendServerCommand(client_num, 1,
+					utils::string::va("f \"ufo %s\"",
+						game::mp::g_entities[client_num].client->flags & 2
+						? "^2on"
+						: "^1off"));
+			});
 
 			add_sv("give", [](const int client_num, const params_sv& params)
 			{
