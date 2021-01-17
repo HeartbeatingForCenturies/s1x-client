@@ -16,6 +16,20 @@ namespace patches
 {
 	namespace
 	{
+		game::dvar_t* register_virtual_lobby_enabled_stub(const char* name, bool value,
+				const unsigned int /*flags*/,
+				const char* description)
+		{
+			return game::Dvar_RegisterBool(name, false, game::DVAR_FLAG_READ, description);
+		}
+
+		game::dvar_t* register_virtual_lobby_mode_stub(const char* name, int /*value*/, int /*min*/, int /*max*/,
+			const unsigned int /*flags*/,
+			const char* description)
+		{
+			return game::Dvar_RegisterInt(name, 0, 0, 0, game::DVAR_FLAG_READ, description);
+		}
+
 		utils::hook::detour live_get_local_client_name_hook;
 
 		const char* live_get_local_client_name()
@@ -23,21 +37,9 @@ namespace patches
 			return game::Dvar_FindVar("name")->current.string;
 		}
 
-		utils::hook::detour sv_kick_client_num_hook;
-
-		void sv_kick_client_num(const int clientNum, const char* reason)
-		{
-			// Don't kick bot to equalize team balance.
-			if (reason == "EXE_PLAYERKICKED_BOT_BALANCE"s)
-			{
-				return;
-			}
-			return sv_kick_client_num_hook.invoke<void>(clientNum, reason);
-		}
-
 		utils::hook::detour com_register_dvars_hook;
 
-		void com_register_dvars()
+		void com_register_dvars_stub()
 		{
 			if (game::environment::is_mp())
 			{
@@ -161,7 +163,7 @@ namespace patches
 			LoadLibraryA("PhysXUpdateLoader64.dll");
 
 			// Register dvars
-			com_register_dvars_hook.create(SELECT_VALUE(0x1402F86F0, 0x1403CF7F0), &com_register_dvars);
+			com_register_dvars_hook.create(SELECT_VALUE(0x1402F86F0, 0x1403CF7F0), &com_register_dvars_stub);
 
 			// Unlock fps in main menu
 			utils::hook::set<BYTE>(SELECT_VALUE(0x140144F5B, 0x140213C3B), 0xEB);
@@ -203,11 +205,11 @@ namespace patches
 
 		static void patch_mp()
 		{
+			// Disable virtualLobby
+			//utils::hook::call(0x1403CFDCC, register_virtual_lobby_enabled_stub);
+
 			// Use name dvar
 			live_get_local_client_name_hook.create(0x1404D47F0, &live_get_local_client_name);
-
-			// Patch SV_KickClientNum
-			sv_kick_client_num_hook.create(0x1404377A0, &sv_kick_client_num);
 
 			// block changing name in-game
 			utils::hook::set<uint8_t>(0x140438850, 0xC3);

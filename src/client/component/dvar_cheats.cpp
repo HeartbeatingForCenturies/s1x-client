@@ -131,7 +131,7 @@ namespace dvar_cheats
 		const auto* dvar = game::Scr_GetString(0); // grab the original dvar again since it's never stored on stack
 		const auto* command = utils::string::va("q %s \"%s\"", dvar, value);
 
-		game::SV_GameSendServerCommand(entity_num, 1, command);
+		game::SV_GameSendServerCommand(entity_num, game::SV_CMD_RELIABLE, command);
 	}
 
 	const auto player_cmd_set_client_dvar = utils::hook::assemble([](utils::hook::assembler& a)

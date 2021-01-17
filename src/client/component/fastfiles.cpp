@@ -70,6 +70,17 @@ namespace fastfiles
 				}, 0, false);
 			});
 
+			command::add("fontlist", [](const command::params& params)
+			{
+				game::DB_EnumXAssets_FastFile(game::ASSET_TYPE_FONT, [](const game::XAssetHeader header, void*)
+				{
+					if (header.font && header.font->fontName)
+					{
+						printf("%s\n", header.font->fontName);
+					}
+				}, 0, false);
+			});
+
 			command::add("g_poolSizes", []()
 			{
 				for (auto i = 0; i < game::ASSET_TYPE_COUNT; i++)

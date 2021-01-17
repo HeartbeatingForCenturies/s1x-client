@@ -80,7 +80,7 @@ namespace game_console
 
 		void print(const std::string& data)
 		{
-			//print_internal(data.data());
+			print_internal(data.data());
 			printf("%s\n", data.data());
 		}
 
@@ -406,6 +406,24 @@ namespace game_console
 		}
 	}
 
+	void print_internal(const char* fmt, ...)
+	{
+		char va_buffer[0x200] = { 0 };
+
+		va_list ap;
+		va_start(ap, fmt);
+		vsprintf_s(va_buffer, fmt, ap);
+		va_end(ap);
+
+		const auto formatted = std::string(va_buffer);
+		const auto lines = utils::string::split(formatted, '\n');
+
+		for (auto& line : lines)
+		{
+			print_internal(line);
+		}
+	}
+
 	void print(const int type, const char* fmt, ...)
 	{
 		char va_buffer[0x200] = {0};
@@ -654,19 +672,6 @@ namespace game_console
 		return true;
 	}
 
-	int printf_stub(char const* format, ...)
-	{
-		int result;
-		char buffer[256];
-		va_list args;
-		va_start(args, format);
-		result = vsnprintf(buffer, 256, format, args);
-		va_end(args);
-		std::cout << buffer;
-		print_internal(buffer);
-		return result;
-	}
-
 	class component final : public component_interface
 	{
 	public:
@@ -686,8 +691,6 @@ namespace game_console
 			{
 				return;
 			}
-
-			utils::hook::jump(printf, printf_stub);
 
 			// initialize our structs
 			con.cursor = 0;
@@ -725,7 +728,7 @@ namespace game_console
 			dvars::con_outputBarColor = game::Dvar_RegisterVec4("con_outputBarColor", 0.5f, 0.5f, 0.5f, 0.6f, 0.0f,
 			                                                    1.0f, 1,
 			                                                    "color of console output bar");
-			dvars::con_outputSliderColor = game::Dvar_RegisterVec4("con_outputSliderColor", 0.0f, 0.7f, 1.0f, 1.00f,
+			dvars::con_outputSliderColor = game::Dvar_RegisterVec4("con_outputSliderColor", 1.0f, 0.8f, 0.0f, 1.0f,
 			                                                       0.0f, 1.0f,
 			                                                       1, "color of console output slider");
 			dvars::con_outputWindowColor = game::Dvar_RegisterVec4("con_outputWindowColor", 0.25f, 0.25f, 0.25f, 0.85f,

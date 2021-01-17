@@ -78,5 +78,24 @@ namespace game
 				return "Unknown (" + std::to_string(static_cast<int>(mode)) + ")";
 			}
 		}
+
+		std::string playmode_to_string(game::CodPlayMode playmode)
+		{
+			switch (playmode)
+			{
+			case CODPLAYMODE_CORE:
+				return "Core";
+			case CODPLAYMODE_ZOMBIES:
+				return "Zombies";
+			case CODPLAYMODE_SURVIVAL:
+				return "Survival";
+			case CODPLAYMODE_SP:
+				return "Singleplayer";
+			case CODPLAYMODE_NONE:
+				return "None";
+			default:
+				return "Unknown (" + std::to_string(static_cast<int>(playmode)) + ")";
+			}
+		}
 	}
 }

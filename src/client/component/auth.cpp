@@ -99,11 +99,12 @@ namespace auth
 				return;
 			}
 
-			utils::cryptography::ecc::key key;
+			// THIS CRASHES WITH DEDICATED WHEN CONNECTING!
+			/*utils::cryptography::ecc::key key;
 			key.set(info.publickey());
 
-			const auto xuid = strtoull(steam_id.data(), nullptr, 16);
-			if (xuid != key.get_hash())
+			//const auto xuid = strtoull(steam_id.data(), nullptr, 16);
+			//if (xuid != key.get_hash())
 			{
 				// xuid is always 0
 				//MessageBoxA(nullptr, steam_id.data(), std::to_string(key.get_hash()).data(), 0);
@@ -115,7 +116,7 @@ namespace auth
 			{
 				network::send(*from, "error", "Challenge signature was invalid!", '\n');
 				return;
-			}
+			}*/
 
 			game::SV_DirectConnect(from);
 		}

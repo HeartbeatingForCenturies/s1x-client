@@ -166,7 +166,7 @@ namespace network
 		const char* description)
 	{
 		auto dvar = game::Dvar_RegisterInt("net_port", 27016, 0, 0xFFFFu, game::DVAR_FLAG_LATCHED, "Network port");
-
+		
 		// read net_port from command line
 		command::read_startup_variable("net_port");
 
@@ -246,9 +246,11 @@ namespace network
 
 				// don't try to reconnect client
 				utils::hook::call(0x140439D4D, reconnect_migratated_client);
+				utils::hook::nop(0x140439D28, 4); // this crashes when reconnecting for some reason
 
 				// allow server owner to modify net_port before the socket bind
-				utils::hook::call(0x1404D7A7F, register_netport_stub);
+				utils::hook::call(0x1404D7A3D, register_netport_stub);
+				utils::hook::call(0x1404D7E28, register_netport_stub);
 
 				// ignore built in "print" oob command and add in our own
 				utils::hook::set<uint8_t>(0x14020A723, 0xEB);
