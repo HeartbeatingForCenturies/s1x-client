@@ -17,6 +17,7 @@ namespace game
 
 	WEAK symbol<void(const char* cmdName, void(), cmd_function_s* allocedCmd)> Cmd_AddCommandInternal{ 0x1402EDDB0, 0x1403AF2C0 };
 	WEAK symbol<void(int localClientNum, int controllerIndex, const char* text)> Cmd_ExecuteSingleCommand{ 0x1402EE350, 0x1403AF900 };
+	WEAK symbol<void(const char*)> Cmd_RemoveCommand{ 0x1402EE910, 0x1403AFEF0 };
 	WEAK symbol<void(const char* text_in)> Cmd_TokenizeString{ 0x1402EEA30, 0x1403B0020 };
 	WEAK symbol<void()> Cmd_EndTokenizeString{ 0x1402EE000, 0x1403AF5B0 };
 
@@ -39,6 +40,7 @@ namespace game
 
 	WEAK symbol<dvar_t* (const char* name)> Dvar_FindVar{ 0x140370860, 0x1404BF8B0 };
 	WEAK symbol<void(char* buffer, int index)> Dvar_GetCombinedString{ 0x1402FB590, 0x1403D3290 };
+	WEAK symbol<bool(const char* name)> Dvar_IsValidName{ 0x140370CB0, 0x1404BFF70 };
 	WEAK symbol<void(dvar_t* dvar, DvarSetSource source)> Dvar_Reset{ 0x140372950, 0x1404C1DB0 };
 	WEAK symbol<void(const char* dvar, const char* buffer)> Dvar_SetCommand{ 0x1403730D0, 0x1404C2520 };
 	WEAK symbol<void(dvar_t* dvar, const char* string)> Dvar_SetString{ 0x140373DE0, 0x1404C3610 };
@@ -72,11 +74,15 @@ namespace game
 	WEAK symbol<void(int clientNum, unsigned int weapon)> G_SelectWeapon{ 0x140275380, 0x140340D50 };
 	WEAK symbol<int(playerState_s* ps, unsigned int weapon)> G_TakePlayerWeapon{ 0x1402754E0, 0x1403411D0 };
 
+	WEAK symbol<char* (char* string)> I_CleanStr{ 0x140379010, 0x1404C99A0 };
+
 	WEAK symbol<const char* (int, int, int)> Key_KeynumToString{ 0x14013F380, 0x140207C50 };
 
 	WEAK symbol<unsigned int(int)> Live_SyncOnlineDataFlags{ 0x1404459A0, 0x140562830 };
 
 	WEAK symbol<void(int clientNum, const char* menu, int a3, int a4, unsigned int a5)> LUI_OpenMenu{ 0, 0x14048E450 };
+
+	WEAK symbol<bool(int clientNum, const char* menu)> Menu_IsMenuOpenAndVisible{ 0, 0x140488570 };
 
 	WEAK symbol<Material* (const char* material)> Material_RegisterHandle{ 0x1404919D0, 0x1405AFBE0 };
 
@@ -120,14 +126,14 @@ namespace game
 	WEAK symbol<void(netadr_s* from)> SV_DirectConnect{ 0, 0x1404397A0 };
 	WEAK symbol<void(mp::client_t*, const char*, int)> SV_ExecuteClientCommand{ 0, 0x15121D8E6 };
 	WEAK symbol<void(int localClientNum)> SV_FastRestart{ 0, 0x1404374E0 };
-	WEAK symbol<void(int, int, const char*)> SV_GameSendServerCommand{ 0x1403F3A70, 0x14043E120 };
+	WEAK symbol<void(int clientNum, svscmd_type type, const char* text)> SV_GameSendServerCommand{ 0x1403F3A70, 0x14043E120 };
 	WEAK symbol<const char* (int clientNum)> SV_GetGuid{ 0, 0x14043E1E0 };
 	WEAK symbol<playerState_s* (int num)> SV_GetPlayerstateForClientNum{ 0x1403F3AB0, 0x14043E260 };
 	WEAK symbol<void(int clientNum, const char* reason)> SV_KickClientNum{ 0, 0x1404377A0 };
 	WEAK symbol<bool()> SV_Loaded{ 0x1403F42C0, 0x14043FA50 };
 	WEAK symbol<bool(const char* map) >SV_MapExists{ 0, 0x140437800 };
-	WEAK symbol<void(int localClientNum, const char* map)> SV_StartMap{ 0, 0x140438320 };
-	WEAK symbol<void(int localClientNum, const char* map, bool migrate)> SV_StartMapForParty{ 0, 0x140438490 };
+	WEAK symbol<void(int localClientNum, const char* map, bool mapIsPreloaded)> SV_StartMap{ 0, 0x140438320 };
+	WEAK symbol<void(int localClientNum, const char* map, bool mapIsPreloaded, bool migrate)> SV_StartMapForParty{ 0, 0x140438490 };
 
 	WEAK symbol<void(const char* error, ...)> Sys_Error{ 0x14038C770, 0x1404D6260 };
 	WEAK symbol<HANDLE(int folder, const char* baseFileName)> Sys_CreateFile{ 0x14037BCA0, 0x1404CC8A0 };
@@ -135,6 +141,11 @@ namespace game
 	WEAK symbol<int()> Sys_Milliseconds{ 0x14038E9F0, 0x1404D8730 };
 	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{ 0x14038E720, 0x1404D8460 };
 	WEAK symbol<void()> Sys_ShowConsole{ 0x14038FA90, 0x1404D98B0 };
+
+	WEAK symbol<const char* (const char*)> UI_GetMapDisplayName{ 0, 0x1403B1CD0 };
+	WEAK symbol<const char* (const char*)> UI_GetGameTypeDisplayName{ 0, 0x1403B1670 };
+	WEAK symbol<void(unsigned int localClientNum, const char** args)> UI_RunMenuScript { 0, 0x140490060 };
+	WEAK symbol<int(const char* text, int maxChars, Font_s* font, float scale)> UI_TextWidth{ 0, 0x140492380 };
 
 	/***************************************************************
 	 * Variables

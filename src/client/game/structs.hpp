@@ -14,10 +14,8 @@ namespace game
 		CODPLAYMODE_NONE = 0x0,
 		CODPLAYMODE_SP = 0x1,
 		CODPLAYMODE_CORE = 0x2,
-		CODPLAYMODE_SURVIVAL = 0x3,
-		CODPLAYMODE_ZOMBIES = 0x4,
-		CODPLAYMODE_GOLIATH = 0x5,
-		CODPLAYMODE_COUNT = 0x6,
+		CODPLAYMODE_SURVIVAL = 0x5,
+		CODPLAYMODE_ZOMBIES = 0x6,
 	};
 
 	enum DWOnlineStatus
@@ -764,6 +762,12 @@ namespace game
 		CA_ACTIVE = 0xA,
 	};
 
+	enum svscmd_type
+	{
+		SV_CMD_CAN_IGNORE = 0x0,
+		SV_CMD_RELIABLE = 0x1,
+	};
+
 	enum DBSyncMode
 	{
 		DB_LOAD_ASYNC = 0x0,
@@ -900,6 +904,7 @@ namespace game
 	{
 		void* data;
 		Material* material;
+		Font_s* font;
 	};
 
 	enum TestClientType
@@ -914,8 +919,10 @@ namespace game
 	{
 		struct gclient_s
 		{
-			char __pad0[21407];
-			int flags;
+			char __pad0[20708];
+			char name[16]; // 20708
+			char __pad1[684];
+			int flags; // 21408
 		}; // size = ?
 
 		struct EntityState
