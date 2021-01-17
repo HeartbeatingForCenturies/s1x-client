@@ -4,6 +4,7 @@
 #include "game/game.hpp"
 
 #include "game_console.hpp"
+#include "server_list.hpp"
 
 #include <utils/hook.hpp>
 
@@ -27,6 +28,11 @@ namespace input
 		void cl_key_event_stub(unsigned int local_client_num, int key, signed int down, int arg4)
 		{
 			if (!game_console::console_key_event(local_client_num, key, down))
+			{
+				return;
+			}
+
+			if (game::environment::is_mp() && !server_list::sl_key_event(key, down))
 			{
 				return;
 			}

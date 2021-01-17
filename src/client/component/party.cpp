@@ -6,7 +6,7 @@
 #include "command.hpp"
 #include "network.hpp"
 #include "scheduler.hpp"
-//#include "server_list.hpp"
+#include "server_list.hpp"
 
 #include "steam/steam.hpp"
 
@@ -107,6 +107,30 @@ namespace party
 		}
 	}
 
+	int get_client_num_by_name(const std::string& name)
+	{
+		for (auto i = 0; !name.empty() && i < *game::mp::svs_numclients; ++i)
+		{
+			if (game::mp::g_entities[i].client)
+			{
+				char client_name[16] = { 0 };
+				strncpy_s(client_name, game::mp::g_entities[i].client->name, 16);
+				game::I_CleanStr(client_name);
+
+				if (client_name == name)
+				{
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	void reset_connect_state()
+	{
+		connect_state = {};
+	}
+
 	int get_client_count()
 	{
 		auto count = 0;
@@ -143,7 +167,7 @@ namespace party
 			return;
 		}
 
-		command::execute("lui_open popup_acceptinginvite", false);
+		command::execute("lui_open_popup popup_acceptinginvite", false);
 
 		connect_state.host = target;
 		connect_state.challenge = utils::cryptography::random::get_challenge();
@@ -181,9 +205,20 @@ namespace party
 				return;
 			}
 
-			// starting map like this crashes the game.
 			printf("Starting map: %s\n", mapname.data());
-			game::SV_StartMapForParty(0, mapname.data(), true);
+			
+			auto* gametype = game::Dvar_FindVar("g_gametype");
+			if (gametype && gametype->current.string)
+			{
+				command::execute(utils::string::va("ui_gametype %s", gametype->current.string), true);
+			}
+			command::execute(utils::string::va("ui_mapname %s", mapname.data()), true);
+			
+			// StartServer
+			reinterpret_cast<void(*)(unsigned int)>(0x140492260)(0);
+
+			// this dun work.
+			//game::SV_StartMapForParty(0, mapname.data(), false, false);
 		}
 	}
 
@@ -241,37 +276,41 @@ namespace party
 				}
 			});
 
-			command::add("reconnect", [](const command::params& params)
-			{
-				if (!game::CL_IsCgameInitialized())
-				{
-					return;
-				}
-				const auto host = connect_state.host;
-				if (host.type == game::NA_LOOPBACK)
-				{
-					command::execute("map_restart", true);
-					return;
-				}
-				if (host.type != game::NA_IP)
-				{
-					return;
-				}
-				command::execute("disconnect", true);
-				scheduler::once([host]()
-				{
-					connect(host);
-				}, scheduler::pipeline::async, 2s);
-			});
-
-			command::add("clientkick", [](const command::params& params)
+			command::add("kickClient", [](const command::params& params)
 			{
 				if (params.size() < 2)
 				{
-					printf("usage: clientkick <num>\n");
+					printf("usage: kickClient <num>\n");
 					return;
 				}
 				const auto client_num = atoi(params.get(1));
+				if (client_num < 0 || client_num >= *game::mp::svs_numclients)
+				{
+					return;
+				}
+
+				game::SV_KickClientNum(client_num, "EXE_PLAYERKICKED");
+			});
+
+			command::add("kick", [](const command::params& params)
+			{
+				if (params.size() < 2)
+				{
+					printf("usage: kick <name>\n");
+					return;
+				}
+
+				const std::string name = params.get(1);
+				if (name == "all"s)
+				{
+					for (auto i = 0; i < *game::mp::svs_numclients; ++i)
+					{
+						game::SV_KickClientNum(i, "EXE_PLAYERKICKED");
+					}
+					return;
+				}
+
+				const auto client_num = get_client_num_by_name(name);
 				if (client_num < 0 || client_num >= *game::mp::svs_numclients)
 				{
 					return;
@@ -297,7 +336,7 @@ namespace party
 				const auto message = params.join(2);
 				const auto* const name = game::Dvar_FindVar("sv_sayName")->current.string;
 
-				game::SV_GameSendServerCommand(client_num, 0,
+				game::SV_GameSendServerCommand(client_num, game::SV_CMD_CAN_IGNORE,
 				                               utils::string::va("%c \"%s: %s\"", 84, name, message.data()));
 				printf("%s -> %i: %s\n", name, client_num, message.data());
 			});
@@ -312,7 +351,7 @@ namespace party
 				const auto client_num = atoi(params.get(1));
 				const auto message = params.join(2);
 
-				game::SV_GameSendServerCommand(client_num, 0, utils::string::va("%c \"%s\"", 84, message.data()));
+				game::SV_GameSendServerCommand(client_num, game::SV_CMD_CAN_IGNORE, utils::string::va("%c \"%s\"", 84, message.data()));
 				printf("%i: %s\n", client_num, message.data());
 			});
 
@@ -327,7 +366,7 @@ namespace party
 				const auto* const name = game::Dvar_FindVar("sv_sayName")->current.string;
 
 				game::SV_GameSendServerCommand(
-					-1, 0, utils::string::va("%c \"%s: %s\"", 84, name, message.data()));
+					-1, game::SV_CMD_CAN_IGNORE, utils::string::va("%c \"%s: %s\"", 84, name, message.data()));
 				printf("%s: %s\n", name, message.data());
 			});
 
@@ -340,7 +379,7 @@ namespace party
 
 				const auto message = params.join(1);
 
-				game::SV_GameSendServerCommand(-1, 0, utils::string::va("%c \"%s\"", 84, message.data()));
+				game::SV_GameSendServerCommand(-1, game::SV_CMD_CAN_IGNORE, utils::string::va("%c \"%s\"", 84, message.data()));
 				printf("%s\n", message.data());
 			});
 
@@ -362,6 +401,7 @@ namespace party
 				info.set("sv_maxclients", utils::string::va("%i", *game::mp::svs_numclients));
 				info.set("protocol", utils::string::va("%i", PROTOCOL));
 				info.set("playmode", utils::string::va("%i", game::Com_GetCurrentCoDPlayMode()));
+				info.set("sv_running", utils::string::va("%i", get_dvar_bool("sv_running")));
 
 				network::send(target, "infoResponse", info.build(), '\n');
 			});
@@ -369,7 +409,7 @@ namespace party
 			network::on("infoResponse", [](const game::netadr_s& target, const std::string_view& data)
 			{
 				const utils::info_string info{data};
-				//server_list::handle_info_response(target, info);
+				server_list::handle_info_response(target, info);
 
 				if (connect_state.host != target)
 				{
@@ -397,6 +437,15 @@ namespace party
 				if (game::CodPlayMode(std::atoi(playmode.data())) != game::Com_GetCurrentCoDPlayMode())
 				{
 					const auto str = "Invalid playmode.";
+					printf("%s\n", str);
+					game::Com_Error(game::ERR_DROP, str);
+					return;
+				}
+
+				const auto sv_running = info.get("sv_running");
+				if (!std::atoi(sv_running.data()))
+				{
+					const auto str = "Server not running.";
 					printf("%s\n", str);
 					game::Com_Error(game::ERR_DROP, str);
 					return;
