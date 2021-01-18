@@ -915,6 +915,12 @@ namespace game
 		TC_COUNT = 0x3,
 	};
 
+	enum LiveClientDropType
+	{
+		SV_LIVE_DROP_NONE = 0x0,
+		SV_LIVE_DROP_DISCONNECT = 0x1,
+	};
+
 	namespace mp
 	{
 		struct gclient_s
@@ -954,10 +960,12 @@ namespace game
 		{
 			clientHeader_t header;
 			char __pad0[268972];
-			gentity_s* gentity;
-			char __pad1[616];
-			TestClientType testClient;
-			char __pad2[391700];
+			gentity_s* gentity; // 268976
+			char __pad1[588];
+			LiveClientDropType liveDropRequest; //269572
+			char __pad2[24];
+			TestClientType testClient; // 269600
+			char __pad3[391700];
 		}; // size = 661304
 	}
 

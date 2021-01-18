@@ -90,7 +90,7 @@ namespace game
 
 	WEAK symbol<void(netsrc_t, netadr_s*, const char*)> NET_OutOfBandPrint{ 0, 0x1403DADC0 };
 	WEAK symbol<void(netsrc_t sock, int length, const void* data, const netadr_s* to)> NET_SendLoopPacket{ 0, 0x1403DAF80 };
-	WEAK symbol<bool(const char* s, game::netadr_s* a)> NET_StringToAdr{ 0, 0x1403DB070 };
+	WEAK symbol<bool(const char* s, netadr_s* a)> NET_StringToAdr{ 0, 0x1403DB070 };
 
 	WEAK symbol<void(float x, float y, float width, float height, float s0, float t0, float s1, float t1,
 		float* color, Material* material)> R_AddCmdDrawStretchPic{ 0x1404A2580, 0x1405C0CB0 };
@@ -124,6 +124,7 @@ namespace game
 	WEAK symbol<void(mp::gentity_s*)> SV_AddEntity{ 0, 0x1403388B0 };
 
 	WEAK symbol<void(netadr_s* from)> SV_DirectConnect{ 0, 0x1404397A0 };
+	WEAK symbol<void(mp::client_t* client)> SV_DropClient{ 0, 0x140438A30 };
 	WEAK symbol<void(mp::client_t*, const char*, int)> SV_ExecuteClientCommand{ 0, 0x15121D8E6 };
 	WEAK symbol<void(int localClientNum)> SV_FastRestart{ 0, 0x1404374E0 };
 	WEAK symbol<void(int clientNum, svscmd_type type, const char* text)> SV_GameSendServerCommand{ 0x1403F3A70, 0x14043E120 };
