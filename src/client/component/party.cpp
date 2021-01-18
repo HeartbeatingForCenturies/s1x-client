@@ -29,11 +29,6 @@ namespace party
 		 
 		void perform_game_initialization()
 		{
-			// This fixes several crashes and impure client stuff
-			command::execute("onlinegame 1", true);
-			command::execute("exec default_xboxlive.cfg", true);
-			command::execute("xstartprivateparty", true);
-			command::execute("xblive_privatematch 1", true);
 			command::execute("startentitlements", true);
 		}
 
@@ -186,15 +181,15 @@ namespace party
 		}
 		else
 		{
-			if (!game::environment::is_dedi())
-			{
-				perform_game_initialization();
-			}
-
 			if (!game::SV_MapExists(mapname.data()))
 			{
 				printf("Map '%s' doesn't exist.", mapname.data());
 				return;
+			}
+
+			if (!game::environment::is_dedi())
+			{
+				perform_game_initialization();
 			}
 
 			auto* current_mapname = game::Dvar_FindVar("mapname");
@@ -206,19 +201,9 @@ namespace party
 			}
 
 			printf("Starting map: %s\n", mapname.data());
-			
-			auto* gametype = game::Dvar_FindVar("g_gametype");
-			if (gametype && gametype->current.string)
-			{
-				command::execute(utils::string::va("ui_gametype %s", gametype->current.string), true);
-			}
-			command::execute(utils::string::va("ui_mapname %s", mapname.data()), true);
-			
-			// StartServer
-			reinterpret_cast<void(*)(unsigned int)>(0x140492260)(0);
 
-			// this dun work.
-			//game::SV_StartMapForParty(0, mapname.data(), false, false);
+			game::SV_StartMapForParty(0, mapname.data(), false, false);
+			return;
 		}
 	}
 
