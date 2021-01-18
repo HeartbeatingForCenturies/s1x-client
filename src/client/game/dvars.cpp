@@ -20,6 +20,8 @@ namespace dvars
     game::dvar_t* g_playerEjection = nullptr;
     game::dvar_t* g_playerCollision = nullptr;
 
+    game::dvar_t* pm_bouncing = nullptr;
+
     game::dvar_t* r_fullbright = nullptr;
 
     std::string dvar_get_vector_domain(const int components, const game::dvar_limits& domain)
