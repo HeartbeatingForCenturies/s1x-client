@@ -15,7 +15,8 @@ namespace dedicated
 {
 	namespace
 	{
-		utils::hook::detour dvar_get_string_hook;
+		utils::hook::detour gscr_set_dynamic_dvar_hook;
+		utils::hook::detour com_quit_f_hook;
 
 		void init_dedicated_server()
 		{
@@ -101,7 +102,18 @@ namespace dedicated
 			std::this_thread::sleep_for(1ms);
 		}
 
-		utils::hook::detour com_quit_f_hook;
+		game::dvar_t* gscr_set_dynamic_dvar()
+		{
+			auto s = game::Scr_GetString(0);
+			auto dvar = game::Dvar_FindVar(s);
+			if (dvar && !strncmp("scr_", dvar->name, 4))
+			{
+				return dvar;
+			}
+
+			return gscr_set_dynamic_dvar_hook.invoke<game::dvar_t*>();
+		}
+
 		void kill_server()
 		{
 			for (auto i = 0; i < *game::mp::svs_numclients; ++i)
@@ -118,8 +130,9 @@ namespace dedicated
 
 	void initialize()
 	{
+		command::execute("exec default_xboxlive.cfg", true);
 		command::execute("onlinegame 1", true);
-		command::execute("xblive_privatematch 1", true);
+		command::execute("xblive_privatematch 0", true);
 	}
 
 	class component final : public component_interface
@@ -146,11 +159,14 @@ namespace dedicated
 			utils::hook::jump(0x14020C6B0, init_dedicated_server);
 
 			// delay startup commands until the initialization is done
-			//utils::hook::call(0x1403CDF63, execute_startup_command);
+			utils::hook::call(0x1403CDF63, execute_startup_command);
 
 			// delay console commands until the initialization is done
 			utils::hook::call(0x1403CEC35, execute_console_command);
 			utils::hook::nop(0x1403CEC4B, 5);
+
+			// patch GScr_SetDynamicDvar to behave better
+			gscr_set_dynamic_dvar_hook.create(0x140312D00, &gscr_set_dynamic_dvar);
 
 			utils::hook::nop(0x1404AE6AE, 5); // don't load config file
 			utils::hook::nop(0x1403AF719, 5); // ^
@@ -160,8 +176,7 @@ namespace dedicated
 			utils::hook::set<uint8_t>(0x14062BC10, 0xC3); // init sound system (2)
 			utils::hook::set<uint8_t>(0x1405F31A0, 0xC3); // render thread
 			utils::hook::set<uint8_t>(0x140213C20, 0xC3); // called from Com_Frame, seems to do renderer stuff
-			utils::hook::set<uint8_t>(0x1402085C0, 0xC3);
-			// CL_CheckForResend, which tries to connect to the local server constantly
+			utils::hook::set<uint8_t>(0x1402085C0, 0xC3); // CL_CheckForResend, which tries to connect to the local server constantly
 			utils::hook::set<uint8_t>(0x14059B854, 0); // r_loadForRenderer default to 0
 			utils::hook::set<uint8_t>(0x1404D6952, 0xC3); // recommended settings check - TODO: Check hook
 			utils::hook::set<uint8_t>(0x1404D9BA0, 0xC3); // some mixer-related function called on shutdown
@@ -213,6 +228,8 @@ namespace dedicated
 
 			utils::hook::set<uint8_t>(0x1403E1A50, 0xC3); // render synchronization lock
 			utils::hook::set<uint8_t>(0x1403E1990, 0xC3); // render synchronization unlock
+
+			utils::hook::set<uint8_t>(0x1400E517B, 0xEB); // LUI: Unable to start the LUI system due to errors in main.lua
 
 			utils::hook::nop(0x1404CC482, 5); // Disable sound pak file loading
 			utils::hook::nop(0x1404CC471, 2); // ^
