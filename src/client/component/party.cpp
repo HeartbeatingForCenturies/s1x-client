@@ -29,6 +29,8 @@ namespace party
 		 
 		void perform_game_initialization()
 		{
+			command::execute("onlinegame 1", true);
+			command::execute("xblive_privatematch 1", true);
 			command::execute("startentitlements", true);
 		}
 
@@ -202,8 +204,18 @@ namespace party
 
 			printf("Starting map: %s\n", mapname.data());
 
-			game::SV_StartMapForParty(0, mapname.data(), false, false);
-			return;
+			auto* gametype = game::Dvar_FindVar("g_gametype");
+			if (gametype && gametype->current.string)
+			{
+				command::execute(utils::string::va("ui_gametype %s", gametype->current.string), true);
+			}
+			command::execute(utils::string::va("ui_mapname %s", mapname.data()), true);
+
+			// StartServer
+			reinterpret_cast<void(*)(unsigned int)>(0x140492260)(0);
+
+			//game::SV_StartMapForParty(0, mapname.data(), false, false);
+			//return;
 		}
 	}
 

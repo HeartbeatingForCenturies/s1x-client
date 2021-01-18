@@ -105,7 +105,7 @@ namespace dedicated
 		game::dvar_t* gscr_set_dynamic_dvar()
 		{
 			auto s = game::Scr_GetString(0);
-			auto dvar = game::Dvar_FindVar(s);
+			auto* dvar = game::Dvar_FindVar(s);
 			if (dvar && !strncmp("scr_", dvar->name, 4))
 			{
 				return dvar;
@@ -132,7 +132,7 @@ namespace dedicated
 	{
 		command::execute("exec default_xboxlive.cfg", true);
 		command::execute("onlinegame 1", true);
-		command::execute("xblive_privatematch 0", true);
+		command::execute("xblive_privatematch 1", true);
 	}
 
 	class component final : public component_interface
