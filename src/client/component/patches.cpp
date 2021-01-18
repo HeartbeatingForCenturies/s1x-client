@@ -37,6 +37,18 @@ namespace patches
 			return game::Dvar_FindVar("name")->current.string;
 		}
 
+		utils::hook::detour sv_kick_client_num_hook;
+
+		void sv_kick_client_num(const int clientNum, const char* reason)
+		{
+			// Don't kick bot to equalize team balance.
+			if (reason == "EXE_PLAYERKICKED_BOT_BALANCE"s)
+			{
+				return;
+			}
+			return sv_kick_client_num_hook.invoke<void>(clientNum, reason);
+		}
+
 		utils::hook::detour com_register_dvars_hook;
 
 		void com_register_dvars_stub()
@@ -206,10 +218,13 @@ namespace patches
 		static void patch_mp()
 		{
 			// Disable virtualLobby
-			//utils::hook::call(0x1403CFDCC, register_virtual_lobby_enabled_stub);
+			utils::hook::call(0x1403CFDCC, register_virtual_lobby_enabled_stub);
 
 			// Use name dvar
 			live_get_local_client_name_hook.create(0x1404D47F0, &live_get_local_client_name);
+
+			// Patch SV_KickClientNum
+			sv_kick_client_num_hook.create(0x1404377A0, &sv_kick_client_num);
 
 			// block changing name in-game
 			utils::hook::set<uint8_t>(0x140438850, 0xC3);
