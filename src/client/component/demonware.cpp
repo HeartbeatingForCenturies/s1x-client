@@ -311,7 +311,6 @@ namespace demonware
 
 			hostent* __stdcall get_host_by_name(char* name)
 			{
-				printf("gethostbyname: %s\n", name);
 				unsigned long addr = 0;
 				const auto server = find_server_by_name(name);
 				if (server) addr = server->get_address();
@@ -418,6 +417,10 @@ namespace demonware
 		void post_unpack() override
 		{
 			utils::hook::jump(SELECT_VALUE(0x140575880, 0x1406C0080), bd_logger_stub);
+
+			utils::hook::set<uint8_t>(0x140698BB2, 0); // CURLOPT_SSL_VERIFYPEER
+			utils::hook::set<uint8_t>(0x140698B69, 0xAF); // CURLOPT_SSL_VERIFYHOST
+			utils::hook::set<uint8_t>(0x14088D0E8, 0x0); // HTTPS -> HTTP
 		}
 
 		void pre_destroy() override
