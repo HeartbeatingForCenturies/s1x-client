@@ -418,7 +418,12 @@ namespace demonware
 		{
 			utils::hook::jump(SELECT_VALUE(0x140575880, 0x1406C0080), bd_logger_stub);
 
-			utils::hook::set<uint8_t>(0x140698BB2, 0); // CURLOPT_SSL_VERIFYPEER
+			if (game::environment::is_sp())
+			{
+				return;
+			}
+
+			utils::hook::set<uint8_t>(0x140698BB2, 0x0); // CURLOPT_SSL_VERIFYPEER
 			utils::hook::set<uint8_t>(0x140698B69, 0xAF); // CURLOPT_SSL_VERIFYHOST
 			utils::hook::set<uint8_t>(0x14088D0E8, 0x0); // HTTPS -> HTTP
 		}
