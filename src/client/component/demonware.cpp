@@ -420,6 +420,8 @@ namespace demonware
 
 			if (game::environment::is_sp())
 			{
+				utils::hook::set<uint8_t>(0x1405632E0, 0xC3); // bdAuthSteam
+				utils::hook::set<uint8_t>(0x1402DF2C0, 0xC3); // dwNet
 				return;
 			}
 
