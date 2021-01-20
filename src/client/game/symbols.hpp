@@ -136,8 +136,10 @@ namespace game
 	WEAK symbol<void(int localClientNum, const char* map, bool mapIsPreloaded)> SV_StartMap{ 0, 0x140438320 };
 	WEAK symbol<void(int localClientNum, const char* map, bool mapIsPreloaded, bool migrate)> SV_StartMapForParty{ 0, 0x140438490 };
 
-	WEAK symbol<void(const char* error, ...)> Sys_Error{ 0x14038C770, 0x1404D6260 };
+	WEAK symbol<void(char* path, int pathSize, Sys_Folder folder, const char* filename, const char* ext)> Sys_BuildAbsPath{ 0x14037BBE0, 0x1404CC7E0 };
 	WEAK symbol<HANDLE(int folder, const char* baseFileName)> Sys_CreateFile{ 0x14037BCA0, 0x1404CC8A0 };
+	WEAK symbol<void(const char* error, ...)> Sys_Error{ 0x14038C770, 0x1404D6260 };
+	WEAK symbol<bool(const char* path)> Sys_FileExists{ 0x14038C810, 0x1404D6310 };
 	WEAK symbol<bool()> Sys_IsDatabaseReady2{ 0x1402FF980, 0x1403E1840 };
 	WEAK symbol<int()> Sys_Milliseconds{ 0x14038E9F0, 0x1404D8730 };
 	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{ 0x14038E720, 0x1404D8460 };

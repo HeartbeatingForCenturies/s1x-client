@@ -251,7 +251,7 @@ namespace patches
 			utils::hook::call(0x140003609, aim_assist_add_to_target_list);
 
 			// unlock all items
-			utils::hook::jump(0x1403BD790, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable
+			utils::hook::jump(0x1403BD790, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable_LocalClient
 			utils::hook::jump(0x1403BD290, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable
 
 			// disable emblems
