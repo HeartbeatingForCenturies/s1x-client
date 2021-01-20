@@ -3,5 +3,5 @@
 
 namespace videos
 {
-	void replace(const char* what, const char* with);
+	void replace(const std::string& what, const std::string& with);
 }

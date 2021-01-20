@@ -13,18 +13,18 @@ namespace videos
 	class video_replace
 	{
 	public:
-		const char* replace;
-		const char* with;
+		std::string replace;
+		std::string with;
 	};
 
 	namespace
 	{
 		template<typename T>
-		T* find_vid(std::vector<T>* vec, const char* name)
+		T* find_vid(std::vector<T>* vec, const std::string& name)
 		{
 			for (auto i = 0; i < vec->size(); i++)
 			{
-				if (!strcmp(name, vec->at(i).replace))
+				if (name == vec->at(i).replace)
 				{
 					return &vec->at(i);
 				}
@@ -35,7 +35,7 @@ namespace videos
 
 	static std::vector<video_replace> replaces;
 
-	void replace(const char* what, const char* with)
+	void replace(const std::string& what, const std::string& with)
 	{
 		video_replace vid;
 		vid.replace = what;
@@ -50,9 +50,15 @@ namespace videos
 		void playvid(const char* name, int a2, int a3)
 		{
 			auto* vid = find_vid(&replaces, name);
-			if (vid && utils::io::file_exists(utils::string::va("raw\\video\\%s.bik", vid->with)))
+			if (vid)
 			{
-				name = vid->with;
+				char path[256];
+				game::Sys_BuildAbsPath(path, 256, game::SF_VIDEO, vid->with.data(), ".bik");
+
+				if (game::Sys_FileExists(path))
+				{
+					name = vid->with.data();
+				}
 			}
 
 			return playvid_hook.invoke<void>(name, a2, a3);

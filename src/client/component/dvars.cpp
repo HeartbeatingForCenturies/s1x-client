@@ -11,79 +11,79 @@ namespace dvars
 	class dvar_bool
 	{
 	public:
-		const char* name;
+		std::string name;
 		bool value;
 		unsigned int flags;
-		const char* description;
+		std::string description;
 	};
 
 	class dvar_float
 	{
 	public:
-		const char* name;
+		std::string name;
 		float value;
 		float min;
 		float max;
 		unsigned int flags;
-		const char* description;
+		std::string description;
 	};
 
 	class dvar_int
 	{
 	public:
-		const char* name;
+		std::string name;
 		int value;
 		int min;
 		int max;
 		unsigned int flags;
-		const char* description;
+		std::string description;
 	};
 
 	class dvar_string
 	{
 	public:
-		const char* name;
-		const char* value;
+		std::string name;
+		std::string value;
 		unsigned int flags;
-		const char* description;
+		std::string description;
 	};
 
 	class dvar_setbool
 	{
 	public:
-		const char* name;
+		std::string name;
 		bool boolean;
 	};
 
 	class dvar_setfloat
 	{
 	public:
-		const char* name;
+		std::string name;
 		float fl;
 	};
 
 	class dvar_setint
 	{
 	public:
-		const char* name;
+		std::string name;
 		int integer;
 	};
 
 	class dvar_setstring
 	{
 	public:
-		const char* name;
-		const char* string;
+		std::string name;
+		std::string string;
 	};
 
 	namespace
 	{
 		template<typename T>
-		T* find_dvar(std::vector<T>* vec, const char* name)
+		T* find_dvar(std::vector<T>* vec, const std::string& name)
 		{
 			for (auto i = 0; i < vec->size(); i++)
 			{
-				if (!strcmp(name, vec->at(i).name))
+				if (name == vec->at(i).name)
 				{
 					return &vec->at(i);
 				}
@@ -99,28 +99,28 @@ namespace dvars
 		static std::vector<dvar_setint> set_int_disables;
 		static std::vector<dvar_setstring> set_string_disables;
 
-		void Dvar_SetBool(const char* name)
+		void Dvar_SetBool(const std::string& name)
 		{
 			dvar_setbool values;
 			values.name = name;
 			set_bool_disables.push_back(std::move(values));
 		}
 
-		void Dvar_SetFloat(const char* name)
+		void Dvar_SetFloat(const std::string& name)
 		{
 			dvar_setfloat values;
 			values.name = name;
 			set_float_disables.push_back(std::move(values));
 		}
 
-		void Dvar_SetInt(const char* name)
+		void Dvar_SetInt(const std::string& name)
 		{
 			dvar_setint values;
 			values.name = name;
 			set_int_disables.push_back(std::move(values));
 		}
 
-		void Dvar_SetString(const char* name)
+		void Dvar_SetString(const std::string& name)
 		{
 			dvar_setstring values;
 			values.name = name;
@@ -140,7 +140,7 @@ namespace dvars
 		static std::vector<dvar_setint> set_int_overrides;
 		static std::vector<dvar_setstring> set_string_overrides;
 
-		void Dvar_RegisterBool(const char* name, bool value, unsigned int flags, const char* description)
+		void Dvar_RegisterBool(const std::string& name, bool value, unsigned int flags, const std::string& description)
 		{
 			dvar_bool values;
 			values.name = name;
@@ -150,7 +150,7 @@ namespace dvars
 			register_bool_overrides.push_back(std::move(values));
 		}
 
-		void Dvar_RegisterFloat(const char* name, float value, float min, float max, unsigned int flags, const char* description)
+		void Dvar_RegisterFloat(const std::string& name, float value, float min, float max, unsigned int flags, const std::string& description)
 		{
 			dvar_float values;
 			values.name = name;
@@ -162,7 +162,7 @@ namespace dvars
 			register_float_overrides.push_back(std::move(values));
 		}
 
-		void Dvar_RegisterInt(const char* name, int value, int min, int max, unsigned int flags, const char* description)
+		void Dvar_RegisterInt(const std::string& name, int value, int min, int max, unsigned int flags, const std::string& description)
 		{
 			dvar_int values;
 			values.name = name;
@@ -174,7 +174,7 @@ namespace dvars
 			register_int_overrides.push_back(std::move(values));
 		}
 
-		void Dvar_RegisterString(const char* name, const char* value, unsigned int flags, const char* description)
+		void Dvar_RegisterString(const std::string& name, const std::string& value, unsigned int flags, const std::string& description)
 		{
 			dvar_string values;
 			values.name = name;
@@ -184,7 +184,7 @@ namespace dvars
 			register_string_overrides.push_back(std::move(values));
 		}
 
-		void Dvar_SetBool(const char* name, bool boolean)
+		void Dvar_SetBool(const std::string& name, bool boolean)
 		{
 			dvar_setbool values;
 			values.name = name;
@@ -192,7 +192,7 @@ namespace dvars
 			set_bool_overrides.push_back(std::move(values));
 		}
 
-		void Dvar_SetFloat(const char* name, float fl)
+		void Dvar_SetFloat(const std::string& name, float fl)
 		{
 			dvar_setfloat values;
 			values.name = name;
@@ -200,7 +200,7 @@ namespace dvars
 			set_float_overrides.push_back(std::move(values));
 		}
 
-		void Dvar_SetInt(const char* name, int integer)
+		void Dvar_SetInt(const std::string& name, int integer)
 		{
 			dvar_setint values;
 			values.name = name;
@@ -208,7 +208,7 @@ namespace dvars
 			set_int_overrides.push_back(std::move(values));
 		}
 
-		void Dvar_SetString(const char* name, const char* string)
+		void Dvar_SetString(const std::string& name, const std::string& string)
 		{
 			dvar_setstring values;
 			values.name = name;
@@ -234,7 +234,7 @@ namespace dvars
 		{
 			value = var->value;
 			flags = var->flags;
-			description = var->description;
+			description = var->description.data();
 		}
 
 		return dvar_register_bool_hook.invoke<game::dvar_t*>(name, value, flags, description);
@@ -249,7 +249,7 @@ namespace dvars
 			min = var->min;
 			max = var->max;
 			flags = var->flags;
-			description = var->description;
+			description = var->description.data();
 		}
 
 		return dvar_register_float_hook.invoke<game::dvar_t*>(name, value, min, max, flags, description);
@@ -264,7 +264,7 @@ namespace dvars
 			min = var->min;
 			max = var->max;
 			flags = var->flags;
-			description = var->description;
+			description = var->description.data();
 		}
 
 		return dvar_register_int_hook.invoke<game::dvar_t*>(name, value, min, max, flags, description);
@@ -275,9 +275,9 @@ namespace dvars
 		auto* var = find_dvar(&override::register_string_overrides, name);
 		if (var)
 		{
-			value = var->value;
+			value = var->value.data();
 			flags = var->flags;
-			description = var->description;
+			description = var->description.data();
 		}
 
 		return dvar_register_string_hook.invoke<game::dvar_t*>(name, value, flags, description);
@@ -345,7 +345,7 @@ namespace dvars
 		var = find_dvar(&override::set_string_overrides, dvar->name);
 		if (var)
 		{
-			string = var->string;
+			string = var->string.data();
 		}
 
 		return dvar_set_string_hook.invoke<void>(dvar, string);
