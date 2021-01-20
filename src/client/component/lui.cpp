@@ -10,7 +10,6 @@
 
 namespace lui
 {
-
 	class component final : public component_interface
 	{
 	public:

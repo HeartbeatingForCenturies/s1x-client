@@ -16,18 +16,23 @@ namespace patches
 {
 	namespace
 	{
-		game::dvar_t* register_virtual_lobby_enabled_stub(const char* name, bool value,
-				const unsigned int /*flags*/,
+		game::dvar_t* register_virtual_lobby_enabled_stub(const char* name, bool /*value*/,
+				unsigned int /*flags*/,
 				const char* description)
 		{
 			return game::Dvar_RegisterBool(name, false, game::DVAR_FLAG_READ, description);
 		}
 
-		game::dvar_t* register_virtual_lobby_mode_stub(const char* name, int /*value*/, int /*min*/, int /*max*/,
-			const unsigned int /*flags*/,
+		game::dvar_t* register_virtual_lobby_stubs(const char* name, bool value,
+			unsigned int flags,
 			const char* description)
 		{
-			return game::Dvar_RegisterInt(name, 0, 0, 0, game::DVAR_FLAG_READ, description);
+			if (game::Com_GetCurrentCoDPlayMode() == game::CODPLAYMODE_CORE)
+			{
+				value = true;
+				flags = game::DVAR_FLAG_READ;
+			}
+			return game::Dvar_RegisterBool(name, value, game::DVAR_FLAG_READ, description);
 		}
 
 		utils::hook::detour live_get_local_client_name_hook;
@@ -163,6 +168,11 @@ namespace patches
 				game::Com_Error(game::ERR_DROP, error, arg1);
 			}
 		}
+
+		int is_item_unlocked()
+		{
+			return 0; // 0 == yes
+		}
 	}
 
 	class component final : public component_interface
@@ -218,7 +228,9 @@ namespace patches
 		static void patch_mp()
 		{
 			// Disable virtualLobby
-			utils::hook::call(0x1403CFDCC, register_virtual_lobby_enabled_stub);
+			utils::hook::call(0x1403CFDCC, register_virtual_lobby_enabled_stub); // virtualLobbyEnabled
+			//utils::hook::call(0x14013E0C0, register_virtual_lobby_stubs); // virtualLobbyReady
+			utils::hook::call(0x1403CFE6A, register_virtual_lobby_stubs); // virtualLobbyAllocated
 
 			// Use name dvar
 			live_get_local_client_name_hook.create(0x1404D47F0, &live_get_local_client_name);
@@ -237,6 +249,18 @@ namespace patches
 				game::DvarFlags::DVAR_FLAG_SAVED,
 				"Enables aim assist for controllers");
 			utils::hook::call(0x140003609, aim_assist_add_to_target_list);
+
+			// unlock all items
+			utils::hook::jump(0x1403BD790, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable
+			utils::hook::jump(0x1403BD290, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable
+
+			// disable emblems
+			dvars::override::Dvar_RegisterInt("emblems_active", 0, 0, 0, game::DVAR_FLAG_NONE);
+			utils::hook::set<uint8_t>(0x140479590, 0xC3); // don't register commands
+
+			// disable elite_clan
+			dvars::override::Dvar_RegisterInt("elite_clan_active", 0, 0, 0, game::DVAR_FLAG_NONE);
+			utils::hook::set<uint8_t>(0x14054AB20, 0xC3); // don't register commands
 		}
 
 		static void patch_sp()

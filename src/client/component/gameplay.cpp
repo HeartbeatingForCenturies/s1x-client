@@ -73,7 +73,7 @@ namespace gameplay
 			// Implement bouncing dvar
 			utils::hook::jump(0x14014DF91, pm_bouncing_stub_mp, true);
 			dvars::pm_bouncing = game::Dvar_RegisterBool("pm_bouncing", false,
-				game::DvarFlags::DVAR_FLAG_REPLICATED, "Enable bouncing");
+				game::DVAR_FLAG_REPLICATED, "Enable bouncing");
 		}
 	};
 }
