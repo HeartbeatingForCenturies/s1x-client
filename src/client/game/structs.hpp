@@ -9,6 +9,17 @@ namespace game
 	typedef vec_t vec3_t[3];
 	typedef vec_t vec4_t[4];
 
+	enum Sys_Folder
+	{
+		SF_ZONE = 0x0,
+		SF_ZONE_LOC = 0x1,
+		SF_VIDEO = 0x2,
+		SF_VIDEO_LOC = 0x3,
+		SF_PAKFILE = 0x4,
+		SF_PAKFILE_LOC = 0x5,
+		SF_COUNT = 0x6,
+	};
+
 	enum CodPlayMode
 	{
 		CODPLAYMODE_NONE = 0x0,

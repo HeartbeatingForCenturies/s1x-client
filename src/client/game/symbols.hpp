@@ -141,6 +141,7 @@ namespace game
 	WEAK symbol<bool()> Sys_IsDatabaseReady2{ 0x1402FF980, 0x1403E1840 };
 	WEAK symbol<int()> Sys_Milliseconds{ 0x14038E9F0, 0x1404D8730 };
 	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{ 0x14038E720, 0x1404D8460 };
+	WEAK symbol<void(Sys_Folder, const char* path)> Sys_SetFolder{ 0x14037BDD0, 0x1404CCA10 };
 	WEAK symbol<void()> Sys_ShowConsole{ 0x14038FA90, 0x1404D98B0 };
 
 	WEAK symbol<const char* (const char*)> UI_GetMapDisplayName{ 0, 0x1403B1CD0 };
