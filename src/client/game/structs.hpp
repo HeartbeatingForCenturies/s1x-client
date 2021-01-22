@@ -911,6 +911,68 @@ namespace game
 		Glyph* glyphs;
 	};
 
+	struct StreamFileNameRaw
+	{
+		const char* dir;
+		const char* name;
+	};
+
+	struct StreamFileNamePacked
+	{
+		unsigned __int64 offset;
+		unsigned __int64 length;
+	};
+
+	union StreamFileInfo
+	{
+		StreamFileNameRaw raw;
+		StreamFileNamePacked packed;
+	};
+
+	struct StreamFileName
+	{
+		unsigned __int16 isLocalized;
+		unsigned __int16 fileIndex;
+		StreamFileInfo info;
+	};
+
+	struct StreamedSound
+	{
+		StreamFileName filename;
+		unsigned int totalMsec;
+	};
+
+	union SoundFileRef
+	{
+		StreamedSound streamSnd;
+	};
+
+	struct SoundFile
+	{
+		char type;
+		char exists;
+		SoundFileRef u;
+	};
+
+	struct snd_alias_t
+	{
+		const char* aliasName;
+		char __pad0[24];
+		SoundFile* soundFile;
+		char __pad1[198];
+		// not gonna map this out...
+	};
+
+	struct snd_alias_list_t
+	{
+		const char* aliasName;
+		snd_alias_t* head;
+		void* unk;
+		unsigned char count;
+		unsigned char unkCount;
+		char __pad0[6];
+	};
+
 	union XAssetHeader
 	{
 		void* data;
