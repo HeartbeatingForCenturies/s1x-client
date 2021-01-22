@@ -261,6 +261,9 @@ namespace patches
 			// disable elite_clan
 			dvars::override::Dvar_RegisterInt("elite_clan_active", 0, 0, 0, game::DVAR_FLAG_NONE);
 			utils::hook::set<uint8_t>(0x14054AB20, 0xC3); // don't register commands
+
+			// disable codPointStore
+			dvars::override::Dvar_RegisterInt("codPointStore_enabled", 0, 0, 0, game::DVAR_FLAG_NONE);
 		}
 
 		static void patch_sp()
