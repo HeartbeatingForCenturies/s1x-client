@@ -5,8 +5,6 @@
 #include "game/game.hpp"
 
 #include <utils/hook.hpp>
-#include <utils/string.hpp>
-#include <utils/io.hpp>
 
 namespace videos
 {
@@ -76,6 +74,12 @@ namespace videos
 			{
 				replace("menus_bg_comp2", "menus_bg_s1-mod");
 				replace("mp_menus_bg_options", "menus_bg_s1-mod_blur");
+			}
+			else if (game::environment::is_sp())
+			{
+				replace("sp_menus_bg_main_menu", "menus_bg_s1-mod_sp");
+				replace("sp_menus_bg_campaign", "menus_bg_s1-mod_sp");
+				replace("sp_menus_bg_options", "menus_bg_s1-mod_sp");
 			}
 		}
 	};
