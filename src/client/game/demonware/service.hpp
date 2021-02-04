@@ -47,7 +47,7 @@ namespace demonware
         auto id() -> std::uint8_t { return this->id_; }
         auto name() -> std::string { return this->name_; }
 
-        void exec_task(service_server* server, const std::string& data)
+        virtual void exec_task(service_server* server, const std::string& data)
         {
             std::lock_guard $(this->mutex_);
 

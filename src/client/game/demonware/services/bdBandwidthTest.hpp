@@ -9,8 +9,7 @@ namespace demonware
 		bdBandwidthTest();
 
 	private:
-		void unk204(service_server* server, uint8_t type, byte_buffer* buffer) const;
-		void unk2(service_server* server, uint8_t type, byte_buffer* buffer) const;
+		void exec_task(service_server* server, const std::string& data) override;
 	};
 
 }
