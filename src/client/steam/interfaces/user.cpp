@@ -13,7 +13,6 @@ namespace steam
         {
             steam_id id{};
             id.bits = auth::get_guid();
-            printf("STEAMBITS: %llu\n", id.bits);
             return id;
         }
     }
@@ -129,7 +128,9 @@ namespace steam
 
     unsigned long long user::RequestEncryptedAppTicket(void* pUserData, int cbUserData)
     {
+#ifdef DEBUG
         printf("[steam_api]: [user]: request encrypted app ticket\n");
+#endif
         // Generate the authentication ticket
         const auto id = this->GetSteamID();
 
@@ -154,7 +155,9 @@ namespace steam
 
     bool user::GetEncryptedAppTicket(void* pTicket, int cbMaxTicket, unsigned int* pcbTicket)
     {
+#ifdef DEBUG
         printf("[steam_api]: [user]: sending encrypted app ticket\n");
+#endif
         if (cbMaxTicket < 0 || auth_ticket.empty()) return false;
 
         const auto size = std::min(size_t(cbMaxTicket), auth_ticket.size());

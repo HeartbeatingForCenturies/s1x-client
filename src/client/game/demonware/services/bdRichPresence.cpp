@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdRichPresence::bdRichPresence() : service(68, "bdRichPresence")
 	{
 		this->register_task(1, &bdRichPresence::unk1);
@@ -23,5 +22,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

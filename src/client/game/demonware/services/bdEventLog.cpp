@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdEventLog::bdEventLog() : service(67, "bdEventLog")
 	{
 		this->register_task(6, &bdEventLog::unk6);
@@ -15,5 +14,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

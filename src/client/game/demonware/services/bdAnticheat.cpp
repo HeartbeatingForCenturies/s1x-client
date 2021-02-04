@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdAnticheat::bdAnticheat() : service(38, "bdAnticheat")
 	{
 		this->register_task(2, &bdAnticheat::unk2);
@@ -23,5 +22,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

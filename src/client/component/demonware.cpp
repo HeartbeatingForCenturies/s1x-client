@@ -167,13 +167,14 @@ namespace demonware
     {
         int getaddrinfo_stub(PCSTR pNodeName, PCSTR pServiceName, const ADDRINFOA* pHints, PADDRINFOA* ppResult)
         {
-            printf("[ network ]: [getaddrinfo]: %s\n", pNodeName);
             return getaddrinfo(pNodeName, pServiceName, pHints, ppResult);
         }
 
         hostent* gethostbyname_stub(const char* name)
         {
+#ifdef DEBUG
             printf("[ network ]: [gethostbyname]: \"%s\"\n", name);
+#endif
 
             const auto server = find_server_by_name(name);
 

@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdStats::bdStats() : service(4, "bdStats")
 	{
 		this->register_task(1, &bdStats::unk1);
@@ -47,5 +46,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

@@ -2,7 +2,6 @@
 
 namespace demonware
 {
-
 	class bdUNK104 final : public service
 	{
 	public:
@@ -11,5 +10,4 @@ namespace demonware
 	private:
 		void unk1(service_server* server, byte_buffer* buffer) const;
 	};
-
 }

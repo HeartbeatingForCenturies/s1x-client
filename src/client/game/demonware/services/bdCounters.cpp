@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdCounters::bdCounters() : service(23, "bdCounters")
 	{
 		this->register_task(1, &bdCounters::unk1);
@@ -23,5 +22,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

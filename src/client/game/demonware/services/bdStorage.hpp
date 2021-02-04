@@ -2,7 +2,6 @@
 
 namespace demonware
 {
-
     class bdStorage final : public service
     {
     public:
@@ -22,5 +21,4 @@ namespace demonware
 
         static std::string get_user_file_path(const std::string& name);
     };
-
 } // namespace demonware

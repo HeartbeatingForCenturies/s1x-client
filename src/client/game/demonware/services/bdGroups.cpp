@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdGroups::bdGroups() : service(28, "bdGroup")
 	{
 		this->register_task(1, &bdGroups::set_groups);
@@ -23,5 +22,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

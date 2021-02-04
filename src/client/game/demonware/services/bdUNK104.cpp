@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdUNK104::bdUNK104() : service(104, "bdUNK104")
 	{
 		this->register_task(1, &bdUNK104::unk1);
@@ -15,5 +14,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

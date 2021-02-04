@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdMatchMaking2::bdMatchMaking2() : service(138, "bdMatchMaking2")
 	{
 		this->register_task(1, &bdMatchMaking2::unk1);
@@ -47,5 +46,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

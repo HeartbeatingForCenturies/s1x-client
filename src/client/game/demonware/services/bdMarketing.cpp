@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdMarketing::bdMarketing() : service(139, "bdMarketing")
 	{
 		this->register_task(3, &bdMarketing::unk3);
@@ -15,5 +14,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

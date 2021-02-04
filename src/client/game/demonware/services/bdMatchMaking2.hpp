@@ -2,7 +2,6 @@
 
 namespace demonware
 {
-
 	class bdMatchMaking2 final : public service
 	{
 	public:
@@ -15,5 +14,4 @@ namespace demonware
 		void unk5(service_server* server, byte_buffer* buffer) const;
 		void unk16(service_server* server, byte_buffer* buffer) const;
 	};
-
 }

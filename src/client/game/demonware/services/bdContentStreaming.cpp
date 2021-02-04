@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdContentStreaming::bdContentStreaming() : service(50, "bdContentStreaming")
 	{
 		this->register_task(2, &bdContentStreaming::unk2);
@@ -23,5 +22,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

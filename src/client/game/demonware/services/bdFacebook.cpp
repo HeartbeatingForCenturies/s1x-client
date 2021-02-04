@@ -3,7 +3,6 @@
 
 namespace demonware
 {
-
 	bdFacebook::bdFacebook() : service(36, "bdFacebook")
 	{
 		this->register_task(1, &bdFacebook::unk1);
@@ -39,5 +38,4 @@ namespace demonware
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
-
 }

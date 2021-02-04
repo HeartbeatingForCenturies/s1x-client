@@ -161,7 +161,7 @@ namespace demonware
 			result.append(utils::string::va("Date: %s GMT\r\n", date));
 			result.append(utils::string::va("Content-Length: %d\r\n\r\n", content.size()));
 			result.append(content);
-			printf("%s\n", result.data());
+			
 			raw_reply reply(result);
 			this->send_reply(&reply);
 

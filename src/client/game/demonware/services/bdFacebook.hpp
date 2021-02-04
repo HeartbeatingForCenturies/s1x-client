@@ -2,7 +2,6 @@
 
 namespace demonware
 {
-
 	class bdFacebook final : public service
 	{
 	public:
@@ -14,5 +13,4 @@ namespace demonware
 		void unk7(service_server* server, byte_buffer* buffer) const;
 		void unk8(service_server* server, byte_buffer* buffer) const;
 	};
-
 }

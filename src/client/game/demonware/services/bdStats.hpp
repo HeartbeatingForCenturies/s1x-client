@@ -2,7 +2,6 @@
 
 namespace demonware
 {
-
 	class bdStats final : public service
 	{
 	public:
@@ -15,5 +14,4 @@ namespace demonware
 		void unk8(service_server* server, byte_buffer* buffer) const;
 		void unk11(service_server* server, byte_buffer* buffer) const;
 	};
-
 }

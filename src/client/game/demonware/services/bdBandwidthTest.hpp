@@ -2,7 +2,6 @@
 
 namespace demonware
 {
-
 	class bdBandwidthTest final : public service
 	{
 	public:
@@ -11,5 +10,4 @@ namespace demonware
 	private:
 		void exec_task(service_server* server, const std::string& data) override;
 	};
-
 }
