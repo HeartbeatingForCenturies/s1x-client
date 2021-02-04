@@ -28,7 +28,7 @@ namespace demonware
 		bool read_data_type(char expected);
 
 		bool read_array_header(unsigned char expected, unsigned int* element_count,
-		                       unsigned int* element_size = nullptr);
+			unsigned int* element_size = nullptr);
 
 		bool write_byte(char data);
 		bool write_bool(bool data);
@@ -47,8 +47,8 @@ namespace demonware
 
 		bool write_array_header(unsigned char type, unsigned int element_count, unsigned int element_size);
 
-		bool read(size_t bytes, void* output);
-		bool write(size_t bytes, const void* data);
+		bool read(int bytes, void* output);
+		bool write(int bytes, const void* data);
 		bool write(const std::string& data);
 
 		void set_use_data_types(bool use_data_types);

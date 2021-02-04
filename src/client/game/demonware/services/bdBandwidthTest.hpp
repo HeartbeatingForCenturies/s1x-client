@@ -1,11 +1,16 @@
 #pragma once
-#include "../i_service.hpp"
 
 namespace demonware
 {
-	class bdBandwidthTest final : public i_generic_service<18>
+
+	class bdBandwidthTest final : public service
 	{
 	public:
-		void call_service(i_server* server, const std::string& data) override;
+		bdBandwidthTest();
+
+	private:
+		void unk204(service_server* server, uint8_t type, byte_buffer* buffer) const;
+		void unk2(service_server* server, uint8_t type, byte_buffer* buffer) const;
 	};
+
 }

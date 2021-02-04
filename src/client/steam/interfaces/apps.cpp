@@ -1,104 +1,105 @@
 #include <std_include.hpp>
-#include "steam/steam.hpp"
+#include "../steam.hpp"
 
 namespace steam
 {
-	bool apps::BIsSubscribed()
-	{
-		return true;
-	}
 
-	bool apps::BIsLowViolence()
-	{
-		return false;
-	}
+    bool apps::BIsSubscribed()
+    {
+        return true;
+    }
 
-	bool apps::BIsCybercafe()
-	{
-		return false;
-	}
+    bool apps::BIsLowViolence()
+    {
+        return false;
+    }
 
-	bool apps::BIsVACBanned()
-	{
-		return false;
-	}
+    bool apps::BIsCybercafe()
+    {
+        return false;
+    }
 
-	const char* apps::GetCurrentGameLanguage()
-	{
-		return "english";
-	}
+    bool apps::BIsVACBanned()
+    {
+        return false;
+    }
 
-	const char* apps::GetAvailableGameLanguages()
-	{
-		return "english";
-	}
+    const char* apps::GetCurrentGameLanguage()
+    {
+        return "english";
+    }
 
-	bool apps::BIsSubscribedApp(unsigned int appID)
-	{
-		return true;
-	}
+    const char* apps::GetAvailableGameLanguages()
+    {
+        return "english";
+    }
 
-	bool apps::BIsDlcInstalled(unsigned int appID)
-	{
-		return true;
-	}
+    bool apps::BIsSubscribedApp(unsigned int appID)
+    {
+        return true;
+    }
 
-	unsigned int apps::GetEarliestPurchaseUnixTime(unsigned int nAppID)
-	{
-		return 0;
-	}
+    bool apps::BIsDlcInstalled(unsigned int appID)
+    {
+        return true;
+    }
 
-	bool apps::BIsSubscribedFromFreeWeekend()
-	{
-		return false;
-	}
+    unsigned int apps::GetEarliestPurchaseUnixTime(unsigned int nAppID)
+    {
+        return 0;
+    }
 
-	int apps::GetDLCCount()
-	{
-		return 0;
-	}
+    bool apps::BIsSubscribedFromFreeWeekend()
+    {
+        return false;
+    }
 
-	bool apps::BGetDLCDataByIndex(int iDLC, unsigned int* pAppID, bool* pbAvailable, char* pchName,
-	                              int cchNameBufferSize)
-	{
-		return false;
-	}
+    int apps::GetDLCCount()
+    {
+        return 0;
+    }
 
-	void apps::InstallDLC(unsigned int nAppID)
-	{
-	}
+    bool apps::BGetDLCDataByIndex(int iDLC, unsigned int* pAppID, bool* pbAvailable, char* pchName, int cchNameBufferSize)
+    {
+        return false;
+    }
 
-	void apps::UninstallDLC(unsigned int nAppID)
-	{
-	}
+    void apps::InstallDLC(unsigned int nAppID)
+    {
+    }
 
-	void apps::RequestAppProofOfPurchaseKey(unsigned int nAppID)
-	{
-	}
+    void apps::UninstallDLC(unsigned int nAppID)
+    {
+    }
 
-	bool apps::GetCurrentBetaName(char *pchName, int cchNameBufferSize)
-	{
-		strncpy_s(pchName, cchNameBufferSize, "public", cchNameBufferSize);
-		return true;
-	}
+    void apps::RequestAppProofOfPurchaseKey(unsigned int nAppID)
+    {
+    }
 
-	bool apps::MarkContentCorrupt(bool bMissingFilesOnly)
-	{
-		return false;
-	}
+    bool apps::GetCurrentBetaName(char* pchName, int cchNameBufferSize)
+    {
+        strncpy_s(pchName, cchNameBufferSize, "public", cchNameBufferSize);
+        return true;
+    }
 
-	unsigned int apps::GetInstalledDepots(int *pvecDepots, unsigned int cMaxDepots)
-	{
-		return 0;
-	}
+    bool apps::MarkContentCorrupt(bool bMissingFilesOnly)
+    {
+        return false;
+    }
 
-	unsigned int apps::GetAppInstallDir(unsigned int appID, char *pchFolder, unsigned int cchFolderBufferSize)
-	{
-		return 0;
-	}
+    unsigned int apps::GetInstalledDepots(int* pvecDepots, unsigned int cMaxDepots)
+    {
+        return 0;
+    }
 
-	bool apps::BIsAppInstalled(unsigned int appID)
-	{
-		return false;
-	}
-}
+    unsigned int apps::GetAppInstallDir(unsigned int appID, char* pchFolder, unsigned int cchFolderBufferSize)
+    {
+        return 0;
+    }
+
+    bool apps::BIsAppInstalled(unsigned int appID)
+    {
+        return false;
+    }
+
+} // namespace steam

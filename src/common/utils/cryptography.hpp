@@ -63,6 +63,17 @@ namespace utils::cryptography
 		std::string compute(const uint8_t* data, size_t length, bool hex = false);
 	}
 
+	namespace aes
+	{
+		std::string encrypt(const std::string& data, const std::string& iv, const std::string& key);
+		std::string decrypt(const std::string& data, const std::string& iv, const std::string& key);
+	}
+
+	namespace hmac_sha1 
+	{
+		std::string process(const std::string& data, const std::string& key, unsigned int* len);
+	}
+
 	namespace sha1
 	{
 		std::string compute(const std::string& data, bool hex = false);
@@ -79,6 +90,12 @@ namespace utils::cryptography
 	{
 		std::string compute(const std::string& data, bool hex = false);
 		std::string compute(const uint8_t* data, size_t length, bool hex = false);
+	}
+
+	namespace base64
+	{
+		std::string encode(unsigned char const*, unsigned int len);
+		std::string decode(std::string const& s);
 	}
 
 	namespace jenkins_one_at_a_time

@@ -1,30 +1,26 @@
 #pragma once
-#include "../i_service.hpp"
 
 namespace demonware
 {
-	class bdStorage final : public i_generic_service<10>
-	{
-	public:
-		bdStorage();
 
-	private:
-		std::vector<std::pair<std::regex, std::string>> publisher_resources_;
+    class bdStorage final : public service
+    {
+    public:
+        bdStorage();
 
-		void set_legacy_user_file(i_server* server, byte_buffer* buffer) const;
-		void update_legacy_user_file(i_server* server, byte_buffer* buffer) const;
-		void get_legacy_user_file(i_server* server, byte_buffer* buffer) const;
-		void list_legacy_user_files(i_server* server, byte_buffer* buffer) const;
-		void list_publisher_files(i_server* server, byte_buffer* buffer);
-		void get_publisher_file(i_server* server, byte_buffer* buffer);
-		void delete_user_file(i_server* server, byte_buffer* buffer) const;
-		void set_user_file(i_server* server, byte_buffer* buffer) const;
-		void get_user_file(i_server* server, byte_buffer* buffer) const;
+    private:
+        std::vector<std::pair<std::regex, std::string>> publisher_resources_;
 
-		void map_publisher_resource(const std::string& expression, INT id);
-		bool load_publisher_resource(const std::string& name, std::string& buffer);
+        void map_publisher_resource(const std::string& expression, INT id);
+        bool load_publisher_resource(const std::string& name, std::string& buffer);
 
-		static std::string get_user_file_path(const std::string& name);
-		static std::string generate_heatmap();
-	};
-}
+        void list_publisher_files(service_server* server, uint8_t type, byte_buffer* buffer);
+        void get_publisher_file(service_server* server, uint8_t type, byte_buffer* buffer);
+        void set_user_file(service_server* server, uint8_t type, byte_buffer* buffer) const;
+        void get_user_file(service_server* server, uint8_t type, byte_buffer* buffer) const;
+        void unk13(service_server* server, uint8_t type, byte_buffer* buffer) const;
+
+        static std::string get_user_file_path(const std::string& name);
+    };
+
+} // namespace demonware

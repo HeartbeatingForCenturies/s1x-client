@@ -1,5 +1,5 @@
 #include <std_include.hpp>
-#include "byte_buffer.hpp"
+#include "demonware.hpp"
 
 namespace demonware
 {
@@ -128,16 +128,11 @@ namespace demonware
 
 		char type;
 		this->read(1, &type);
-		if (type != expected)
-		{
-			//throw std::runtime_error("Data type mismatch!");
-		}
-
 		return type == expected;
 	}
 
 	bool byte_buffer::read_array_header(const unsigned char expected, unsigned int* element_count,
-	                                    unsigned int* element_size)
+		unsigned int* element_size)
 	{
 		if (element_count) *element_count = 0;
 		if (element_size) *element_size = 0;
@@ -242,7 +237,7 @@ namespace demonware
 	}
 
 	bool byte_buffer::write_array_header(const unsigned char type, const unsigned int element_count,
-	                                     const unsigned int element_size)
+		const unsigned int element_size)
 	{
 		const auto using_types = this->is_using_data_types();
 		this->set_use_data_types(false);
@@ -259,7 +254,7 @@ namespace demonware
 		return result;
 	}
 
-	bool byte_buffer::read(const size_t bytes, void* output)
+	bool byte_buffer::read(const int bytes, void* output)
 	{
 		if (bytes + this->current_byte_ > this->buffer_.size()) return false;
 
@@ -269,16 +264,16 @@ namespace demonware
 		return true;
 	}
 
-	bool byte_buffer::write(const size_t bytes, const void* data)
+	bool byte_buffer::write(const int bytes, const void* data)
 	{
-		this->buffer_.append(static_cast<const char*>(data), bytes);
+		this->buffer_.append(reinterpret_cast<const char*>(data), bytes);
 		this->current_byte_ += bytes;
 		return true;
 	}
 
 	bool byte_buffer::write(const std::string& data)
 	{
-		return this->write(data.size(), data.data());
+		return this->write(static_cast<int>(data.size()), data.data());
 	}
 
 	void byte_buffer::set_use_data_types(const bool use_data_types)

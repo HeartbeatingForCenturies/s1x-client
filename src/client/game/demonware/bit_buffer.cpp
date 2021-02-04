@@ -1,5 +1,5 @@
 #include <std_include.hpp>
-#include "bit_buffer.hpp"
+#include "demonware.hpp"
 
 namespace demonware
 {
@@ -41,14 +41,14 @@ namespace demonware
 		return false;
 	}
 
-	bool bit_buffer::write_bytes(const size_t bytes, const char* data)
+	bool bit_buffer::write_bytes(const unsigned int bytes, const char* data)
 	{
 		return this->write_bytes(bytes, reinterpret_cast<const unsigned char*>(data));
 	}
 
-	bool bit_buffer::write_bytes(const size_t bytes, const unsigned char* data)
+	bool bit_buffer::write_bytes(const unsigned int bytes, const unsigned char* data)
 	{
-		return this->write(static_cast<unsigned>(bytes) * 8, data);
+		return this->write(bytes * 8, data);
 	}
 
 	bool bit_buffer::write_bool(bool data)

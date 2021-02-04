@@ -16,8 +16,8 @@ namespace demonware
 		bool read_uint32(unsigned int* output);
 		bool read_data_type(char expected);
 
-		bool write_bytes(size_t bytes, const char* data);
-		bool write_bytes(size_t bytes, const unsigned char* data);
+		bool write_bytes(unsigned int bytes, const char* data);
+		bool write_bytes(unsigned int bytes, const unsigned char* data);
 		bool write_bool(bool data);
 		bool write_int32(int data);
 		bool write_uint32(unsigned int data);

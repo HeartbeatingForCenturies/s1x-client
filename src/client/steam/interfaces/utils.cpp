@@ -1,124 +1,125 @@
 #include <std_include.hpp>
-#include "steam/steam.hpp"
-//#include "component/steam_proxy.hpp"
+#include "../steam.hpp"
 
 namespace steam
 {
-	unsigned int utils::GetSecondsSinceAppActive()
-	{
-		return 0;
-	}
 
-	unsigned int utils::GetSecondsSinceComputerActive()
-	{
-		return 0;
-	}
+    unsigned int utils::GetSecondsSinceAppActive()
+    {
+        return 0;
+    }
 
-	int utils::GetConnectedUniverse()
-	{
-		return 1;
-	}
+    unsigned int utils::GetSecondsSinceComputerActive()
+    {
+        return (uint32_t)GetTickCount64() / 1000;
+    }
 
-	unsigned int utils::GetServerRealTime()
-	{
-		return 0;
-	}
+    int utils::GetConnectedUniverse()
+    {
+        return 1;
+    }
 
-	const char* utils::GetIPCountry()
-	{
-		return "US";
-	}
+    unsigned int utils::GetServerRealTime()
+    {
+        return (uint32_t)time(NULL);
+    }
 
-	bool utils::GetImageSize(int iImage, unsigned int* pnWidth, unsigned int* pnHeight)
-	{
-		return false;
-	}
+    const char* utils::GetIPCountry()
+    {
+        return "US";
+    }
 
-	bool utils::GetImageRGBA(int iImage, unsigned char* pubDest, int nDestBufferSize)
-	{
-		return false;
-	}
+    bool utils::GetImageSize(int iImage, unsigned int* pnWidth, unsigned int* pnHeight)
+    {
+        return false;
+    }
 
-	bool utils::GetCSERIPPort(unsigned int* unIP, unsigned short* usPort)
-	{
-		return false;
-	}
+    bool utils::GetImageRGBA(int iImage, unsigned char* pubDest, int nDestBufferSize)
+    {
+        return false;
+    }
 
-	unsigned char utils::GetCurrentBatteryPower()
-	{
-		return 255;
-	}
+    bool utils::GetCSERIPPort(unsigned int* unIP, unsigned short* usPort)
+    {
+        return false;
+    }
 
-	unsigned int utils::GetAppID()
-	{
-		return 42690;
-	}
+    unsigned char utils::GetCurrentBatteryPower()
+    {
+        return 255;
+    }
 
-	void utils::SetOverlayNotificationPosition(int eNotificationPosition)
-	{
-		//const auto& overlay = steam_proxy::get_overlay_module();
-		//if (overlay)
-		//{
-		//	overlay.invoke<void>("SetNotificationPosition", eNotificationPosition);
-		//}
-	}
+    unsigned int utils::GetAppID()
+    {
+        return 209660;
+    }
 
-	bool utils::IsAPICallCompleted(unsigned long long hSteamAPICall, bool* pbFailed)
-	{
-		return false;
-	}
+    void utils::SetOverlayNotificationPosition(int eNotificationPosition)
+    {
+        //const auto& overlay = steam_proxy::get_overlay_module();
+        //if (overlay)
+        //{
+        //	overlay.invoke<void>("SetNotificationPosition", eNotificationPosition);
+        //}
+    }
 
-	int utils::GetAPICallFailureReason(unsigned long long hSteamAPICall)
-	{
-		return -1;
-	}
+    bool utils::IsAPICallCompleted(unsigned long long hSteamAPICall, bool* pbFailed)
+    {
+        return false;
+    }
 
-	bool utils::GetAPICallResult(unsigned long long hSteamAPICall, void* pCallback, int cubCallback,
-	                             int iCallbackExpected, bool* pbFailed)
-	{
-		return false;
-	}
+    int utils::GetAPICallFailureReason(unsigned long long hSteamAPICall)
+    {
+        return -1;
+    }
 
-	void utils::RunFrame()
-	{
-	}
+    bool utils::GetAPICallResult(unsigned long long hSteamAPICall, void* pCallback, int cubCallback,
+        int iCallbackExpected, bool* pbFailed)
+    {
+        return false;
+    }
 
-	unsigned int utils::GetIPCCallCount()
-	{
-		return 0;
-	}
+    void utils::RunFrame()
+    {
+    }
 
-	void utils::SetWarningMessageHook(void (*pFunction)(int hpipe, const char* message))
-	{
-	}
+    unsigned int utils::GetIPCCallCount()
+    {
+        return 0;
+    }
 
-	bool utils::IsOverlayEnabled()
-	{
-		return false;
-	}
+    void utils::SetWarningMessageHook(void (*pFunction)(int hpipe, const char* message))
+    {
+    }
 
-	bool utils::BOverlayNeedsPresent()
-	{
-		return false;
-	}
+    bool utils::IsOverlayEnabled()
+    {
+        return false;
+    }
 
-	unsigned long long utils::CheckFileSignature(const char* szFileName)
-	{
-		return 0;
-	}
+    bool utils::BOverlayNeedsPresent()
+    {
+        return false;
+    }
 
-	bool utils::ShowGamepadTextInput(int eInputMode, int eInputLineMode, const char *szText, unsigned int uMaxLength)
-	{
-		return false;
-	}
+    unsigned long long utils::CheckFileSignature(const char* szFileName)
+    {
+        return 0;
+    }
 
-	unsigned int utils::GetEnteredGamepadTextLength()
-	{
-		return 0;
-	}
+    bool utils::ShowGamepadTextInput(int eInputMode, int eInputLineMode, const char* szText, unsigned int uMaxLength)
+    {
+        return false;
+    }
 
-	bool utils::GetEnteredGamepadTextInput(char *pchValue, unsigned int cchValueMax)
-	{
-		return false;
-	}
-}
+    unsigned int utils::GetEnteredGamepadTextLength()
+    {
+        return 0;
+    }
+
+    bool utils::GetEnteredGamepadTextInput(char* pchValue, unsigned int cchValueMax)
+    {
+        return false;
+    }
+
+} // namespace steam

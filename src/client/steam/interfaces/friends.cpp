@@ -1,312 +1,313 @@
 #include <std_include.hpp>
-#include "steam/steam.hpp"
+#include "../steam.hpp"
 
 namespace steam
 {
-	const char* friends::GetPersonaName()
-	{
-		return "GlaDos";
-	}
 
-	unsigned long long friends::SetPersonaName(const char* pchPersonaName)
-	{
-		return 0;
-	}
+    const char* friends::GetPersonaName()
+    {
+        return "1337";
+    }
 
-	int friends::GetPersonaState()
-	{
-		return 1;
-	}
+    unsigned long long friends::SetPersonaName(const char* pchPersonaName)
+    {
+        return 0;
+    }
 
-	int friends::GetFriendCount(int eFriendFlags)
-	{
-		return 0;
-	}
+    int friends::GetPersonaState()
+    {
+        return 1;
+    }
 
-	steam_id friends::GetFriendByIndex(int iFriend, int iFriendFlags)
-	{
-		return steam_id();
-	}
+    int friends::GetFriendCount(int eFriendFlags)
+    {
+        return 0;
+    }
 
-	int friends::GetFriendRelationship(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    steam_id friends::GetFriendByIndex(int iFriend, int iFriendFlags)
+    {
+        return steam_id();
+    }
 
-	int friends::GetFriendPersonaState(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    int friends::GetFriendRelationship(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	const char* friends::GetFriendPersonaName(steam_id steamIDFriend)
-	{
-		return "";
-	}
+    int friends::GetFriendPersonaState(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	bool friends::GetFriendGamePlayed(steam_id steamIDFriend, void* pFriendGameInfo)
-	{
-		return false;
-	}
+    const char* friends::GetFriendPersonaName(steam_id steamIDFriend)
+    {
+        return "";
+    }
 
-	const char* friends::GetFriendPersonaNameHistory(steam_id steamIDFriend, int iPersonaName)
-	{
-		return "";
-	}
+    bool friends::GetFriendGamePlayed(steam_id steamIDFriend, void* pFriendGameInfo)
+    {
+        return false;
+    }
 
-	bool friends::HasFriend(steam_id steamIDFriend, int eFriendFlags)
-	{
-		return false;
-	}
+    const char* friends::GetFriendPersonaNameHistory(steam_id steamIDFriend, int iPersonaName)
+    {
+        return "";
+    }
 
-	int friends::GetClanCount()
-	{
-		return 0;
-	}
+    bool friends::HasFriend(steam_id steamIDFriend, int eFriendFlags)
+    {
+        return false;
+    }
 
-	steam_id friends::GetClanByIndex(int iClan)
-	{
-		return steam_id();
-	}
+    int friends::GetClanCount()
+    {
+        return 0;
+    }
 
-	const char* friends::GetClanName(steam_id steamIDClan)
-	{
-		return "3arc";
-	}
+    steam_id friends::GetClanByIndex(int iClan)
+    {
+        return steam_id();
+    }
 
-	const char* friends::GetClanTag(steam_id steamIDClan)
-	{
-		return this->GetClanName(steamIDClan);
-	}
+    const char* friends::GetClanName(steam_id steamIDClan)
+    {
+        return "3arc";
+    }
 
-	bool friends::GetClanActivityCounts(steam_id steamID, int* pnOnline, int* pnInGame, int* pnChatting)
-	{
-		return false;
-	}
+    const char* friends::GetClanTag(steam_id steamIDClan)
+    {
+        return this->GetClanName(steamIDClan);
+    }
 
-	unsigned long long friends::DownloadClanActivityCounts(steam_id groupIDs[], int nIds)
-	{
-		return 0;
-	}
+    bool friends::GetClanActivityCounts(steam_id steamID, int* pnOnline, int* pnInGame, int* pnChatting)
+    {
+        return false;
+    }
 
-	int friends::GetFriendCountFromSource(steam_id steamIDSource)
-	{
-		return 0;
-	}
+    unsigned long long friends::DownloadClanActivityCounts(steam_id groupIDs[], int nIds)
+    {
+        return 0;
+    }
 
-	steam_id friends::GetFriendFromSourceByIndex(steam_id steamIDSource, int iFriend)
-	{
-		return steam_id();
-	}
+    int friends::GetFriendCountFromSource(steam_id steamIDSource)
+    {
+        return 0;
+    }
 
-	bool friends::IsUserInSource(steam_id steamIDUser, steam_id steamIDSource)
-	{
-		return false;
-	}
+    steam_id friends::GetFriendFromSourceByIndex(steam_id steamIDSource, int iFriend)
+    {
+        return steam_id();
+    }
 
-	void friends::SetInGameVoiceSpeaking(steam_id steamIDUser, bool bSpeaking)
-	{
-	}
+    bool friends::IsUserInSource(steam_id steamIDUser, steam_id steamIDSource)
+    {
+        return false;
+    }
 
-	void friends::ActivateGameOverlay(const char* pchDialog)
-	{
-	}
+    void friends::SetInGameVoiceSpeaking(steam_id steamIDUser, bool bSpeaking)
+    {
+    }
 
-	void friends::ActivateGameOverlayToUser(const char* pchDialog, steam_id steamID)
-	{
-	}
+    void friends::ActivateGameOverlay(const char* pchDialog)
+    {
+    }
 
-	void friends::ActivateGameOverlayToWebPage(const char* pchURL)
-	{
-	}
+    void friends::ActivateGameOverlayToUser(const char* pchDialog, steam_id steamID)
+    {
+    }
 
-	void friends::ActivateGameOverlayToStore(unsigned int nAppID, unsigned int eFlag)
-	{
-		OutputDebugStringA("Store requested!");
-	}
+    void friends::ActivateGameOverlayToWebPage(const char* pchURL)
+    {
+    }
 
-	void friends::SetPlayedWith(steam_id steamIDUserPlayedWith)
-	{
-	}
+    void friends::ActivateGameOverlayToStore(unsigned int nAppID, unsigned int eFlag)
+    {
+    }
 
-	void friends::ActivateGameOverlayInviteDialog(steam_id steamIDLobby)
-	{
-	}
+    void friends::SetPlayedWith(steam_id steamIDUserPlayedWith)
+    {
+    }
 
-	int friends::GetSmallFriendAvatar(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    void friends::ActivateGameOverlayInviteDialog(steam_id steamIDLobby)
+    {
+    }
 
-	int friends::GetMediumFriendAvatar(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    int friends::GetSmallFriendAvatar(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	int friends::GetLargeFriendAvatar(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    int friends::GetMediumFriendAvatar(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	bool friends::RequestUserInformation(steam_id steamIDUser, bool bRequireNameOnly)
-	{
-		return false;
-	}
+    int friends::GetLargeFriendAvatar(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	unsigned long long friends::RequestClanOfficerList(steam_id steamIDClan)
-	{
-		return 0;
-	}
+    bool friends::RequestUserInformation(steam_id steamIDUser, bool bRequireNameOnly)
+    {
+        return false;
+    }
 
-	steam_id friends::GetClanOwner(steam_id steamIDClan)
-	{
-		return steam_id();
-	}
+    unsigned long long friends::RequestClanOfficerList(steam_id steamIDClan)
+    {
+        return 0;
+    }
 
-	int friends::GetClanOfficerCount(steam_id steamIDClan)
-	{
-		return 0;
-	}
+    steam_id friends::GetClanOwner(steam_id steamIDClan)
+    {
+        return steam_id();
+    }
 
-	steam_id friends::GetClanOfficerByIndex(steam_id steamIDClan, int iOfficer)
-	{
-		return steam_id();
-	}
+    int friends::GetClanOfficerCount(steam_id steamIDClan)
+    {
+        return 0;
+    }
 
-	int friends::GetUserRestrictions()
-	{
-		return 0;
-	}
+    steam_id friends::GetClanOfficerByIndex(steam_id steamIDClan, int iOfficer)
+    {
+        return steam_id();
+    }
 
-	bool friends::SetRichPresence(const char* pchKey, const char* pchValue)
-	{
-		return true;
-	}
+    int friends::GetUserRestrictions()
+    {
+        return 0;
+    }
 
-	void friends::ClearRichPresence()
-	{
-	}
+    bool friends::SetRichPresence(const char* pchKey, const char* pchValue)
+    {
+        return true;
+    }
 
-	const char* friends::GetFriendRichPresence(steam_id steamIDFriend, const char* pchKey)
-	{
-		return "";
-	}
+    void friends::ClearRichPresence()
+    {
+    }
 
-	int friends::GetFriendRichPresenceKeyCount(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    const char* friends::GetFriendRichPresence(steam_id steamIDFriend, const char* pchKey)
+    {
+        return "";
+    }
 
-	const char* friends::GetFriendRichPresenceKeyByIndex(steam_id steamIDFriend, int iKey)
-	{
-		return "a";
-	}
+    int friends::GetFriendRichPresenceKeyCount(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	void friends::RequestFriendRichPresence(steam_id steamIDFriend)
-	{
-	}
+    const char* friends::GetFriendRichPresenceKeyByIndex(steam_id steamIDFriend, int iKey)
+    {
+        return "a";
+    }
 
-	bool friends::InviteUserToGame(steam_id steamIDFriend, const char* pchConnectString)
-	{
-		return false;
-	}
+    void friends::RequestFriendRichPresence(steam_id steamIDFriend)
+    {
+    }
 
-	int friends::GetCoplayFriendCount()
-	{
-		return 0;
-	}
+    bool friends::InviteUserToGame(steam_id steamIDFriend, const char* pchConnectString)
+    {
+        return false;
+    }
 
-	steam_id friends::GetCoplayFriend(int iCoplayFriend)
-	{
-		return steam_id();
-	}
+    int friends::GetCoplayFriendCount()
+    {
+        return 0;
+    }
 
-	int friends::GetFriendCoplayTime(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    steam_id friends::GetCoplayFriend(int iCoplayFriend)
+    {
+        return steam_id();
+    }
 
-	unsigned int friends::GetFriendCoplayGame(steam_id steamIDFriend)
-	{
-		return 0;
-	}
+    int friends::GetFriendCoplayTime(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	unsigned long long friends::JoinClanChatRoom(steam_id steamIDClan)
-	{
-		return 0;
-	}
+    unsigned int friends::GetFriendCoplayGame(steam_id steamIDFriend)
+    {
+        return 0;
+    }
 
-	bool friends::LeaveClanChatRoom(steam_id steamIDClan)
-	{
-		return false;
-	}
+    unsigned long long friends::JoinClanChatRoom(steam_id steamIDClan)
+    {
+        return 0;
+    }
 
-	int friends::GetClanChatMemberCount(steam_id steamIDClan)
-	{
-		return 0;
-	}
+    bool friends::LeaveClanChatRoom(steam_id steamIDClan)
+    {
+        return false;
+    }
 
-	steam_id friends::GetChatMemberByIndex(steam_id steamIDClan, int iUser)
-	{
-		return steam_id();
-	}
+    int friends::GetClanChatMemberCount(steam_id steamIDClan)
+    {
+        return 0;
+    }
 
-	bool friends::SendClanChatMessage(steam_id steamIDClanChat, const char *pchText)
-	{
-		return false;
-	}
+    steam_id friends::GetChatMemberByIndex(steam_id steamIDClan, int iUser)
+    {
+        return steam_id();
+    }
 
-	int friends::GetClanChatMessage(steam_id steamIDClanChat, int iMessage, void *prgchText, int cchTextMax, unsigned int *peChatEntryType, steam_id *pSteamIDChatter)
-	{
-		return 0;
-	}
+    bool friends::SendClanChatMessage(steam_id steamIDClanChat, const char* pchText)
+    {
+        return false;
+    }
 
-	bool friends::IsClanChatAdmin(steam_id steamIDClanChat, steam_id steamIDUser)
-	{
-		return false;
-	}
+    int friends::GetClanChatMessage(steam_id steamIDClanChat, int iMessage, void* prgchText, int cchTextMax, unsigned int* peChatEntryType, steam_id* pSteamIDChatter)
+    {
+        return 0;
+    }
 
-	bool friends::IsClanChatWindowOpenInSteam(steam_id steamIDClanChat)
-	{
-		return false;
-	}
+    bool friends::IsClanChatAdmin(steam_id steamIDClanChat, steam_id steamIDUser)
+    {
+        return false;
+    }
 
-	bool friends::OpenClanChatWindowInSteam(steam_id steamIDClanChat)
-	{
-		return false;
-	}
+    bool friends::IsClanChatWindowOpenInSteam(steam_id steamIDClanChat)
+    {
+        return false;
+    }
 
-	bool friends::CloseClanChatWindowInSteam(steam_id steamIDClanChat)
-	{
-		return false;
-	}
+    bool friends::OpenClanChatWindowInSteam(steam_id steamIDClanChat)
+    {
+        return false;
+    }
 
-	bool friends::SetListenForFriendsMessages(bool bInterceptEnabled)
-	{
-		return false;
-	}
+    bool friends::CloseClanChatWindowInSteam(steam_id steamIDClanChat)
+    {
+        return false;
+    }
 
-	bool friends::ReplyToFriendMessage(steam_id steamIDFriend, const char *pchMsgToSend)
-	{
-		return false;
-	}
+    bool friends::SetListenForFriendsMessages(bool bInterceptEnabled)
+    {
+        return false;
+    }
 
-	int friends::GetFriendMessage(steam_id steamIDFriend, int iMessageID, void *pvData, int cubData, unsigned int *peChatEntryType)
-	{
-		return 0;
-	}
+    bool friends::ReplyToFriendMessage(steam_id steamIDFriend, const char* pchMsgToSend)
+    {
+        return false;
+    }
 
-	unsigned long long friends::GetFollowerCount(steam_id steamID)
-	{
-		return 0;
-	}
+    int friends::GetFriendMessage(steam_id steamIDFriend, int iMessageID, void* pvData, int cubData, unsigned int* peChatEntryType)
+    {
+        return 0;
+    }
 
-	unsigned long long friends::IsFollowing(steam_id steamID)
-	{
-		return 0;
-	}
+    unsigned long long friends::GetFollowerCount(steam_id steamID)
+    {
+        return 0;
+    }
 
-	unsigned long long friends::EnumerateFollowingList(unsigned int unStartIndex)
-	{
-		return 0;
-	}
-}
+    unsigned long long friends::IsFollowing(steam_id steamID)
+    {
+        return 0;
+    }
+
+    unsigned long long friends::EnumerateFollowingList(unsigned int unStartIndex)
+    {
+        return 0;
+    }
+
+} // namespace steam

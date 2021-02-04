@@ -1,14 +1,16 @@
 #pragma once
-#include "../i_service.hpp"
 
 namespace demonware
 {
-	class bdAnticheat final : public i_generic_service<38>
+
+	class bdAnticheat final : public service
 	{
 	public:
 		bdAnticheat();
 
 	private:
-		void report_console_details(i_server* server, byte_buffer* buffer) const;
+		void unk2(service_server* server, uint8_t type, byte_buffer* buffer) const;
+		void report_console_details(service_server* server, uint8_t type, byte_buffer* buffer) const;
 	};
+
 }

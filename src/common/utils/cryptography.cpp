@@ -333,6 +333,99 @@ namespace utils::cryptography
 		return string::dump_hex(hash, "");
 	}
 
+	namespace aes
+	{
+		namespace 
+		{
+			void initialize()
+			{
+				static auto initialized = false;
+				if (initialized) return;
+				initialized = true;
+
+				register_cipher(&aes_desc);
+			}
+		}
+	}
+
+	std::string aes::encrypt(const std::string& data, const std::string& iv, const std::string& key)
+	{
+		initialize();
+
+		std::string enc_data;
+		enc_data.resize(data.size());
+
+		symmetric_CBC cbc;
+		const auto aes = find_cipher("aes");
+
+		cbc_start(aes, reinterpret_cast<const uint8_t*>(iv.data()), reinterpret_cast<const uint8_t*>(key.data()),
+			static_cast<int>(key.size()), 0, &cbc);
+		cbc_encrypt(reinterpret_cast<const uint8_t*>(data.data()),
+			reinterpret_cast<uint8_t*>(const_cast<char*>(enc_data.data())), static_cast<unsigned long>(data.size()), &cbc);
+		cbc_done(&cbc);
+
+		return enc_data;
+	}
+
+	std::string aes::decrypt(const std::string& data, const std::string& iv, const std::string& key)
+	{
+		initialize();
+
+		std::string dec_data;
+		dec_data.resize(data.size());
+
+		symmetric_CBC cbc;
+		const auto aes = find_cipher("aes");
+
+		cbc_start(aes, reinterpret_cast<const uint8_t*>(iv.data()), reinterpret_cast<const uint8_t*>(key.data()),
+			static_cast<int>(key.size()), 0, &cbc);
+		cbc_decrypt(reinterpret_cast<const uint8_t*>(data.data()),
+			reinterpret_cast<uint8_t*>(const_cast<char*>(dec_data.data())), static_cast<unsigned long>(data.size()), &cbc);
+		cbc_done(&cbc);
+
+		return dec_data;
+	}
+
+	namespace hmac_sha1
+	{
+		namespace
+		{
+			void initialize()
+			{
+				static auto initialized = false;
+				if (initialized) return;
+				initialized = true;
+
+				register_hash(&sha1_desc);
+			}
+		}
+	}
+
+	std::string hmac_sha1::process(const std::string& data, const std::string& key, unsigned int* len)
+	{
+		if (*len > 20)
+		{
+			printf("hmac error\n");
+			return "";
+		}
+		initialize();
+
+		std::string buffer;
+		buffer.resize(*len);
+
+		hmac_state state;
+		const auto sha1 = find_hash("sha1");
+		//hmac_memory
+		hmac_init(&state, sha1, reinterpret_cast<const unsigned char*>(key.data()), static_cast<unsigned long>(key.size()));
+		hmac_process(&state, reinterpret_cast<const unsigned char*>(data.data()), static_cast<int>(data.size()));
+
+		unsigned long outlen = *len;
+		hmac_done(&state, reinterpret_cast<unsigned char*>(buffer.data()), &outlen);
+
+		*len = outlen;
+		return buffer;
+	}
+
 	std::string sha1::compute(const std::string& data, const bool hex)
 	{
 		return compute(reinterpret_cast<const uint8_t*>(data.data()), data.size(), hex);
@@ -391,6 +484,100 @@ namespace utils::cryptography
 		if (!hex) return hash;
 
 		return string::dump_hex(hash, "");
+	}
+
+	namespace base64
+	{
+		namespace 
+		{
+			const std::string base64_chars =
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				"abcdefghijklmnopqrstuvwxyz"
+				"0123456789+/";
+
+			static inline bool is_base64(unsigned char c) {
+				return (isalnum(c) || (c == '+') || (c == '/'));
+			}
+		}
+	}
+
+	std::string base64::encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
+		std::string ret;
+		int i = 0;
+		int j = 0;
+		unsigned char char_array_3[3];
+		unsigned char char_array_4[4];
+
+		while (in_len--) {
+			char_array_3[i++] = *(bytes_to_encode++);
+			if (i == 3) {
+				char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+				char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+				char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+				char_array_4[3] = char_array_3[2] & 0x3f;
+
+				for (i = 0; (i < 4); i++)
+					ret += base64_chars[char_array_4[i]];
+				i = 0;
+			}
+		}
+
+		if (i)
+		{
+			for (j = i; j < 3; j++)
+				char_array_3[j] = '\0';
+
+			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+			char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+
+			for (j = 0; (j < i + 1); j++)
+				ret += base64_chars[char_array_4[j]];
+
+			while ((i++ < 3))
+				ret += '=';
+
+		}
+
+		return ret;
+
+	}
+
+	std::string base64::decode(std::string const& encoded_string) {
+		size_t in_len = encoded_string.size();
+		int i = 0;
+		int j = 0;
+		int in_ = 0;
+		unsigned char char_array_4[4], char_array_3[3];
+		std::string ret;
+
+		while (in_len-- && (encoded_string[in_] != '=') && is_base64(encoded_string[in_])) {
+			char_array_4[i++] = encoded_string[in_]; in_++;
+			if (i == 4) {
+				for (i = 0; i < 4; i++)
+					char_array_4[i] = base64_chars.find(char_array_4[i]) & 0xff;
+
+				char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+				char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+				char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+				for (i = 0; (i < 3); i++)
+					ret += char_array_3[i];
+				i = 0;
+			}
+		}
+
+		if (i) {
+			for (j = 0; j < i; j++)
+				char_array_4[j] = base64_chars.find(char_array_4[j]) & 0xff;
+
+			char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+			char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+
+			for (j = 0; (j < i - 1); j++) ret += char_array_3[j];
+		}
+
+		return ret;
 	}
 
 	unsigned int jenkins_one_at_a_time::compute(const std::string& data)

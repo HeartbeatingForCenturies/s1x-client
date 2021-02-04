@@ -48,8 +48,8 @@ namespace branding
 
 			scheduler::loop([]()
 			{
-				const auto x = 3;
-				const auto y = 0;
+				const auto x = 4;
+				const auto y = 4;
 				const auto scale = 1.0f;
 				float color[4] = { 0.666f, 0.666f, 0.666f, 0.666f };
 				const auto* text = "S1-Mod: " VERSION;

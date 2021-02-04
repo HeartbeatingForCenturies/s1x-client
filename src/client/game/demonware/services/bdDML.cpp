@@ -1,15 +1,14 @@
 #include <std_include.hpp>
-#include "bdDML.hpp"
-#include "../data_types.hpp"
+#include "../demonware.hpp"
 
 namespace demonware
 {
-	bdDML::bdDML()
+	bdDML::bdDML() : service(27, "bdDML")
 	{
-		this->register_service(2, &bdDML::get_user_raw_data);
+		this->register_task(2, "get user raw data", &bdDML::get_user_raw_data);
 	}
 
-	void bdDML::get_user_raw_data(i_server* server, byte_buffer* /*buffer*/) const
+	void bdDML::get_user_raw_data(service_server* server, uint8_t type, byte_buffer* /*buffer*/) const
 	{
 		auto result = new bdDMLRawData;
 		result->country_code = "US";
@@ -22,7 +21,7 @@ namespace demonware
 		result->asn = 0x2119;
 		result->timezone = "+01:00";
 
-		auto reply = server->create_reply(this->get_sub_type());
+		auto reply = server->create_reply(type);
 		reply->add(result);
 		reply->send();
 	}

@@ -99,14 +99,12 @@ namespace auth
 				return;
 			}
 
-			// THIS CRASHES WITH DEDICATED WHEN CONNECTING!
-			/*utils::cryptography::ecc::key key;
+			utils::cryptography::ecc::key key;
 			key.set(info.publickey());
 
-			//const auto xuid = strtoull(steam_id.data(), nullptr, 16);
-			//if (xuid != key.get_hash())
+			const auto xuid = strtoull(steam_id.data(), nullptr, 16);
+			if (xuid != key.get_hash())
 			{
-				// xuid is always 0
 				//MessageBoxA(nullptr, steam_id.data(), std::to_string(key.get_hash()).data(), 0);
 				//network::send(*from, "error", "XUID doesn't match the certificate!", '\n');
 				//return;
@@ -116,7 +114,7 @@ namespace auth
 			{
 				network::send(*from, "error", "Challenge signature was invalid!", '\n');
 				return;
-			}*/
+			}
 
 			game::SV_DirectConnect(from);
 		}
@@ -140,12 +138,12 @@ namespace auth
 
 	uint64_t get_guid()
 	{
-		if (game::environment::is_dedi())
+		//if (game::environment::is_dedi())
 		{
 			return 0x110000100000000 | (::utils::cryptography::random::get_integer() & ~0x80000000);
 		}
 
-		return get_key().get_hash();
+		//return get_key().get_hash();
 	}
 
 	class component final : public component_interface
