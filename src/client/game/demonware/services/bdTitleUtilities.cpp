@@ -5,15 +5,15 @@ namespace demonware
 {
 	bdTitleUtilities::bdTitleUtilities() : service(12, "bdTitleUtilities")
 	{
-		this->register_task(6, "get server time", &bdTitleUtilities::get_server_time);
+		this->register_task(6, &bdTitleUtilities::get_server_time);
 	}
 
-	void bdTitleUtilities::get_server_time(service_server* server, uint8_t type, byte_buffer* /*buffer*/) const
+	void bdTitleUtilities::get_server_time(service_server* server, byte_buffer* /*buffer*/) const
 	{
 		const auto time_result = new bdTimeStamp;
 		time_result->unix_time = uint32_t(time(nullptr));
 
-		auto reply = server->create_reply(type);
+		auto reply = server->create_reply(this->task_id());
 		reply->add(time_result);
 		reply->send();
 	}

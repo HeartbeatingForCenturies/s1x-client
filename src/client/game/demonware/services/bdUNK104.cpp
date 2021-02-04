@@ -6,13 +6,13 @@ namespace demonware
 
 	bdUNK104::bdUNK104() : service(104, "bdUNK104")
 	{
-		this->register_task(1, "unk1", &bdUNK104::unk1);
+		this->register_task(1, &bdUNK104::unk1);
 	}
 
-	void bdUNK104::unk1(service_server* server, uint8_t type, byte_buffer* buffer) const
+	void bdUNK104::unk1(service_server* server, byte_buffer* buffer) const
 	{
 		// TODO:
-		auto reply = server->create_reply(type);
+		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
 

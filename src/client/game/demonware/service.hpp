@@ -4,95 +4,71 @@
 namespace demonware
 {
 
-    class task
+class service
+{
+    using callback_t = std::function<void(service_server*, byte_buffer*)>;
+
+    std::uint8_t id_;
+    std::string name_;
+    std::mutex mutex_;
+    std::uint8_t task_id_;
+    std::map<std::uint8_t, callback_t> tasks_;
+
+public:
+    virtual ~service() = default;
+    service(service&&) = delete;
+    service(const service&) = delete;
+    service& operator=(const service&) = delete;
+    service(std::uint8_t id, std::string name) : id_(id), task_id_(0), name_(std::move(name)) { }
+
+    auto id() const -> std::uint8_t { return this->id_; }
+    auto name() const -> std::string { return this->name_; }
+    auto task_id() const -> std::uint8_t { return this->task_id_; }
+
+    virtual void exec_task(service_server* server, const std::string& data)
     {
-    public:
-        using callback_t = std::function<void(service_server*, uint8_t, byte_buffer*)>;
+        std::lock_guard $(this->mutex_);
 
-    private:
-        std::uint8_t id_;
-        std::string name_;
-        callback_t callback_;
+        byte_buffer buffer(data);
 
-    public:
-        virtual ~task() = default;
-        task(task&&) = delete;
-        task(const task&) = delete;
-        task& operator=(const task&) = delete;
-        task(std::uint8_t id, std::string name, callback_t callback) : id_(id), name_(std::move(name)), callback_(callback) { }
+        buffer.read_byte(&this->task_id_);
 
-        auto id() -> std::uint8_t { return this->id_; }
-        auto name() -> std::string { return this->name_; }
+        const auto& it = this->tasks_.find(this->task_id_);
 
-        void exec(service_server* server, byte_buffer* data)
+        if (it != this->tasks_.end())
         {
-            this->callback_(server, this->id_, data);
-        }
-    };
+            std::cout << "demonware::" << name_ << ": executing task '" << utils::string::va("%d", this->task_id_) << "'\n";
 
-    class service
+            it->second(server, &buffer);
+        }
+        else
+        {
+            std::cout << "demonware::" << name_ << ": missing task '" << utils::string::va("%d", this->task_id_) << "'\n";
+
+            // return no error
+            server->create_reply(this->task_id_)->send();
+        }
+    }
+
+protected:
+
+    template <typename Class, typename T, typename... Args>
+    void register_task(const uint8_t id, T(Class::* callback)(Args ...) const)
     {
-        std::uint8_t id_;
-        std::string name_;
-        std::mutex mutex_;
-        std::map<std::uint8_t, std::unique_ptr<task>> tasks_;
-
-    public:
-        virtual ~service() = default;
-        service(service&&) = delete;
-        service(const service&) = delete;
-        service& operator=(const service&) = delete;
-        service(std::uint8_t id, std::string name) : id_(id), name_(std::move(name)) { }
-
-        auto id() -> std::uint8_t { return this->id_; }
-        auto name() -> std::string { return this->name_; }
-
-        virtual void exec_task(service_server* server, const std::string& data)
+        this->tasks_[id] = [this, callback](Args ... args) -> T
         {
-            std::lock_guard $(this->mutex_);
+            return (reinterpret_cast<Class*>(this)->*callback)(args...);
+        };
+    }
 
-            byte_buffer buffer(data);
-
-            std::uint8_t task_id;
-            buffer.read_byte(&task_id);
-
-            const auto& it = this->tasks_.find(task_id);
-
-            if (it != this->tasks_.end())
-            {
-#ifdef DEBUG
-                printf("[demonware]: [%s]: executing task '%s\n", name_.data(), it->second->name().data());
-#endif
-
-                it->second->exec(server, &buffer);
-            }
-            else
-            {
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-                printf("[demonware]: [%s]: missing task '%s'\n", name_.data(), utils::string::va("%d", task_id));
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-            }
-        }
-
-    protected:
-
-        template <typename Class, typename T, typename... Args>
-        void register_task(const uint8_t id, std::string name, T(Class::* callback)(Args ...) const)
+    template <typename Class, typename T, typename... Args>
+    void register_task(const uint8_t id, T(Class::* callback)(Args ...))
+    {
+        this->tasks_[id] = [this, callback](Args ... args) -> T
         {
-            this->tasks_[id] = std::make_unique<task>(id, std::move(name), [this, callback](Args ... args) -> T
-                {
-                    return (reinterpret_cast<Class*>(this)->*callback)(args...);
-                });
-        }
-
-        template <typename Class, typename T, typename... Args>
-        void register_task(const uint8_t id, std::string name, T(Class::* callback)(Args ...))
-        {
-            this->tasks_[id] = std::make_unique<task>(id, std::move(name), [this, callback](Args ... args) -> T
-                {
-                    return (reinterpret_cast<Class*>(this)->*callback)(args...);
-                });
-        }
-    };
+            return (reinterpret_cast<Class*>(this)->*callback)(args...);
+        };
+    }
+};
 
 } // namespace demonware

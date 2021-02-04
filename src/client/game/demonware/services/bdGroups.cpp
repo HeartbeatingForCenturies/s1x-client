@@ -6,21 +6,21 @@ namespace demonware
 
 	bdGroups::bdGroups() : service(28, "bdGroup")
 	{
-		this->register_task(1, "set_groups", &bdGroups::set_groups);
-		this->register_task(4, "unk4", &bdGroups::unk4);
+		this->register_task(1, &bdGroups::set_groups);
+		this->register_task(4, &bdGroups::unk4);
 	}
 
-	void bdGroups::set_groups(service_server* server, uint8_t type, byte_buffer* buffer) const
+	void bdGroups::set_groups(service_server* server, byte_buffer* buffer) const
 	{
 		// TODO:
-		auto reply = server->create_reply(type);
+		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
 
-	void bdGroups::unk4(service_server* server, uint8_t type, byte_buffer* buffer) const
+	void bdGroups::unk4(service_server* server, byte_buffer* buffer) const
 	{
 		// TODO:
-		auto reply = server->create_reply(type);
+		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
 

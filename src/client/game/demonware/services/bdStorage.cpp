@@ -8,11 +8,11 @@ namespace demonware
 {
     bdStorage::bdStorage() : service(10, "bdStorage")
     {
-        this->register_task(6, "list publisher files", &bdStorage::list_publisher_files);
-        this->register_task(7, "get publisher file", &bdStorage::get_publisher_file);
-        this->register_task(10, "set user file", &bdStorage::set_user_file);
-        this->register_task(12, "get user file", &bdStorage::get_user_file);
-        this->register_task(13, "unk13", &bdStorage::unk13);
+        this->register_task(6, &bdStorage::list_publisher_files);
+        this->register_task(7, &bdStorage::get_publisher_file);
+        this->register_task(10, &bdStorage::set_user_file);
+        this->register_task(12, &bdStorage::get_user_file);
+        this->register_task(13, &bdStorage::unk13);
 
         this->map_publisher_resource("motd-.*\\.txt", DW_MOTD);
         this->map_publisher_resource("ffotd-*\\.ff", DW_FASTFILE);
@@ -49,7 +49,7 @@ namespace demonware
         return false;
     }
 
-    void bdStorage::list_publisher_files(service_server* server, uint8_t type, byte_buffer* buffer)
+    void bdStorage::list_publisher_files(service_server* server, byte_buffer* buffer)
     {
         uint32_t date;
         uint16_t num_results, offset;
@@ -60,7 +60,7 @@ namespace demonware
         buffer->read_uint16(&offset);
         buffer->read_string(&filename);
 
-        auto reply = server->create_reply(type);
+        auto reply = server->create_reply(this->task_id());
 
         if (this->load_publisher_resource(filename, data))
         {
@@ -80,7 +80,7 @@ namespace demonware
         reply->send();
     }
 
-    void bdStorage::get_publisher_file(service_server* server, uint8_t type, byte_buffer* buffer)
+    void bdStorage::get_publisher_file(service_server* server, byte_buffer* buffer)
     {
         std::string filename;
         buffer->read_string(&filename);
@@ -97,13 +97,13 @@ namespace demonware
             printf("[demonware]: [bdStorage]: sending publisher file: %s, size: %lld\n", filename.data(), data.size());
 #endif
 
-            auto reply = server->create_reply(type);
+            auto reply = server->create_reply(this->task_id());
             reply->add(new bdFileData(data));
             reply->send();
         }
         else
         {
-            server->create_reply(type, game::BD_NO_FILE)->send();
+            server->create_reply(this->task_id(), game::BD_NO_FILE)->send();
         }
     }
 
@@ -112,7 +112,7 @@ namespace demonware
         return "players2/user/" + name;
     }
 
-    void bdStorage::set_user_file(service_server* server, uint8_t type, byte_buffer* buffer) const
+    void bdStorage::set_user_file(service_server* server, byte_buffer* buffer) const
     {
         bool priv;
         uint64_t owner;
@@ -137,12 +137,12 @@ namespace demonware
         info->owner_id = owner;
         info->priv = priv;
 
-        auto reply = server->create_reply(type);
+        auto reply = server->create_reply(this->task_id());
         reply->add(info);
         reply->send();
     }
 
-    void bdStorage::get_user_file(service_server* server, uint8_t type, byte_buffer* buffer) const
+    void bdStorage::get_user_file(service_server* server, byte_buffer* buffer) const
     {
         uint64_t owner{};
         std::string game, filename, platform, data;
@@ -159,20 +159,20 @@ namespace demonware
         const auto path = get_user_file_path(filename);
         if (utils::io::read_file(path, &data))
         {
-            auto reply = server->create_reply(type);
+            auto reply = server->create_reply(this->task_id());
             reply->add(new bdFileData(data));
             reply->send();
         }
         else
         {
-            server->create_reply(type, game::BD_NO_FILE)->send();
+            server->create_reply(this->task_id(), game::BD_NO_FILE)->send();
         }
     }
 
-    void bdStorage::unk13(service_server* server, uint8_t type, byte_buffer* buffer) const
+    void bdStorage::unk13(service_server* server, byte_buffer* buffer) const
     {
         // TODO:
-        auto reply = server->create_reply(type);
+        auto reply = server->create_reply(this->task_id());
         reply->send();
     }
 } // namespace demonware

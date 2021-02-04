@@ -8,6 +8,6 @@ namespace demonware
 		bdDML();
 
 	private:
-		void get_user_raw_data(service_server* server, uint8_t type, byte_buffer* buffer) const;
+		void get_user_raw_data(service_server* server, byte_buffer* buffer) const;
 	};
 }

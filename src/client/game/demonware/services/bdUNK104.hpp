@@ -9,7 +9,7 @@ namespace demonware
 		bdUNK104();
 
 	private:
-		void unk1(service_server* server, uint8_t type, byte_buffer* buffer) const;
+		void unk1(service_server* server, byte_buffer* buffer) const;
 	};
 
 }

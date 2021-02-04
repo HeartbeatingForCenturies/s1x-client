@@ -6,8 +6,8 @@
 #include "byte_buffer.hpp"
 #include "data_types.hpp"
 #include "reply.hpp"
-#include "service.hpp"
 #include "server.hpp"
+#include "service.hpp"
 
 //#include "services/bdTeams.hpp"           //  3
 #include "services/bdStats.hpp"             //  4
@@ -43,8 +43,6 @@
 
 namespace demonware
 {
-	// KEYS
-	void derive_keys();
 	void derive_keys_s1();
 	void queue_packet_to_hash(const std::string& packet);
 	void set_session_key(const std::string& key);

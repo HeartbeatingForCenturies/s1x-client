@@ -6,13 +6,13 @@ namespace demonware
 
 	bdProfiles::bdProfiles() : service(8, "bdProfiles")
 	{
-		this->register_task(3, "unk3", &bdProfiles::unk3);
+		this->register_task(3, &bdProfiles::unk3);
 	}
 
-	void bdProfiles::unk3(service_server* server, uint8_t type, byte_buffer* buffer) const
+	void bdProfiles::unk3(service_server* server, byte_buffer* buffer) const
 	{
 		// TODO:
-		auto reply = server->create_reply(type);
+		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
 

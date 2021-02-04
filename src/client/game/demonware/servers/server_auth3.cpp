@@ -39,7 +39,6 @@ namespace demonware
 
 		std::lock_guard _(this->mutex_);
 
-		//this->reply_sent_ = true;
 		const auto buffer = data->data();
 		for (auto& byte : buffer)
 		{
@@ -67,18 +66,14 @@ namespace demonware
 
 	void server_auth3::dispatch(const std::string& packet)
 	{
-		if (packet.starts_with("POST /auth/")) // user request auth
+		if (packet.starts_with("POST /auth/"))
 		{
 #ifdef DEBUG
 			printf("[demonware]: [auth]: user requested authentication.\n");
 #endif
-
-			//std::string result = "HTTP/1.1 100 Continue\r\n\r\n";
-			//raw_reply reply(result);
-			//this->send_reply(&reply);
 			return;
 		}
-		else // user send data
+		else
 		{
 			unsigned int title_id = 0;
 			unsigned int iv_seed = 0;
@@ -158,15 +153,12 @@ namespace demonware
 			content.append("\"lsg_endpoint\": null,");
 			content.append("}");
 
-			//std::string signature = utils::sha256::compute(content, false);
-
 			// http stuff
 			std::string result;
 			result.append("HTTP/1.1 200 OK\r\n");
 			result.append("Server: TornadoServer/4.5.3\r\n");
 			result.append("Content-Type: application/json\r\n");
 			result.append(utils::string::va("Date: %s GMT\r\n", date));
-			//result.append(utils::va("X-Signature: %s\r\n", signature.data()));
 			result.append(utils::string::va("Content-Length: %d\r\n\r\n", content.size()));
 			result.append(content);
 			printf("%s\n", result.data());

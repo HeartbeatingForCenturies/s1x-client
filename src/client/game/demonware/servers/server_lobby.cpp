@@ -100,15 +100,12 @@ namespace demonware
 
 				if (size <= 0)
 				{
-#ifdef DEBUG
-					printf("[demonware]: [lobby]: ping packet\n");
-#endif
 					const std::string zero("\x00\x00\x00\x00", 4);
 					raw_reply reply(zero);
 					this->send_reply(&reply);
 					return;
 				}
-				else if (size == 0xC8) // Connection id
+				else if (size == 0xC8)
 				{
 #ifdef DEBUG
 					printf("[demonware]: [lobby]: received client_header_ack.\n");
@@ -193,9 +190,8 @@ namespace demonware
 						return;
 					}
 				}
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+
 				printf("[demonware]: [lobby]: ERROR! received unk message.\n");
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 				return;
 			}
 		}
@@ -214,9 +210,14 @@ namespace demonware
 		}
 		else
 		{
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
 			printf("[demonware]: [lobby]: missing service '%s'\n", utils::string::va("%d", id));
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+
+			// return no error
+			byte_buffer buffer(data);
+			std::uint8_t task_id;
+			buffer.read_byte(&task_id);
+
+			this->create_reply(task_id)->send();
 		}
 	}
 
