@@ -85,4 +85,4 @@ namespace videos
 	};
 }
 
-REGISTER_COMPONENT(videos::component)
+//REGISTER_COMPONENT(videos::component)

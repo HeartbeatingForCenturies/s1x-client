@@ -184,4 +184,4 @@ namespace dvar_cheats
 	};
 }
 
-REGISTER_COMPONENT(dvar_cheats::component)
+//REGISTER_COMPONENT(dvar_cheats::component)

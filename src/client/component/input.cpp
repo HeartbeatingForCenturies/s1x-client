@@ -57,4 +57,4 @@ namespace input
 	};
 }
 
-REGISTER_COMPONENT(input::component)
+//REGISTER_COMPONENT(input::component)

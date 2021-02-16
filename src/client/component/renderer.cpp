@@ -69,4 +69,4 @@ namespace renderer
 	};
 }
 
-REGISTER_COMPONENT(renderer::component)
+//REGISTER_COMPONENT(renderer::component)
