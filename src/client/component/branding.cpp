@@ -40,9 +40,9 @@ namespace branding
 			{
 				localized_strings::override("LUA_MENU_MULTIPLAYER_CAPS", "S1-MOD: MULTIPLAYER\n");
 			}
-			localized_strings::override("LUA_MENU_LEGAL_COPYRIGHT", "S1-Mod: " VERSION);
+			localized_strings::override("LUA_MENU_LEGAL_COPYRIGHT", "S1x: " VERSION);
 
-			dvars::override::Dvar_SetString("version", utils::string::va("S1-Mod %s", VERSION));
+			dvars::override::Dvar_SetString("version", utils::string::va("S1x %s", VERSION));
 
 			ui_get_formatted_build_number_hook.create(SELECT_VALUE(0x14035B3F0, 0x1404A8950), ui_get_formatted_build_number_stub);
 
@@ -52,7 +52,7 @@ namespace branding
 				const auto y = 4;
 				const auto scale = 1.0f;
 				float color[4] = { 0.666f, 0.666f, 0.666f, 0.666f };
-				const auto* text = "S1-Mod: " VERSION;
+				const auto* text = "S1x: " VERSION;
 
 				auto* font = game::R_RegisterFont("fonts/normalfont");
 				

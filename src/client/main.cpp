@@ -84,7 +84,7 @@ FARPROC load_binary(const launcher::mode mode)
 	if (!utils::io::read_file(binary, &data))
 	{
 		throw std::runtime_error(utils::string::va(
-			"Failed to read game binary (%s)!\nPlease copy the s1-mod.exe into your Call of Duty: Advanced Warfare installation folder and run it from there.", binary.data()));
+			"Failed to read game binary (%s)!\nPlease copy the s1x.exe into your Call of Duty: Advanced Warfare installation folder and run it from there.", binary.data()));
 	}
 
 	return loader.load_library(binary);
