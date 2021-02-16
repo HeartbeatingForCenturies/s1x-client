@@ -22,7 +22,7 @@ namespace dedicated_info
 				auto* sv_running = game::Dvar_FindVar("sv_running");
 				if (!sv_running || !sv_running->current.enabled)
 				{
-					console::set_title("S1-Mod Dedicated Server");
+					console::set_title("S1x Dedicated Server");
 					return;
 				}
 

@@ -70,7 +70,7 @@ namespace splash
 			{
 				ShowWindow(this->window_, SW_HIDE);
 				DestroyWindow(this->window_);
-				UnregisterClassA("S1-Mod Splash Screen", utils::nt::library{});
+				UnregisterClassA("S1x Splash Screen", utils::nt::library{});
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace splash
 			wnd_class.hIcon = LoadIconA(self, reinterpret_cast<LPCSTR>(102));
 			wnd_class.hCursor = LoadCursorA(nullptr, IDC_APPSTARTING);
 			wnd_class.hbrBackground = reinterpret_cast<HBRUSH>(6);
-			wnd_class.lpszClassName = "S1-Mod Splash Screen";
+			wnd_class.lpszClassName = "S1x Splash Screen";
 
 			if (RegisterClassA(&wnd_class))
 			{
@@ -98,7 +98,7 @@ namespace splash
 
 				if (image_)
 				{
-					this->window_ = CreateWindowExA(WS_EX_APPWINDOW, "S1-Mod Splash Screen", "S1-Mod",
+					this->window_ = CreateWindowExA(WS_EX_APPWINDOW, "S1x Splash Screen", "S1x",
 					                                WS_POPUP | WS_SYSMENU,
 					                                (x_pixels - 320) / 2, (y_pixels - 100) / 2, 320, 100, nullptr,
 					                                nullptr,

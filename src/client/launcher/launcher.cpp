@@ -46,7 +46,7 @@ void launcher::create_main_menu()
 			return DefWindowProcA(*window, message, w_param, l_param);
 		});
 
-	this->main_window_.create("S1-Mod", 750, 420);
+	this->main_window_.create("S1x", 750, 420);
 	this->main_window_.load_html(load_content(MENU_MAIN));
 	this->main_window_.show();
 }
