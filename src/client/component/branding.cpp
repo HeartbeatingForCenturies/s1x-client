@@ -47,7 +47,7 @@ namespace branding
 			ui_get_formatted_build_number_hook.create(
 				SELECT_VALUE(0x14035B3F0, 0x1404A8950), ui_get_formatted_build_number_stub);
 
-			/*scheduler::loop([]()
+			scheduler::loop([]()
 			{
 				const auto x = 4;
 				const auto y = 4;
@@ -55,16 +55,16 @@ namespace branding
 				float color[4] = {0.666f, 0.666f, 0.666f, 0.666f};
 				const auto* text = "S1x: " VERSION;
 
-				auto* font = game::R_RegisterFont("fonts/normalfont");
+				auto* font = game::R_RegisterFont("fonts/consolefont");
 
 				if (!font) return;
 
 				game::R_AddCmdDrawText(text, 0x7FFFFFFF, font, static_cast<float>(x),
 				                       y + static_cast<float>(font->pixelHeight) * scale,
 				                       scale, scale, 0.0f, color, 0);
-			}, scheduler::pipeline::renderer);*/
+			}, scheduler::pipeline::renderer);
 		}
 	};
-} // namespace branding
+}
 
-//REGISTER_COMPONENT(branding::component)
+REGISTER_COMPONENT(branding::component)

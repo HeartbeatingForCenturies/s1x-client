@@ -97,7 +97,7 @@ namespace fps
 						average))
 					+ 9.313225746154785e-10);
 
-				auto* font = game::R_RegisterFont("fonts/normalfont");
+				auto* font = game::R_RegisterFont("fonts/consolefont");
 				if (!font) return;
 
 				const auto* const fps_string = utils::string::va("%i", fps);
@@ -121,7 +121,7 @@ namespace fps
 			{
 				const auto ping = *reinterpret_cast<int*>(0x1417E6A84);
 
-				auto* font = game::R_RegisterFont("fonts/normalfont");
+				auto* font = game::R_RegisterFont("fonts/consolefont");
 				if (!font) return;
 
 				auto* const ping_string = utils::string::va("Ping: %i", ping);
