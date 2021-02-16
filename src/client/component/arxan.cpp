@@ -120,7 +120,7 @@ namespace arxan
 		{
 			if (function == "SetThreadContext")
 			{
-				return set_thread_context_stub;
+				//return set_thread_context_stub;
 			}
 
 			return nullptr;

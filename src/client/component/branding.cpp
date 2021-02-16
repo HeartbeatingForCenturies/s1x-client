@@ -47,7 +47,7 @@ namespace branding
 			ui_get_formatted_build_number_hook.create(
 				SELECT_VALUE(0x14035B3F0, 0x1404A8950), ui_get_formatted_build_number_stub);
 
-			scheduler::loop([]()
+			/*scheduler::loop([]()
 			{
 				const auto x = 4;
 				const auto y = 4;
@@ -62,7 +62,7 @@ namespace branding
 				game::R_AddCmdDrawText(text, 0x7FFFFFFF, font, static_cast<float>(x),
 				                       y + static_cast<float>(font->pixelHeight) * scale,
 				                       scale, scale, 0.0f, color, 0);
-			}, scheduler::pipeline::renderer);
+			}, scheduler::pipeline::renderer);*/
 		}
 	};
 } // namespace branding
