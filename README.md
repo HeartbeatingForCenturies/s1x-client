@@ -1,11 +1,8 @@
-# S1-Mod
+# S1x
 
 <p align="center">
   <img alig src="assets/github/banner.png?raw=true" />
 </p>
-
-Proof of concept for an Advanced Warfare client. <br>
-[This project is based on IW6x](https://github.com/XLabsProject/iw6x-client)
 
 <br/>
 

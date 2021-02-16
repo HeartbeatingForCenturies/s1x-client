@@ -219,7 +219,7 @@ newaction {
 
 dependencies.load()
 
-workspace "s1-mod"
+workspace "s1x"
 startproject "client"
 location "./build"
 objdir "%{wks.location}/obj"
@@ -295,7 +295,7 @@ project "client"
 kind "ConsoleApp"
 language "C++"
 
-targetname "s1-mod"
+targetname "s1x"
 
 pchheader "std_include.hpp"
 pchsource "src/client/std_include.cpp"
