@@ -71,4 +71,4 @@ namespace bots
 	};
 }
 
-//REGISTER_COMPONENT(bots::component)
+REGISTER_COMPONENT(bots::component)

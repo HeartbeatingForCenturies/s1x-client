@@ -153,4 +153,4 @@ namespace map_rotation
 	};
 }
 
-//REGISTER_COMPONENT(map_rotation::component)
+REGISTER_COMPONENT(map_rotation::component)

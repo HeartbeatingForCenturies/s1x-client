@@ -31,7 +31,7 @@ namespace binding
 				if (value && value < get_num_keys())
 				{
 					const auto len = sprintf_s(&buffer[bytes_used], (buffer_size_align - bytes_used),
-						"bind %s \"%s\"\n", key_button, game::command_whitelist[value]);
+					                           "bind %s \"%s\"\n", key_button, game::command_whitelist[value]);
 
 					if (len < 0)
 					{
@@ -46,7 +46,7 @@ namespace binding
 					if (static_cast<size_t>(value) < custom_binds.size() && !custom_binds[value].empty())
 					{
 						const auto len = sprintf_s(&buffer[bytes_used], (buffer_size_align - bytes_used),
-							"bind %s \"%s\"\n", key_button, custom_binds[value].data());
+						                           "bind %s \"%s\"\n", key_button, custom_binds[value].data());
 
 						if (len < 0)
 						{
@@ -135,4 +135,4 @@ namespace binding
 	};
 }
 
-//REGISTER_COMPONENT(binding::component)
+REGISTER_COMPONENT(binding::component)

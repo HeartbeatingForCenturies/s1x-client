@@ -172,4 +172,4 @@ namespace fps
 	};
 }
 
-//REGISTER_COMPONENT(fps::component)
+REGISTER_COMPONENT(fps::component)

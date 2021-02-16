@@ -120,7 +120,8 @@ namespace dedicated
 			{
 				if (game::mp::svs_clients[i].header.state >= 3)
 				{
-					game::SV_GameSendServerCommand(i, game::SV_CMD_CAN_IGNORE, utils::string::va("r \"%s\"", "EXE_ENDOFGAME"));
+					game::SV_GameSendServerCommand(i, game::SV_CMD_CAN_IGNORE,
+					                               utils::string::va("r \"%s\"", "EXE_ENDOFGAME"));
 				}
 			}
 
@@ -176,7 +177,8 @@ namespace dedicated
 			utils::hook::set<uint8_t>(0x14062BC10, 0xC3); // init sound system (2)
 			utils::hook::set<uint8_t>(0x1405F31A0, 0xC3); // render thread
 			utils::hook::set<uint8_t>(0x140213C20, 0xC3); // called from Com_Frame, seems to do renderer stuff
-			utils::hook::set<uint8_t>(0x1402085C0, 0xC3); // CL_CheckForResend, which tries to connect to the local server constantly
+			utils::hook::set<uint8_t>(0x1402085C0, 0xC3);
+			// CL_CheckForResend, which tries to connect to the local server constantly
 			utils::hook::set<uint8_t>(0x14059B854, 0); // r_loadForRenderer default to 0
 			utils::hook::set<uint8_t>(0x1404D6952, 0xC3); // recommended settings check - TODO: Check hook
 			utils::hook::set<uint8_t>(0x1404D9BA0, 0xC3); // some mixer-related function called on shutdown
@@ -229,7 +231,8 @@ namespace dedicated
 			utils::hook::set<uint8_t>(0x1403E1A50, 0xC3); // render synchronization lock
 			utils::hook::set<uint8_t>(0x1403E1990, 0xC3); // render synchronization unlock
 
-			utils::hook::set<uint8_t>(0x1400E517B, 0xEB); // LUI: Unable to start the LUI system due to errors in main.lua
+			utils::hook::set<uint8_t>(0x1400E517B, 0xEB);
+			// LUI: Unable to start the LUI system due to errors in main.lua
 
 			utils::hook::nop(0x1404CC482, 5); // Disable sound pak file loading
 			utils::hook::nop(0x1404CC471, 2); // ^
@@ -259,8 +262,6 @@ namespace dedicated
 				printf("Server started!\n");
 				printf("==================================\n");
 
-				MessageBoxA(nullptr, "server started!", "", 0);
-
 				// remove disconnect command
 				game::Cmd_RemoveCommand((const char*)751);
 
@@ -279,4 +280,4 @@ namespace dedicated
 	};
 }
 
-//REGISTER_COMPONENT(dedicated::component)
+REGISTER_COMPONENT(dedicated::component)

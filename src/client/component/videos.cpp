@@ -20,7 +20,7 @@ namespace videos
 		template<typename T>
 		T* find_vid(std::vector<T>* vec, const std::string& name)
 		{
-			for (auto i = 0; i < vec->size(); i++)
+			for (auto i = 0ull; i < vec->size(); i++)
 			{
 				if (name == vec->at(i).replace)
 				{

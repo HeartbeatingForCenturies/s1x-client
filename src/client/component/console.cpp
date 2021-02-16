@@ -19,7 +19,7 @@ namespace console
 			DWORD process;
 			GetWindowThreadProcessId(con_window, &process);
 
-			if(process == GetCurrentProcessId() || IsDebuggerPresent())
+			if (process == GetCurrentProcessId() || IsDebuggerPresent())
 			{
 				ShowWindow(con_window, SW_HIDE);
 			}
@@ -93,7 +93,7 @@ namespace console
 				{
 					game::Sys_ShowConsole();
 				}
-				else if(!utils::flags::has_flag("noconsole"))
+				else if (!utils::flags::has_flag("noconsole"))
 				{
 					game::Sys_ShowConsole();
 				}

@@ -26,7 +26,7 @@ namespace auth
 
 			return info.szHwProfileGuid;
 		}
-	
+
 		utils::cryptography::ecc::key& get_key()
 		{
 			static auto key = utils::cryptography::ecc::generate_key(512, get_key_entropy());
@@ -48,7 +48,7 @@ namespace auth
 				return false;
 			}
 
-			const utils::info_string info_string{ std::string{params[2]} };
+			const utils::info_string info_string{std::string{params[2]}};
 			const auto challenge = info_string.get("challenge");
 
 			connect_string.clear();
@@ -88,7 +88,7 @@ namespace auth
 				return;
 			}
 
-			const utils::info_string info_string{ std::string{params[2]} };
+			const utils::info_string info_string{std::string{params[2]}};
 
 			const auto steam_id = info_string.get("xuid");
 			const auto challenge = info_string.get("challenge");
@@ -173,4 +173,4 @@ namespace auth
 	};
 }
 
-//REGISTER_COMPONENT(auth::component)
+REGISTER_COMPONENT(auth::component)
