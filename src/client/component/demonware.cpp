@@ -20,7 +20,7 @@ namespace demonware
 		void bd_logger_stub(const char* const function, const char* const msg, ...)
 		{
 			static auto* enabled =
-				game::Dvar_RegisterBool("bd_logger_enabled", false, game::DVAR_FLAG_NONE, "bdLogger");
+				game::Dvar_RegisterBool("bd_logger_enabled", false, game::DVAR_FLAG_SAVED, "bdLogger");
 			if (!enabled->current.enabled)
 			{
 				return;
@@ -393,6 +393,8 @@ namespace demonware
 			utils::hook::set<uint8_t>(0x140698BB2, 0x0); // CURLOPT_SSL_VERIFYPEER
 			utils::hook::set<uint8_t>(0x140698B69, 0xAF); // CURLOPT_SSL_VERIFYHOST
 			utils::hook::set<uint8_t>(0x14088D0E8, 0x0); // HTTPS -> HTTP
+
+			utils::hook::set<uint8_t>(0x140437CC0, 0xC3); // SV_SendMatchData
 		}
 
 		void pre_destroy() override

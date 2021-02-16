@@ -38,7 +38,7 @@ namespace branding
 
 			if (game::environment::is_mp())
 			{
-				localized_strings::override("LUA_MENU_MULTIPLAYER_CAPS", "S1-MOD: MULTIPLAYER\n");
+				localized_strings::override("LUA_MENU_MULTIPLAYER_CAPS", "S1x: MULTIPLAYER\n");
 			}
 			localized_strings::override("LUA_MENU_LEGAL_COPYRIGHT", "S1x: " VERSION);
 

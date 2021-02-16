@@ -37,13 +37,15 @@ public:
 
         if (it != this->tasks_.end())
         {
-            std::cout << "demonware::" << name_ << ": executing task '" << utils::string::va("%d", this->task_id_) << "'\n";
+#ifdef DEBUG
+            printf("demonware::%s: executing task '%d'\n", name_.data(), this->task_id_);
+#endif
 
             it->second(server, &buffer);
         }
         else
         {
-            std::cout << "demonware::" << name_ << ": missing task '" << utils::string::va("%d", this->task_id_) << "'\n";
+            printf("demonware::%s: missing task '%d'\n", name_.data(), this->task_id_);
 
             // return no error
             server->create_reply(this->task_id_)->send();

@@ -72,14 +72,14 @@ namespace videos
 
 			if (game::environment::is_mp())
 			{
-				replace("menus_bg_comp2", "menus_bg_s1-mod");
-				replace("mp_menus_bg_options", "menus_bg_s1-mod_blur");
+				replace("menus_bg_comp2", "menus_bg_s1x");
+				replace("mp_menus_bg_options", "menus_bg_s1x_blur");
 			}
 			else if (game::environment::is_sp())
 			{
-				replace("sp_menus_bg_main_menu", "menus_bg_s1-mod_sp");
-				replace("sp_menus_bg_campaign", "menus_bg_s1-mod_sp");
-				replace("sp_menus_bg_options", "menus_bg_s1-mod_sp");
+				replace("sp_menus_bg_main_menu", "menus_bg_s1x_sp");
+				replace("sp_menus_bg_campaign", "menus_bg_s1x_sp");
+				replace("sp_menus_bg_options", "menus_bg_s1x_sp");
 			}
 		}
 	};

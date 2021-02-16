@@ -5,7 +5,7 @@
 
 #define SELECT_VALUE(sp, mp) (game::environment::is_sp() ? (sp) : (mp))
 
-#define SERVER_CD_KEY "S1MOD-CD-Key"
+#define SERVER_CD_KEY "S1X-CD-Key"
 
 namespace game
 {

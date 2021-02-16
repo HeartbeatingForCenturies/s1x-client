@@ -136,7 +136,6 @@ namespace patches
 			if (file.exists())
 			{
 				snprintf(buf, size, "%s\n", file.get_buffer().data());
-				printf("%s\n", buf);
 				return buf;
 			}
 
