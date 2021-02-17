@@ -151,7 +151,7 @@ namespace dedicated
 				return;
 			}
 
-			// Disable r_shaderPreload
+			// Disable r_preloadShaders
 			dvars::override::Dvar_RegisterBool("r_preloadShaders", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
 
 			// Don't allow sv_hostname to be changed by the game
