@@ -219,6 +219,24 @@ namespace party
 		}
 	}
 
+	void send_disconnect()
+	{
+		reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
+		reinterpret_cast<void (*)(int)>(0x1402058F0)(0);
+	}
+
+	const auto disconnect_stub = utils::hook::assemble([](utils::hook::assembler& a)
+	{
+		a.pushad64();
+		a.call_aligned(send_disconnect);
+		a.popad64();
+
+		a.mov(edx, 1);
+		a.xor_(ecx, ecx);
+
+		a.jmp(0x140209EC0);
+	});
+
 	class component final : public component_interface
 	{
 	public:
@@ -228,6 +246,8 @@ namespace party
 			{
 				return;
 			}
+
+			utils::hook::jump(0x14020A010, disconnect_stub, true);
 
 			command::add("map", [](const command::params& argument)
 			{
