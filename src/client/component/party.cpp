@@ -221,7 +221,9 @@ namespace party
 
 	void send_disconnect()
 	{
+		// CL_ForwardCommandToServer
 		reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
+		// CL_WritePacket
 		reinterpret_cast<void (*)(int)>(0x1402058F0)(0);
 	}
 
@@ -247,6 +249,7 @@ namespace party
 				return;
 			}
 
+			// hook disconnect command function
 			utils::hook::jump(0x14020A010, disconnect_stub, true);
 
 			command::add("map", [](const command::params& argument)
