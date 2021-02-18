@@ -221,10 +221,13 @@ namespace party
 
 	void send_disconnect()
 	{
-		// CL_ForwardCommandToServer
-		reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
-		// CL_WritePacket
-		reinterpret_cast<void (*)(int)>(0x1402058F0)(0);
+		if (game::CL_IsCgameInitialized())
+		{
+			// CL_ForwardCommandToServer
+			reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
+			// CL_WritePacket
+			reinterpret_cast<void (*)(int)>(0x1402058F0)(0);
+		}
 	}
 
 	const auto disconnect_stub = utils::hook::assemble([](utils::hook::assembler& a)
