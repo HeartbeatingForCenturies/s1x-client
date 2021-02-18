@@ -30,6 +30,7 @@ namespace party
 		void perform_game_initialization()
 		{
 			command::execute("onlinegame 1", true);
+			command::execute("xstartprivateparty", true);
 			command::execute("xblive_privatematch 1", true);
 			command::execute("startentitlements", true);
 		}
@@ -41,13 +42,28 @@ namespace party
 				return;
 			}
 
-			if (game::Live_SyncOnlineDataFlags(0))
+			if (game::Live_SyncOnlineDataFlags(0) != 0)
 			{
-				scheduler::once([=]()
+				// initialize the game after onlinedataflags is 32 (workaround)
+				if (game::Live_SyncOnlineDataFlags(0) == 32)
 				{
-					connect_to_party(target, mapname, gametype);
-				}, scheduler::pipeline::main, 1s);
-				return;
+					scheduler::once([=]()
+					{
+						command::execute("xstartprivateparty", true);
+						command::execute("disconnect", true); // 32 -> 0
+
+						connect_to_party(target, mapname, gametype);
+					}, scheduler::pipeline::main, 1s);
+					return;
+				}
+				else
+				{
+					scheduler::once([=]()
+					{
+						connect_to_party(target, mapname, gametype);
+					}, scheduler::pipeline::main, 1s);
+					return;
+				}
 			}
 
 			perform_game_initialization();
@@ -174,9 +190,9 @@ namespace party
 
 	void start_map(const std::string& mapname)
 	{
-		if (game::Live_SyncOnlineDataFlags(0) != 0)
+		if (game::Live_SyncOnlineDataFlags(0) > 32)
 		{
-			scheduler::on_game_initialized([mapname]()
+			scheduler::once([=]()
 			{
 				command::execute("map " + mapname, false);
 			}, scheduler::pipeline::main, 1s);
@@ -185,7 +201,7 @@ namespace party
 		{
 			if (!game::SV_MapExists(mapname.data()))
 			{
-				printf("Map '%s' doesn't exist.", mapname.data());
+				printf("Map '%s' doesn't exist.\n", mapname.data());
 				return;
 			}
 
