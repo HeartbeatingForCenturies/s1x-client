@@ -15,12 +15,11 @@ namespace demonware
         this->register_task(13, &bdStorage::unk13);
 
         this->map_publisher_resource("motd-.*\\.txt", DW_MOTD);
-        //this->map_publisher_resource("ffotd-.*\\.ff", DW_FASTFILE);
+        this->map_publisher_resource("ffotd-.*\\.ff", DW_FASTFILE);
         this->map_publisher_resource("playlists(_.+)?\\.aggr", DW_PLAYLISTS);
         this->map_publisher_resource("social_[Tt][Uu][0-9]+\\.cfg", DW_SOCIAL_CONFIG);
         this->map_publisher_resource("mm\\.cfg", DW_MM_CONFIG);
         this->map_publisher_resource("entitlement_config\\.info", DW_ENTITLEMENT_CONFIG);
-        this->map_publisher_resource("codPointStoreConfig_[Tt][Uu][0-9]+\\.csv", DW_CODPOINTS_CONFIG);
         this->map_publisher_resource("lootConfig_[Tt][Uu][0-9]+\\.csv", DW_LOOT_CONFIG);
         this->map_publisher_resource("winStoreConfig_[Tt][Uu][0-9]+\\.csv", DW_STORE_CONFIG);
     }
