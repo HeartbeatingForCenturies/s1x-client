@@ -33,3 +33,6 @@
 	path = deps/asmjit
 	url = https://github.com/Joelrau/asmjit.git
 	branch = old-state
+[submodule "deps/WinToast"]
+	path = deps/WinToast
+	url = https://github.com/mohabouje/WinToast.git
