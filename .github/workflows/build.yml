@@ -80,7 +80,7 @@ jobs:
         uses: ammaraskar/msvc-problem-matcher@master
 
       - name: Build ${{matrix.configuration}} binaries
-        run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=x64 build/iw6x.sln
+        run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=x64 build/s1x.sln
 
       - name: Upload ${{matrix.configuration}} binaries
         uses: actions/upload-artifact@v2
@@ -137,10 +137,10 @@ jobs:
       - uses: papeloto/action-zip@v1
         with:
           recursive: false
-          files: iw6x.exe
-          dest: iw6x-${{ steps.changelog_reader.outputs.version }}.zip
+          files: s1x.exe
+          dest: s1x-${{ steps.changelog_reader.outputs.version }}.zip
       - name: Sign ZIP file
-        run: gpg --output "iw6x-${{ steps.changelog_reader.outputs.version }}.zip.sig" --detach-sig "iw6x-${{ steps.changelog_reader.outputs.version }}.zip"
+        run: gpg --output "s1x-${{ steps.changelog_reader.outputs.version }}.zip.sig" --detach-sig "s1x-${{ steps.changelog_reader.outputs.version }}.zip"
 
       - name: Create Release
         id: create_release
@@ -161,8 +161,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.XLABS_CI_GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/iw6x-${{ steps.changelog_reader.outputs.version }}.zip
-          asset_name: iw6x-${{ steps.changelog_reader.outputs.version }}.zip
+          asset_path: ${{ github.workspace }}/s1x-${{ steps.changelog_reader.outputs.version }}.zip
+          asset_name: s1x-${{ steps.changelog_reader.outputs.version }}.zip
           asset_content_type: application/zip
 
       - name: Upload Release ZIP signature
@@ -172,8 +172,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.XLABS_CI_GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/iw6x-${{ steps.changelog_reader.outputs.version }}.zip.sig
-          asset_name: iw6x-${{ steps.changelog_reader.outputs.version }}.zip.sig
+          asset_path: ${{ github.workspace }}/s1x-${{ steps.changelog_reader.outputs.version }}.zip.sig
+          asset_name: s1x-${{ steps.changelog_reader.outputs.version }}.zip.sig
           asset_content_type: text/plain
 
       - name: Remove extra files
