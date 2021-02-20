@@ -26,7 +26,7 @@ namespace renderer
 			}
 		}
 
-		void r_init_draw_method_stub()
+		void gfxdrawmethod()
 		{
 			game::gfxDrawMethod->drawScene = game::GFX_DRAW_SCENE_STANDARD;
 			game::gfxDrawMethod->baseTechType = dvars::r_fullbright->current.enabled ? get_fullbright_technique() : game::TECHNIQUE_LIT;
@@ -34,17 +34,19 @@ namespace renderer
 			game::gfxDrawMethod->forceTechType = dvars::r_fullbright->current.enabled ? get_fullbright_technique() : 182;
 		}
 
+		void r_init_draw_method_stub()
+		{
+			gfxdrawmethod();
+		}
+
 		bool r_update_front_end_dvar_options_stub()
 		{
 			if (dvars::r_fullbright->modified)
 			{
-				dvars::r_fullbright->modified = false;
+				game::Dvar_ClearModified(dvars::r_fullbright);
 				game::R_SyncRenderThread();
 				
-				game::gfxDrawMethod->drawScene = game::GFX_DRAW_SCENE_STANDARD;
-				game::gfxDrawMethod->baseTechType = dvars::r_fullbright->current.enabled ? get_fullbright_technique() : game::TECHNIQUE_LIT;
-				game::gfxDrawMethod->emissiveTechType = dvars::r_fullbright->current.enabled ? get_fullbright_technique() : game::TECHNIQUE_EMISSIVE;
-				game::gfxDrawMethod->forceTechType = dvars::r_fullbright->current.enabled ? get_fullbright_technique() : 182;
+				gfxdrawmethod();
 			}
 
 			return r_update_front_end_dvar_options_hook.invoke<bool>();
