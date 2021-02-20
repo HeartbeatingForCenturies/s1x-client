@@ -22,7 +22,7 @@
 
 #define APPVEYOR_ARTIFACT_URL(artifact) (APPVEYOR_ARTIFACT_BASE artifact APPVEYOR_ARTIFACT_SUFFIX)
 
-#define APPVEYOR_IW6X_EXE    APPVEYOR_ARTIFACT_URL("build/bin/x64/" APPVEYOR_CONFIGURATION "/s1x.exe")
+#define APPVEYOR_S1X_EXE    APPVEYOR_ARTIFACT_URL("build/bin/x64/" APPVEYOR_CONFIGURATION "/s1x.exe")
 #define APPVEYOR_VERSION_TXT APPVEYOR_ARTIFACT_URL("build/version.txt")
 
 namespace updater
@@ -73,7 +73,7 @@ namespace updater
 
 		void perform_update(const std::string& target)
 		{
-			const auto binary = download_file_sync(APPVEYOR_IW6X_EXE);
+			const auto binary = download_file_sync(APPVEYOR_S1X_EXE);
 			utils::io::write_file(target, binary);
 		}
 
