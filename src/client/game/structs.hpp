@@ -973,11 +973,20 @@ namespace game
 		char __pad0[6];
 	};
 
+	struct RawFile
+	{
+		const char* name;
+		int compressedLen;
+		int len;
+		const char* buffer;
+	};
+
 	union XAssetHeader
 	{
 		void* data;
 		Material* material;
 		Font_s* font;
+		RawFile* rawfile;
 	};
 
 	enum TestClientType

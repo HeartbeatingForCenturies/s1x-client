@@ -39,6 +39,7 @@ namespace game
 	WEAK symbol<void(const char** zoneNames, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{ 0x1402F8B50, 0x140270F30 };
 
 	WEAK symbol<dvar_t* (const char* name)> Dvar_FindVar{ 0x140370860, 0x1404BF8B0 };
+	WEAK symbol<void(const dvar_t* dvar)> Dvar_ClearModified{ 0x1402FFCF0, 0x1404BF690 };
 	WEAK symbol<void(char* buffer, int index)> Dvar_GetCombinedString{ 0x1402FB590, 0x1403D3290 };
 	WEAK symbol<bool(const char* name)> Dvar_IsValidName{ 0x140370CB0, 0x1404BFF70 };
 	WEAK symbol<void(dvar_t* dvar, DvarSetSource source)> Dvar_Reset{ 0x140372950, 0x1404C1DB0 };
