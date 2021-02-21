@@ -150,8 +150,8 @@ namespace arxan
 			// 140545F80 -> 140545EE0
 			// 14053CCF0 -> 14053CCC0 // dwGetLogonStatus
 
-			//utils::hook::jump(0x140558C20, 0x140558CB0); // dwNetPump
-			//utils::hook::jump(0x140591850, 0x1405918E0); // dwLobbyPump
+			utils::hook::call(0x14053B5FE, 0x140545EE0); // some pump
+			utils::hook::call(0x1404D3D42, 0x140509410); // some other pump
 			utils::hook::jump(0x14053CCB0, 0x14053CCC0); // dwGetLogonStatus
 			utils::hook::call(0x14053CD04, 0x14053CCC0); // dwGetLogonStatus
 
