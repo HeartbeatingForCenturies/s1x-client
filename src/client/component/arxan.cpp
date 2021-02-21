@@ -144,6 +144,17 @@ namespace arxan
 			// cba to implement sp, not sure if it's even needed
 			if (game::environment::is_sp()) return;
 
+			// HW-BP Mapping
+			// 1404D4F40 -> 1404D4F30
+			// 140509500 -> 140509410
+			// 140545F80 -> 140545EE0
+			// 14053CCF0 -> 14053CCC0 // dwGetLogonStatus
+
+			//utils::hook::jump(0x140558C20, 0x140558CB0); // dwNetPump
+			//utils::hook::jump(0x140591850, 0x1405918E0); // dwLobbyPump
+			utils::hook::jump(0x14053CCB0, 0x14053CCC0); // dwGetLogonStatus
+			utils::hook::call(0x14053CD04, 0x14053CCC0); // dwGetLogonStatus
+
 			//scheduler::on_game_initialized(remove_hardware_breakpoints, scheduler::pipeline::main);
 		}
 	};
