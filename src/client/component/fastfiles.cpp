@@ -11,6 +11,7 @@
 namespace fastfiles
 {
 	static std::string current_fastfile;
+
 	namespace
 	{
 		utils::hook::detour db_try_load_x_file_internal_hook;
@@ -63,7 +64,7 @@ namespace fastfiles
 			{
 				game::DB_EnumXAssets_FastFile(game::ASSET_TYPE_MATERIAL, [](const game::XAssetHeader header, void*)
 				{
-					if(header.material && header.material->name)
+					if (header.material && header.material->name)
 					{
 						printf("%s\n", header.material->name);
 					}

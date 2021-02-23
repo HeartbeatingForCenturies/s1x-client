@@ -5,7 +5,6 @@
 #include "game/game.hpp"
 #include "party.hpp"
 
-#include <utils/hook.hpp>
 #include <utils/string.hpp>
 
 namespace bots
@@ -27,15 +26,15 @@ namespace bots
 			{
 				// auto-assign
 				game::SV_ExecuteClientCommand(&game::mp::svs_clients[entity_num],
-					utils::string::va("lui 125 2 %i",
-						*game::mp::sv_serverId_value), false);
+				                              utils::string::va("lui 125 2 %i",
+				                                                *game::mp::sv_serverId_value), false);
 
 				scheduler::once([entity_num]()
 				{
 					// select class ( they don't select it? )
 					game::SV_ExecuteClientCommand(&game::mp::svs_clients[entity_num],
-						utils::string::va("lui 9 %i %i", (rand() % (104 - 100 + 1) + 100),
-							*game::mp::sv_serverId_value), false);
+					                              utils::string::va("lui 9 %i %i", (rand() % (104 - 100 + 1) + 100),
+					                                                *game::mp::sv_serverId_value), false);
 				}, scheduler::pipeline::server, 1s);
 			}, scheduler::pipeline::server, 1s);
 		}

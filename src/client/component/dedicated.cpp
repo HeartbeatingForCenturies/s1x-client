@@ -5,7 +5,6 @@
 #include "network.hpp"
 #include "command.hpp"
 #include "game/game.hpp"
-#include "fastfiles.hpp"
 #include "dvars.hpp"
 
 #include <utils/hook.hpp>
@@ -43,7 +42,7 @@ namespace dedicated
 			return startup_command_queue;
 		}
 
-		void execute_startup_command(int client, int controllerIndex, const char* command)
+		void execute_startup_command(int client, int /*controllerIndex*/, const char* command)
 		{
 			if (game::Live_SyncOnlineDataFlags(0) == 0)
 			{
@@ -266,7 +265,7 @@ namespace dedicated
 				printf("==================================\n");
 
 				// remove disconnect command
-				game::Cmd_RemoveCommand((const char*)751);
+				game::Cmd_RemoveCommand(reinterpret_cast<const char*>(751));
 
 				execute_startup_command_queue();
 				execute_console_command_queue();

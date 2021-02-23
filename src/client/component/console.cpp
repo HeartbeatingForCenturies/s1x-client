@@ -3,7 +3,6 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 #include "scheduler.hpp"
-#include "game_console.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/flags.hpp>
@@ -196,8 +195,8 @@ namespace console
 
 		SetWindowPos(get_window(), nullptr, rect.left, rect.top, width, height, 0);
 
-		auto logoWindow = *reinterpret_cast<HWND*>(SELECT_VALUE(0x14A9F6080, 0x14B5B94D0));
-		SetWindowPos(logoWindow, 0, 5, 5, width - 25, 60, 0);
+		const auto logo_window = *reinterpret_cast<HWND*>(SELECT_VALUE(0x14A9F6080, 0x14B5B94D0));
+		SetWindowPos(logo_window, nullptr, 5, 5, width - 25, 60, 0);
 	}
 }
 

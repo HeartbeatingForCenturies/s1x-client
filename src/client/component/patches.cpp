@@ -17,21 +17,21 @@ namespace patches
 	namespace
 	{
 		game::dvar_t* register_virtual_lobby_enabled_stub(const char* name, bool /*value*/,
-				unsigned int /*flags*/,
-				const char* description)
+		                                                  unsigned int /*flags*/,
+		                                                  const char* description)
 		{
 			return game::Dvar_RegisterBool(name, false, game::DVAR_FLAG_READ, description);
 		}
 
 		game::dvar_t* register_virtual_lobby_stubs(const char* name, bool value,
-			unsigned int flags,
-			const char* description)
+		                                           unsigned int /*flags*/,
+		                                           const char* description)
 		{
 			if (game::Com_GetCurrentCoDPlayMode() == game::CODPLAYMODE_CORE)
 			{
 				value = true;
-				flags = game::DVAR_FLAG_READ;
 			}
+
 			return game::Dvar_RegisterBool(name, value, game::DVAR_FLAG_READ, description);
 		}
 
@@ -44,14 +44,14 @@ namespace patches
 
 		utils::hook::detour sv_kick_client_num_hook;
 
-		void sv_kick_client_num(const int clientNum, const char* reason)
+		void sv_kick_client_num(const int client_num, const char* reason)
 		{
 			// Don't kick bot to equalize team balance.
 			if (reason == "EXE_PLAYERKICKED_BOT_BALANCE"s)
 			{
 				return;
 			}
-			return sv_kick_client_num_hook.invoke<void>(clientNum, reason);
+			return sv_kick_client_num_hook.invoke<void>(client_num, reason);
 		}
 
 		utils::hook::detour com_register_dvars_hook;
@@ -71,15 +71,15 @@ namespace patches
 		}
 
 		game::dvar_t* register_com_maxfps_stub(const char* name, int /*value*/, int /*min*/, int /*max*/,
-			const unsigned int /*flags*/,
-			const char* description)
+		                                       const unsigned int /*flags*/,
+		                                       const char* description)
 		{
 			return game::Dvar_RegisterInt(name, 0, 0, 1000, game::DVAR_FLAG_SAVED, description);
 		}
 
 		game::dvar_t* register_cg_fov_stub(const char* name, float value, float min, float /*max*/,
-			const unsigned int flags,
-			const char* description)
+		                                   const unsigned int flags,
+		                                   const char* description)
 		{
 			return game::Dvar_RegisterFloat(name, value, min, 160, game::DVAR_FLAG_SAVED, description);
 		}
@@ -104,8 +104,8 @@ namespace patches
 			{
 				if (args.size() == 1)
 				{
-					const auto current = game::Dvar_ValueToString(dvar, dvar->current);
-					const auto reset = game::Dvar_ValueToString(dvar, dvar->reset);
+					const auto* const current = game::Dvar_ValueToString(dvar, dvar->current);
+					const auto* const reset = game::Dvar_ValueToString(dvar, dvar->reset);
 					game_console::print(game_console::con_type_info, "\"%s\" is: \"%s^7\" default: \"%s^7\"",
 					                    dvar->name, current, reset);
 					game_console::print(game_console::con_type_info, "   %s\n",
@@ -140,7 +140,8 @@ namespace patches
 			}
 
 			// DB_ReadRawFile
-			return reinterpret_cast<const char*(*)(const char*, char*, int)>(SELECT_VALUE(0x140180E30, 0x140273080))(filename, buf, size);
+			return reinterpret_cast<const char*(*)(const char*, char*, int)>(SELECT_VALUE(0x140180E30, 0x140273080))(
+				filename, buf, size);
 		}
 
 		void aim_assist_add_to_target_list(void* a1, void* a2)
@@ -153,7 +154,8 @@ namespace patches
 
 		void missing_content_error_stub(int /*mode*/, const char* /*message*/)
 		{
-			game::Com_Error(game::ERR_DROP, utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile()));
+			game::Com_Error(game::ERR_DROP,
+			                utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile()));
 		}
 
 		void bsp_sys_error_stub(const char* error, const char* arg1)
@@ -245,8 +247,8 @@ namespace patches
 
 			// client side aim assist dvar
 			dvars::aimassist_enabled = game::Dvar_RegisterBool("aimassist_enabled", true,
-				game::DvarFlags::DVAR_FLAG_SAVED,
-				"Enables aim assist for controllers");
+			                                                   game::DvarFlags::DVAR_FLAG_SAVED,
+			                                                   "Enables aim assist for controllers");
 			utils::hook::call(0x140003609, aim_assist_add_to_target_list);
 
 			// unlock all items
@@ -267,7 +269,6 @@ namespace patches
 
 		static void patch_sp()
 		{
-
 		}
 	};
 }

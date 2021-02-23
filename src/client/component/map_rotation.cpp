@@ -28,7 +28,8 @@ namespace map_rotation
 		void launch_default_map()
 		{
 			auto* mapname = game::Dvar_FindVar("mapname");
-			if (mapname && mapname->current.string && strlen(mapname->current.string) && mapname->current.string != "mp_vlobby_room"s)
+			if (mapname && mapname->current.string && strlen(mapname->current.string) && mapname->current.string !=
+				"mp_vlobby_room"s)
 			{
 				launch_map(mapname->current.string);
 			}

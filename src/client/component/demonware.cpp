@@ -1,6 +1,5 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
-#include "demonware.hpp"
 #include "game_module.hpp"
 
 #include <utils/hook.hpp>
@@ -166,9 +165,9 @@ namespace demonware
 
 	namespace io
 	{
-		int getaddrinfo_stub(PCSTR pNodeName, PCSTR pServiceName, const ADDRINFOA* pHints, PADDRINFOA* ppResult)
+		int getaddrinfo_stub(PCSTR node_name, PCSTR service_name, const ADDRINFOA* hints, PADDRINFOA* result)
 		{
-			return getaddrinfo(pNodeName, pServiceName, pHints, ppResult);
+			return getaddrinfo(node_name, service_name, hints, result);
 		}
 
 		hostent* gethostbyname_stub(const char* name)
@@ -204,7 +203,7 @@ namespace demonware
 #pragma warning(pop)
 		}
 
-		int connect_stub(SOCKET s, const struct sockaddr* addr, int len)
+		int connect_stub(SOCKET s, const struct sockaddr* addr, const int len)
 		{
 			if (len == sizeof(sockaddr_in))
 			{

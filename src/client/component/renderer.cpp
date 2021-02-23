@@ -4,7 +4,6 @@
 #include "game/dvars.hpp"
 
 #include <utils/hook.hpp>
-#include <utils/string.hpp>
 
 namespace renderer
 {

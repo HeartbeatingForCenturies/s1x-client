@@ -26,7 +26,7 @@ namespace party
 		} connect_state;
 
 		std::string sv_motd;
-		 
+
 		void perform_game_initialization()
 		{
 			command::execute("onlinegame 1", true);
@@ -126,7 +126,7 @@ namespace party
 		{
 			if (game::mp::g_entities[i].client)
 			{
-				char client_name[16] = { 0 };
+				char client_name[16] = {0};
 				strncpy_s(client_name, game::mp::g_entities[i].client->name, 16);
 				game::I_CleanStr(client_name);
 
@@ -211,7 +211,8 @@ namespace party
 			}
 
 			auto* current_mapname = game::Dvar_FindVar("mapname");
-			if (current_mapname && utils::string::to_lower(current_mapname->current.string) == utils::string::to_lower(mapname) && game::SV_Loaded())
+			if (current_mapname && utils::string::to_lower(current_mapname->current.string) ==
+				utils::string::to_lower(mapname) && game::SV_Loaded())
 			{
 				printf("Restarting map: %s\n", mapname.data());
 				command::execute("map_restart", false);
@@ -390,7 +391,8 @@ namespace party
 				const auto client_num = atoi(params.get(1));
 				const auto message = params.join(2);
 
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_CAN_IGNORE, utils::string::va("%c \"%s\"", 84, message.data()));
+				game::SV_GameSendServerCommand(client_num, game::SV_CMD_CAN_IGNORE,
+				                               utils::string::va("%c \"%s\"", 84, message.data()));
 				printf("%i: %s\n", client_num, message.data());
 			});
 
@@ -418,7 +420,8 @@ namespace party
 
 				const auto message = params.join(1);
 
-				game::SV_GameSendServerCommand(-1, game::SV_CMD_CAN_IGNORE, utils::string::va("%c \"%s\"", 84, message.data()));
+				game::SV_GameSendServerCommand(-1, game::SV_CMD_CAN_IGNORE,
+				                               utils::string::va("%c \"%s\"", 84, message.data()));
 				printf("%s\n", message.data());
 			});
 
