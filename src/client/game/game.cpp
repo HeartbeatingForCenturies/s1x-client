@@ -27,7 +27,19 @@ namespace game
 	{
 		launcher::mode mode = launcher::mode::none;
 
-		launcher::mode get_mode()
+		launcher::mode translate_surrogate(const launcher::mode _mode)
+		{
+			switch (_mode)
+			{
+			case launcher::mode::survival:
+			case launcher::mode::zombies:
+				return launcher::mode::multiplayer;
+			default:
+				return _mode;
+			}
+		}
+
+		launcher::mode get_real_mode()
 		{
 			if (mode == launcher::mode::none)
 			{
@@ -35,6 +47,11 @@ namespace game
 			}
 
 			return mode;
+		}
+
+		launcher::mode get_mode()
+		{
+			return translate_surrogate(get_real_mode());
 		}
 
 		bool is_sp()

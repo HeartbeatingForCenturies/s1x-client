@@ -33,6 +33,16 @@ launcher::mode detect_mode_from_arguments()
 		return launcher::mode::multiplayer;
 	}
 
+	if (utils::flags::has_flag("survival"))
+	{
+		return launcher::mode::survival;
+	}
+
+	if (utils::flags::has_flag("zombies"))
+	{
+		return launcher::mode::zombies;
+	}
+
 	if (utils::flags::has_flag("singleplayer"))
 	{
 		return launcher::mode::singleplayer;
@@ -70,6 +80,8 @@ FARPROC load_binary(const launcher::mode mode)
 	{
 	case launcher::mode::server:
 	case launcher::mode::multiplayer:
+	case launcher::mode::survival:
+	case launcher::mode::zombies:
 		binary = "s1_mp64_ship.exe";
 		break;
 	case launcher::mode::singleplayer:
@@ -84,7 +96,8 @@ FARPROC load_binary(const launcher::mode mode)
 	if (!utils::io::read_file(binary, &data))
 	{
 		throw std::runtime_error(utils::string::va(
-			"Failed to read game binary (%s)!\nPlease copy the s1x.exe into your Call of Duty: Advanced Warfare installation folder and run it from there.", binary.data()));
+			"Failed to read game binary (%s)!\nPlease copy the s1x.exe into your Call of Duty: Advanced Warfare installation folder and run it from there.",
+			binary.data()));
 	}
 
 	return loader.load_library(binary);
@@ -100,16 +113,16 @@ void verify_aw_version()
 	const auto value = *reinterpret_cast<DWORD*>(0x140001337);
 	if (value != 0x24AFEB05 && value != 0x1D860F04)
 	{
-		throw std::runtime_error("Unsupported Call of Duty: Advanced Warfare version"s);
+		throw std::runtime_error("Unsupported Call of Duty: Advanced Warfare version");
 	}
 }
 
 void enable_dpi_awareness()
 {
-	const utils::nt::library user32{ "user32.dll" };
+	const utils::nt::library user32{"user32.dll"};
 	const auto set_dpi = user32
-		? user32.get_proc<BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT)>("SetProcessDpiAwarenessContext")
-		: nullptr;
+		                     ? user32.get_proc<BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT)>("SetProcessDpiAwarenessContext")
+		                     : nullptr;
 	if (set_dpi)
 	{
 		set_dpi(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);

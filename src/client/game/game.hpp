@@ -12,6 +12,7 @@ namespace game
 	namespace environment
 	{
 		launcher::mode get_mode();
+		launcher::mode get_real_mode();
 
 		bool is_sp();
 		bool is_mp();
