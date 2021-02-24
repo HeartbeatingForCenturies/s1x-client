@@ -387,7 +387,7 @@ namespace demonware
 	public:
 		component()
 		{
-			register_server(std::make_shared<demonware::server_stun>("s1-stun.us.demonware.net"));
+			/*register_server(std::make_shared<demonware::server_stun>("s1-stun.us.demonware.net"));
 			register_server(std::make_shared<demonware::server_stun>("s1-stun.eu.demonware.net"));
 			register_server(std::make_shared<demonware::server_stun>("s1-stun.jp.demonware.net"));
 			register_server(std::make_shared<demonware::server_stun>("s1-stun.au.demonware.net"));
@@ -395,7 +395,7 @@ namespace demonware
 			register_server(std::make_shared<demonware::server_stun>("stun.us.demonware.net"));
 			register_server(std::make_shared<demonware::server_stun>("stun.eu.demonware.net"));
 			register_server(std::make_shared<demonware::server_stun>("stun.jp.demonware.net"));
-			register_server(std::make_shared<demonware::server_stun>("stun.au.demonware.net"));
+			register_server(std::make_shared<demonware::server_stun>("stun.au.demonware.net"));*/
 
 			register_server(std::make_shared<demonware::server_auth3>("aw-pc-auth3.prod.demonware.net"));
 			register_server(std::make_shared<demonware::server_lobby>("aw-pc-lobby.prod.demonware.net"));
