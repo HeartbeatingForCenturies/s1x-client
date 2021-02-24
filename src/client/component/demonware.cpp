@@ -165,11 +165,6 @@ namespace demonware
 
 	namespace io
 	{
-		int getaddrinfo_stub(PCSTR node_name, PCSTR service_name, const ADDRINFOA* hints, PADDRINFOA* result)
-		{
-			return getaddrinfo(node_name, service_name, hints, result);
-		}
-
 		hostent* gethostbyname_stub(const char* name)
 		{
 #ifdef DEBUG
@@ -370,16 +365,6 @@ namespace demonware
 
 			return ioctlsocket(s, cmd, argp);
 		}
-
-		bool register_hook(const std::string& process, void* stub)
-		{
-			const auto game_module = game_module::get_game_module();
-
-			auto result = false;
-			result = result || utils::hook::iat(game_module, "wsock32.dll", process, stub);
-			result = result || utils::hook::iat(game_module, "WS2_32.dll", process, stub);
-			return result;
-		}
 	}
 
 	class component final : public component_interface
@@ -404,17 +389,24 @@ namespace demonware
 		void post_load() override
 		{
 			server_thread = utils::thread::create_named_thread("Demonware", server_main);
+		}
 
-			io::register_hook("send", io::send_stub);
-			io::register_hook("recv", io::recv_stub);
-			io::register_hook("sendto", io::sendto_stub);
-			io::register_hook("recvfrom", io::recvfrom_stub);
-			io::register_hook("select", io::select_stub);
-			io::register_hook("connect", io::connect_stub);
-			io::register_hook("closesocket", io::closesocket_stub);
-			io::register_hook("ioctlsocket", io::ioctlsocket_stub);
-			io::register_hook("gethostbyname", io::gethostbyname_stub);
-			io::register_hook("getaddrinfo", io::getaddrinfo_stub);
+		void* load_import(const std::string& library, const std::string& function) override
+		{
+			if (library == "WS2_32.dll")
+			{
+				if (function == "#3") return io::closesocket_stub;
+				if (function == "#4") return io::connect_stub;
+				if (function == "#10") return io::ioctlsocket_stub;
+				if (function == "#16") return io::recv_stub;
+				if (function == "#17") return io::recvfrom_stub;
+				if (function == "#18") return io::select_stub;
+				if (function == "#19") return io::send_stub;
+				if (function == "#20") return io::sendto_stub;
+				if (function == "#52") return io::gethostbyname_stub;
+			}
+
+			return nullptr;
 		}
 
 		void post_unpack() override
