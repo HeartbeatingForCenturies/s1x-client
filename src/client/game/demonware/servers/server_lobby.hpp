@@ -2,7 +2,6 @@
 
 namespace demonware
 {
-
 	class server_lobby : public server_base, service_server
 	{
 	public:
@@ -11,7 +10,7 @@ namespace demonware
 		void frame() override;
 		int recv(const char* buf, int len) override;
 		int send(char* buf, int len) override;
-		bool pending_data()override;
+		bool pending_data() override;
 
 		template <typename T>
 		void register_service()
@@ -34,7 +33,5 @@ namespace demonware
 
 		void dispatch(const std::string& packet);
 		void call_service(std::uint8_t type, const std::string& data);
-
 	};
-
 }
