@@ -12,6 +12,8 @@
 #include <utils/string.hpp>
 #include <utils/hook.hpp>
 
+#include "version.hpp"
+
 namespace patches
 {
 	namespace
@@ -265,6 +267,12 @@ namespace patches
 
 			// disable codPointStore
 			dvars::override::Dvar_RegisterInt("codPointStore_enabled", 0, 0, 0, game::DVAR_FLAG_NONE);
+
+			// don't register every replicated dvar as a network dvar
+			utils::hook::nop(0x1403534BE, 5); // dvar_foreach
+
+			// patch "Server is different version" to show the server client version
+			utils::hook::inject(0x1404398B2, VERSION);
 		}
 
 		static void patch_sp()

@@ -100,8 +100,8 @@ namespace server_list
 			return count > 15 ? 15 : count;
 		}
 
-		const char* ui_feeder_item_text(int /*localClientNum*/, void* /*a2*/, void* /*a3*/, const size_t index,
-		                                const size_t column)
+		const char* ui_feeder_item_text(int /*localClientNum*/, void* /*a2*/, void* /*a3*/, const int index,
+		                                const int column)
 		{
 			std::lock_guard<std::mutex> _(mutex);
 

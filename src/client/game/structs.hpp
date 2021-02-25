@@ -981,12 +981,27 @@ namespace game
 		const char* buffer;
 	};
 
+	struct StringTableCell
+	{
+		const char* string;
+		int hash;
+	};
+
+	struct StringTable
+	{
+		const char* name;
+		int columnCount;
+		int rowCount;
+		StringTableCell* values;
+	};
+
 	union XAssetHeader
 	{
 		void* data;
 		Material* material;
 		Font_s* font;
 		RawFile* rawfile;
+		StringTable* stringTable;
 	};
 
 	enum TestClientType
