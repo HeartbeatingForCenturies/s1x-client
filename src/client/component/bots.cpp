@@ -44,7 +44,7 @@ namespace bots
 			game::SV_SpawnTestClient(&game::mp::g_entities[entity_num]);
 			if (game::Com_GetCurrentCoDPlayMode() == game::CODPLAYMODE_CORE)
 			{
-				bot_team_join(entity_num);
+				//bot_team_join(entity_num); // super bugger rn
 			}
 		}
 

@@ -174,6 +174,8 @@ namespace game
 	WEAK symbol<int> g_poolSize{ 0x140804140, 0x1409B4B90 };
 	WEAK symbol<const char*> g_assetNames{ 0x140803C90 , 0x1409B3180 };
 
+	WEAK symbol<DWORD> threadIds{ 0x149632EC0, 0x147DCEA30 };
+
 	WEAK symbol<GfxDrawMethod_s> gfxDrawMethod{ 0x14CDFAFE8, 0x14D80FD98 };
 
 	namespace mp
