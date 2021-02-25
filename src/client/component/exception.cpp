@@ -184,7 +184,7 @@ namespace exception
 		void write_minidump(const LPEXCEPTION_POINTERS exceptioninfo)
 		{
 			const std::string crash_name = utils::string::va("minidumps/s1x-crash-%d-%s.zip",
-			                                                 game::environment::get_mode(), get_timestamp().data());
+			                                                 game::environment::get_real_mode(), get_timestamp().data());
 
 			utils::compression::zip::archive zip_file{};
 			zip_file.add("crash.dmp", create_minidump(exceptioninfo));
