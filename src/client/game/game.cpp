@@ -76,11 +76,17 @@ namespace game
 
 		std::string get_string()
 		{
-			const auto current_mode = get_mode();
+			const auto current_mode = get_real_mode();
 			switch (current_mode)
 			{
 			case launcher::mode::server:
 				return "Dedicated Server";
+
+			case launcher::mode::zombies:
+				return "Zombies";
+
+			case launcher::mode::survival:
+				return "Survival";
 
 			case launcher::mode::multiplayer:
 				return "Multiplayer";
@@ -93,25 +99,6 @@ namespace game
 
 			default:
 				return "Unknown (" + std::to_string(static_cast<int>(mode)) + ")";
-			}
-		}
-
-		std::string playmode_to_string(game::CodPlayMode playmode)
-		{
-			switch (playmode)
-			{
-			case CODPLAYMODE_CORE:
-				return "Core";
-			case CODPLAYMODE_ZOMBIES:
-				return "Zombies";
-			case CODPLAYMODE_SURVIVAL:
-				return "Survival";
-			case CODPLAYMODE_SP:
-				return "Singleplayer";
-			case CODPLAYMODE_NONE:
-				return "None";
-			default:
-				return "Unknown (" + std::to_string(static_cast<int>(playmode)) + ")";
 			}
 		}
 	}

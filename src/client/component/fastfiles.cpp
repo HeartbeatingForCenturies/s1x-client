@@ -82,6 +82,17 @@ namespace fastfiles
 				}, 0, false);
 			});
 
+			command::add("rawfilelist", [](const command::params& params)
+			{
+				game::DB_EnumXAssets_FastFile(game::ASSET_TYPE_RAWFILE, [](const game::XAssetHeader header, void*)
+				{
+					if (header.rawfile && header.rawfile->name)
+					{
+						printf("%s\n", header.rawfile->name);
+					}
+				}, 0, false);
+			});
+
 			command::add("g_poolSizes", []()
 			{
 				for (auto i = 0; i < game::ASSET_TYPE_COUNT; i++)
