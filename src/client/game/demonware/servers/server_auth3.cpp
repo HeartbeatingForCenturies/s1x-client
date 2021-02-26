@@ -1,7 +1,5 @@
 #include <std_include.hpp>
 #include "../demonware.hpp"
-#include <utils/json.hpp>
-using json = nlohmann::json;
 
 namespace demonware
 {
@@ -77,24 +75,28 @@ namespace demonware
 		{
 			unsigned int title_id = 0;
 			unsigned int iv_seed = 0;
-			std::string identity = "";
-			std::string token = "";
+			std::string identity{};
+			std::string token{};
 
-			json j = json::parse(packet);
+			rapidjson::Document j;
+			j.Parse(packet.data(), packet.size());
 
-			if (j.contains("title_id") && j["title_id"].is_string())
-				title_id = std::stoul(j["title_id"].get<std::string>());
+			if (j.HasMember("title_id") && j["title_id"].IsString())
+				title_id = std::stoul(j["title_id"].GetString());
 
-			if (j.contains("iv_seed") && j["iv_seed"].is_string())
-				iv_seed = std::stoul(j["iv_seed"].get<std::string>());
+			if (j.HasMember("iv_seed") && j["iv_seed"].IsString())
+				iv_seed = std::stoul(j["iv_seed"].GetString());
 
-			if (j.contains("extra_data") && j["extra_data"].is_string())
+			if (j.HasMember("extra_data") && j["extra_data"].IsString())
 			{
-				json extra_data = json::parse(j["extra_data"].get<std::string>());
+				rapidjson::Document extra_data;
+				auto& ed = j["extra_data"];
+				extra_data.Parse(ed.GetString(), ed.GetStringLength());
 
-				if (extra_data.contains("token") && extra_data["token"].is_string())
+				if (extra_data.HasMember("token") && extra_data["token"].IsString())
 				{
-					std::string token_b64 = extra_data["token"].get<std::string>();
+					auto& tokenField = extra_data["token"];
+					std::string token_b64(tokenField.GetString(), tokenField.GetStringLength());
 					token = utils::cryptography::base64::decode(token_b64);
 				}
 			}
@@ -104,7 +106,8 @@ namespace demonware
 #endif
 
 			std::string auth_key(reinterpret_cast<char*>(&token.data()[32]), 24);
-			std::string session_key("\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37", 24);
+			std::string session_key(
+				"\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37", 24);
 
 			// client_ticket
 			auth_ticket_t ticket{};
@@ -161,7 +164,7 @@ namespace demonware
 			result.append(utils::string::va("Date: %s GMT\r\n", date));
 			result.append(utils::string::va("Content-Length: %d\r\n\r\n", content.size()));
 			result.append(content);
-			
+
 			raw_reply reply(result);
 			this->send_reply(&reply);
 
