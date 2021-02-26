@@ -94,17 +94,5 @@ private:
 
 			this->handle(packet);
 		}
-
-		this->in_queue_.access_with_lock([&](data_queue& queue, auto& lock)
-		{
-			while (!this->in_queue_.get_raw().empty())
-			{
-				auto data = std::move(queue.front());
-				queue.pop();
-				lock.unlock();
-				this->handle(data);
-				lock.lock();
-			}
-		});
 	}
 };
