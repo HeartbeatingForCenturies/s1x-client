@@ -6,7 +6,7 @@ class base_server
 public:
 	using stream_queue = std::queue<char>;
 	using data_queue = std::queue<std::string>;
-	
+
 	base_server(std::string name)
 		: name_(std::move(name))
 	{

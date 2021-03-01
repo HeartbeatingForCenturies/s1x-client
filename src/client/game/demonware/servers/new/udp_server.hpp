@@ -37,7 +37,7 @@ public:
 
 			const auto copy_size = std::min(size, data.size());
 			std::memcpy(buf, data.data(), copy_size);
-			
+
 			return copy_size;
 		});
 	}

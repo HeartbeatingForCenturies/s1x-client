@@ -18,106 +18,113 @@ namespace demonware
 #endif
 			return;
 		}
-		else
+
+		unsigned int title_id = 0;
+		unsigned int iv_seed = 0;
+		std::string identity{};
+		std::string token{};
+
+		rapidjson::Document j;
+		j.Parse(packet.data(), packet.size());
+
+		if (j.HasMember("title_id") && j["title_id"].IsString())
+			title_id = std::stoul(j["title_id"].GetString());
+
+		if (j.HasMember("iv_seed") && j["iv_seed"].IsString())
+			iv_seed = std::stoul(j["iv_seed"].GetString());
+
+		if (j.HasMember("extra_data") && j["extra_data"].IsString())
 		{
-			unsigned int title_id = 0;
-			unsigned int iv_seed = 0;
-			std::string identity{};
-			std::string token{};
+			rapidjson::Document extra_data;
+			auto& ed = j["extra_data"];
+			extra_data.Parse(ed.GetString(), ed.GetStringLength());
 
-			rapidjson::Document j;
-			j.Parse(packet.data(), packet.size());
-
-			if (j.HasMember("title_id") && j["title_id"].IsString())
-				title_id = std::stoul(j["title_id"].GetString());
-
-			if (j.HasMember("iv_seed") && j["iv_seed"].IsString())
-				iv_seed = std::stoul(j["iv_seed"].GetString());
-
-			if (j.HasMember("extra_data") && j["extra_data"].IsString())
+			if (extra_data.HasMember("token") && extra_data["token"].IsString())
 			{
-				rapidjson::Document extra_data;
-				auto& ed = j["extra_data"];
-				extra_data.Parse(ed.GetString(), ed.GetStringLength());
-
-				if (extra_data.HasMember("token") && extra_data["token"].IsString())
-				{
-					auto& tokenField = extra_data["token"];
-					std::string token_b64(tokenField.GetString(), tokenField.GetStringLength());
-					token = utils::cryptography::base64::decode(token_b64);
-				}
+				auto& token_field = extra_data["token"];
+				std::string token_b64(token_field.GetString(), token_field.GetStringLength());
+				token = utils::cryptography::base64::decode(token_b64);
 			}
-
-#ifdef DEBUG
-			printf("[demonware]: [auth]: authenticating user %s\n", std::string(&token.data()[64]).data());
-#endif
-
-			std::string auth_key(reinterpret_cast<char*>(&token.data()[32]), 24);
-			std::string session_key(
-				"\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37", 24);
-
-			// client_ticket
-			auth_ticket_t ticket{};
-			std::memset(&ticket, 0x0, sizeof ticket);
-			ticket.m_magicNumber = 0x0EFBDADDE;
-			ticket.m_type = 0;
-			ticket.m_titleID = title_id;
-			ticket.m_timeIssued = static_cast<uint32_t>(time(nullptr));
-			ticket.m_timeExpires = ticket.m_timeIssued + 30000;
-			ticket.m_licenseID = 0;
-			ticket.m_userID = reinterpret_cast<uint64_t>(&token.data()[56]);
-			strncpy_s(ticket.m_username, sizeof(ticket.m_username), reinterpret_cast<char*>(&token.data()[64]), 64);
-			std::memcpy(ticket.m_sessionKey, session_key.data(), 24);
-
-			const auto iv = utils::cryptography::tiger::compute(std::string(reinterpret_cast<char*>(&iv_seed), 4));
-			std::string ticket_enc = utils::cryptography::des3::encrypt(
-				std::string(reinterpret_cast<char*>(&ticket), sizeof(ticket)), iv, auth_key);
-			std::string ticket_b64 = utils::cryptography::base64::encode((const unsigned char*)ticket_enc.c_str(), 128);
-
-			// server_ticket
-			uint8_t auth_data[128];
-			std::memset(&auth_data, 0, sizeof auth_data);
-			std::memcpy(auth_data, session_key.data(), 24);
-			std::string auth_data_b64 = utils::cryptography::base64::encode(auth_data, 128);
-
-			demonware::set_session_key(session_key);
-
-			// header time
-			char date[64];
-			time_t now = time(0);
-			tm gmtm;
-			gmtime_s(&gmtm, &now);
-			strftime(date, 64, "%a, %d %b %G %T", &gmtm);
-
-			// json content
-			std::string content;
-			content.append("{\"auth_task\": \"29\",");
-			content.append("\"code\": \"700\",");
-			content.append(utils::string::va("\"iv_seed\": \"%u\",", iv_seed));
-			content.append(utils::string::va("\"client_ticket\": \"%s\",", ticket_b64.c_str()));
-			content.append(utils::string::va("\"server_ticket\": \"%s\",", auth_data_b64.c_str()));
-			content.append("\"client_id\": \"\",");
-			content.append("\"account_type\": \"steam\",");
-			content.append("\"crossplay_enabled\": false,");
-			content.append("\"loginqueue_eanbled\": false,");
-			content.append("\"lsg_endpoint\": null,");
-			content.append("}");
-
-			// http stuff
-			std::string result;
-			result.append("HTTP/1.1 200 OK\r\n");
-			result.append("Server: TornadoServer/4.5.3\r\n");
-			result.append("Content-Type: application/json\r\n");
-			result.append(utils::string::va("Date: %s GMT\r\n", date));
-			result.append(utils::string::va("Content-Length: %d\r\n\r\n", content.size()));
-			result.append(content);
-
-			raw_reply reply(result);
-			this->send_reply(&reply);
-
-#ifdef DEBUG
-			printf("[demonware]: [auth]: user successfully authenticated.\n");
-#endif
 		}
+
+#ifdef DEBUG
+		printf("[demonware]: [auth]: authenticating user %s\n", std::string(&token.data()[64]).data());
+#endif
+
+		std::string auth_key(reinterpret_cast<char*>(token.data() + 32), 24);
+		std::string session_key(
+			"\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37", 24);
+
+		// client_ticket
+		auth_ticket_t ticket{};
+		std::memset(&ticket, 0x0, sizeof ticket);
+		ticket.m_magicNumber = 0x0EFBDADDE;
+		ticket.m_type = 0;
+		ticket.m_titleID = title_id;
+		ticket.m_timeIssued = static_cast<uint32_t>(time(nullptr));
+		ticket.m_timeExpires = ticket.m_timeIssued + 30000;
+		ticket.m_licenseID = 0;
+		ticket.m_userID = reinterpret_cast<uint64_t>(token.data() +56);
+		strncpy_s(ticket.m_username, sizeof(ticket.m_username), reinterpret_cast<char*>(token.data() + 64), 64);
+		std::memcpy(ticket.m_sessionKey, session_key.data(), 24);
+
+		const auto iv = utils::cryptography::tiger::compute(std::string(reinterpret_cast<char*>(&iv_seed), 4));
+		std::string ticket_enc = utils::cryptography::des3::encrypt(
+			std::string(reinterpret_cast<char*>(&ticket), sizeof(ticket)), iv, auth_key);
+		std::string ticket_b64 = utils::cryptography::base64::encode(reinterpret_cast<const unsigned char*>(ticket_enc.data()), 128);
+
+		// server_ticket
+		uint8_t auth_data[128];
+		std::memset(&auth_data, 0, sizeof auth_data);
+		std::memcpy(auth_data, session_key.data(), 24);
+		std::string auth_data_b64 = utils::cryptography::base64::encode(auth_data, 128);
+
+		demonware::set_session_key(session_key);
+
+		// header time
+		char date[64];
+		time_t now = time(0);
+		tm gmtm{};
+		gmtime_s(&gmtm, &now);
+		strftime(date, 64, "%a, %d %b %G %T", &gmtm);
+
+		// json content
+		rapidjson::Document doc;
+		doc.SetObject();
+
+		doc.AddMember("auth_task", "29", doc.GetAllocator());
+		doc.AddMember("code", "700", doc.GetAllocator());
+
+		auto seed = std::to_string(iv_seed);
+		doc.AddMember("iv_seed", rapidjson::StringRef(seed.data(), seed.size()), doc.GetAllocator());
+		doc.AddMember("client_ticket", rapidjson::StringRef(ticket_b64.data(), ticket_b64.size()), doc.GetAllocator());
+		doc.AddMember("server_ticket", rapidjson::StringRef(auth_data_b64.data(), auth_data_b64.size()), doc.GetAllocator());
+		doc.AddMember("client_id", "", doc.GetAllocator());
+		doc.AddMember("account_type", "steam", doc.GetAllocator());
+		doc.AddMember("crossplay_enabled", false, doc.GetAllocator());
+		doc.AddMember("loginqueue_eanbled", false, doc.GetAllocator());
+
+		rapidjson::Value value{};
+		doc.AddMember("lsg_endpoint", value, doc.GetAllocator());
+
+		rapidjson::StringBuffer buffer{};
+		rapidjson::Writer<rapidjson::StringBuffer, rapidjson::Document::EncodingType, rapidjson::ASCII<>> writer(buffer);
+		doc.Accept(writer);
+
+		// http stuff
+		std::string result;
+		result.append("HTTP/1.1 200 OK\r\n");
+		result.append("Server: TornadoServer/4.5.3\r\n");
+		result.append("Content-Type: application/json\r\n");
+		result.append(utils::string::va("Date: %s GMT\r\n", date));
+		result.append(utils::string::va("Content-Length: %d\r\n\r\n", buffer.GetLength()));
+		result.append(buffer.GetString(), buffer.GetLength());
+
+		raw_reply reply(result);
+		this->send_reply(&reply);
+
+#ifdef DEBUG
+		printf("[demonware]: [auth]: user successfully authenticated.\n");
+#endif
 	}
 }
