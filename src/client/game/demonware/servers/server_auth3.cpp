@@ -48,7 +48,7 @@ namespace demonware
 		}
 
 #ifdef DEBUG
-		printf("[demonware]: [auth]: authenticating user %s\n", std::string(&token.data()[64]).data());
+		printf("[demonware]: [auth]: authenticating user %s\n", token.data() + 64);
 #endif
 
 		std::string auth_key(reinterpret_cast<char*>(token.data() + 32), 24);
@@ -83,7 +83,7 @@ namespace demonware
 
 		// header time
 		char date[64];
-		time_t now = time(0);
+		time_t now = time(nullptr);
 		tm gmtm{};
 		gmtime_s(&gmtm, &now);
 		strftime(date, 64, "%a, %d %b %G %T", &gmtm);
