@@ -33,9 +33,9 @@ namespace console
 		{
 			hide_console();
 
-			_pipe(this->handles_, 1024, _O_TEXT);
-			_dup2(this->handles_[1], 1);
-			_dup2(this->handles_[1], 2);
+			(void)_pipe(this->handles_, 1024, _O_TEXT);
+			(void)_dup2(this->handles_[1], 1);
+			(void)_dup2(this->handles_[1], 2);
 
 			//setvbuf(stdout, nullptr, _IONBF, 0);
 			//setvbuf(stderr, nullptr, _IONBF, 0);
@@ -221,7 +221,7 @@ namespace console
 
 		SetWindowPos(get_window(), nullptr, rect.left, rect.top, width, height, 0);
 
-		const auto logo_window = *reinterpret_cast<HWND*>(SELECT_VALUE(0x14A9F6080, 0x14B5B94D0));
+		auto* const logo_window = *reinterpret_cast<HWND*>(SELECT_VALUE(0x14A9F6080, 0x14B5B94D0));
 		SetWindowPos(logo_window, nullptr, 5, 5, width - 25, 60, 0);
 	}
 }
