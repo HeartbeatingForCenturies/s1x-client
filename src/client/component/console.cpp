@@ -3,6 +3,7 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 #include "scheduler.hpp"
+#include "command.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/flags.hpp>
@@ -45,6 +46,7 @@ namespace console
 			scheduler::loop([this]()
 			{
 				this->log_messages();
+				this->event_frame();
 			}, scheduler::pipeline::main);
 
 			this->console_runner_ = utils::thread::create_named_thread("Console IO", [this]
@@ -71,7 +73,19 @@ namespace console
 
 		void post_unpack() override
 		{
-			this->initialize();
+			game::Sys_ShowConsole();
+
+			if (!game::environment::is_dedi())
+			{
+				// Hide that shit
+				ShowWindow(console::get_window(), SW_MINIMIZE);
+			}
+
+			// Async console is not ready yet :/
+			//this->initialize();
+
+			std::lock_guard<std::mutex> _(this->mutex_);
+			this->console_initialized_ = true;
 		}
 
 	private:
@@ -83,6 +97,22 @@ namespace console
 		std::queue<std::string> message_queue_;
 
 		int handles_[2]{};
+
+		void event_frame()
+		{
+			MSG msg;
+			while (PeekMessageA(&msg, nullptr, NULL, NULL, PM_REMOVE))
+			{
+				if (msg.message == WM_QUIT)
+				{
+					command::execute("quit", false);
+					break;
+				}
+
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
 
 		void initialize()
 		{
