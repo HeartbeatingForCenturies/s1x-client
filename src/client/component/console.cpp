@@ -118,11 +118,7 @@ namespace console
 		{
 			utils::thread::create_named_thread("Console", [this]()
 			{
-				if (game::environment::is_dedi())
-				{
-					game::Sys_ShowConsole();
-				}
-				else if (!utils::flags::has_flag("noconsole"))
+				if (game::environment::is_dedi() || !utils::flags::has_flag("noconsole"))
 				{
 					game::Sys_ShowConsole();
 				}
