@@ -3,66 +3,13 @@
 
 namespace demonware
 {
-	int server_auth3::recv(const char* buf, const int len)
-	{
-		if (len <= 0) return -1;
-		std::lock_guard<std::recursive_mutex> _(this->mutex_);
-		this->incoming_queue_.push(std::string(buf, len));
-
-		return len;
-	}
-
-	int server_auth3::send(char* buf, int len)
-	{
-		if (len > 0 && !this->outgoing_queue_.empty())
-		{
-			std::lock_guard<std::recursive_mutex> _(this->mutex_);
-
-			len = std::min(len, static_cast<int>(this->outgoing_queue_.size()));
-			for (auto i = 0; i < len; ++i)
-			{
-				buf[i] = this->outgoing_queue_.front();
-				this->outgoing_queue_.pop();
-			}
-
-			return len;
-		}
-
-		return SOCKET_ERROR;
-	}
-
 	void server_auth3::send_reply(reply* data)
 	{
 		if (!data) return;
-
-		std::lock_guard _(this->mutex_);
-
-		const auto buffer = data->data();
-		for (auto& byte : buffer)
-		{
-			this->outgoing_queue_.push(byte);
-		}
+		this->send(data->data());
 	}
 
-	void server_auth3::frame()
-	{
-		if (!this->incoming_queue_.empty())
-		{
-			std::lock_guard _(this->mutex_);
-			const auto packet = this->incoming_queue_.front();
-			this->incoming_queue_.pop();
-
-			this->dispatch(packet);
-		}
-	}
-
-	bool server_auth3::pending_data()
-	{
-		std::lock_guard _(this->mutex_);
-		return !this->outgoing_queue_.empty();
-	}
-
-	void server_auth3::dispatch(const std::string& packet)
+	void server_auth3::handle(const std::string& packet)
 	{
 		if (packet.starts_with("POST /auth/"))
 		{

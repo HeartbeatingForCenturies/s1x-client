@@ -25,7 +25,7 @@ public:
 			return 0;
 		}
 
-		out_queue_.access([&](stream_queue& queue)
+		return out_queue_.access<size_t>([&](stream_queue& queue)
 		{
 			for (size_t i = 0; i < size; ++i)
 			{
@@ -40,30 +40,12 @@ public:
 
 			return size;
 		});
-
-		return 0;
 	}
 
-protected:
-	virtual void handle(const std::string& data) = 0;
-
-	void send(const std::string& data)
+	bool pending_data() override
 	{
-		out_queue_.access([&](stream_queue& queue)
-		{
-			for (const auto& val : data)
-			{
-				queue.push(val);
-			}
-		});
+		return !this->out_queue_.get_raw().empty();
 	}
-
-private:
-	using stream_queue = std::queue<char>;
-	using data_queue = std::queue<std::string>;
-
-	utils::concurrency::container<data_queue> in_queue_;
-	utils::concurrency::container<stream_queue> out_queue_;
 
 	void frame() override
 	{
@@ -95,4 +77,22 @@ private:
 			this->handle(packet);
 		}
 	}
+
+protected:
+	virtual void handle(const std::string& data) = 0;
+
+	void send(const std::string& data)
+	{
+		out_queue_.access([&](stream_queue& queue)
+		{
+			for (const auto& val : data)
+			{
+				queue.push(val);
+			}
+		});
+	}
+
+private:
+	utils::concurrency::container<data_queue> in_queue_;
+	utils::concurrency::container<stream_queue> out_queue_;
 };
