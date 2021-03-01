@@ -11,7 +11,7 @@
 DECLSPEC_NORETURN void WINAPI exit_hook(const int code)
 {
 	component_loader::pre_destroy();
-	_exit(code); // Temporarily
+	exit(code);
 }
 
 

@@ -2,15 +2,10 @@
 
 namespace demonware
 {
-	class server_lobby : public server_base, service_server
+	class server_lobby : public tcp_server, service_server
 	{
 	public:
-		explicit server_lobby(std::string name);
-
-		void frame() override;
-		int recv(const char* buf, int len) override;
-		int send(char* buf, int len) override;
-		bool pending_data() override;
+		 server_lobby(std::string name);
 
 		template <typename T>
 		void register_service()
@@ -26,12 +21,9 @@ namespace demonware
 		void send_reply(reply* data) override;
 
 	private:
-		std::recursive_mutex mutex_;
-		std::queue<char> outgoing_queue_;
-		std::queue<std::string> incoming_queue_;
-		std::map<std::uint8_t, std::unique_ptr<service>> services_;
+		std::unordered_map<std::uint8_t, std::unique_ptr<service>> services_;
 
-		void dispatch(const std::string& packet);
-		void call_service(std::uint8_t type, const std::string& data);
+		void handle(const std::string& packet) override;
+		void call_service(const std::uint8_t id, const std::string& data);
 	};
 }

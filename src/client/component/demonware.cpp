@@ -48,7 +48,7 @@ namespace demonware
 	{
 		std::lock_guard<std::recursive_mutex> $(server_mutex);
 
-		servers[server->address()] = server;
+		servers[server->get_address()] = server;
 	}
 
 	auto find_server_by_address(const std::uint32_t address) -> server_ptr
@@ -176,7 +176,7 @@ namespace demonware
 			if (server)
 			{
 				static thread_local in_addr address;
-				address.s_addr = server->address();
+				address.s_addr = server->get_address();
 
 				static thread_local in_addr* addr_list[2];
 				addr_list[0] = &address;
@@ -223,7 +223,8 @@ namespace demonware
 
 			if (server)
 			{
-				return server->recv(buf, len);
+				server->handle_input(buf, len);
+				return len;
 			}
 
 			return send(s, buf, len, flags);
@@ -237,7 +238,7 @@ namespace demonware
 			{
 				if (server->pending_data())
 				{
-					return server->send(buf, len);
+					return static_cast<int>(server->handle_output(buf, len));
 				}
 				else
 				{
@@ -251,21 +252,21 @@ namespace demonware
 
 		int sendto_stub(SOCKET s, const char* buf, int len, int flags, const struct sockaddr* to, int tolen)
 		{
-			const auto* in_addr = reinterpret_cast<const sockaddr_in*>(to);
+			/*const auto* in_addr = reinterpret_cast<const sockaddr_in*>(to);
 			auto server = find_server_by_address(in_addr->sin_addr.s_addr);
 
 			if (server)
 			{
 				socket_link(s, in_addr->sin_addr.s_addr);
 				return server->recv(buf, len);
-			}
+			}*/
 
 			return sendto(s, buf, len, flags, to, tolen);
 		}
 
 		int recvfrom_stub(SOCKET s, char* buf, int len, int flags, struct sockaddr* from, int* fromlen)
 		{
-			auto server = find_server_by_socket(s);
+			/*auto server = find_server_by_socket(s);
 
 			if (server)
 			{
@@ -283,7 +284,7 @@ namespace demonware
 					WSASetLastError(WSAEWOULDBLOCK);
 					return -1;
 				}
-			}
+			}*/
 
 			return recvfrom(s, buf, len, flags, from, fromlen);
 		}

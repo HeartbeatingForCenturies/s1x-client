@@ -4,6 +4,9 @@
 class base_server
 {
 public:
+	using stream_queue = std::queue<char>;
+	using data_queue = std::queue<std::string>;
+
 	base_server(std::string name)
 		: name_(std::move(name))
 	{
@@ -27,14 +30,8 @@ public:
 		return this->address_;
 	}
 
-	virtual void frame()
-	{
-	}
-
-	virtual bool pending_data()
-	{
-		return false;
-	}
+	virtual void frame() = 0;
+	virtual bool pending_data() = 0;
 
 private:
 	std::string name_;

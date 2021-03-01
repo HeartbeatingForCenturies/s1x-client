@@ -3,6 +3,7 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 #include "scheduler.hpp"
+#include "command.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/flags.hpp>
@@ -32,9 +33,9 @@ namespace console
 		{
 			hide_console();
 
-			_pipe(this->handles_, 1024, _O_TEXT);
-			_dup2(this->handles_[1], 1);
-			_dup2(this->handles_[1], 2);
+			(void)_pipe(this->handles_, 1024, _O_TEXT);
+			(void)_dup2(this->handles_[1], 1);
+			(void)_dup2(this->handles_[1], 2);
 
 			//setvbuf(stdout, nullptr, _IONBF, 0);
 			//setvbuf(stderr, nullptr, _IONBF, 0);
@@ -45,6 +46,7 @@ namespace console
 			scheduler::loop([this]()
 			{
 				this->log_messages();
+				this->event_frame();
 			}, scheduler::pipeline::main);
 
 			this->console_runner_ = utils::thread::create_named_thread("Console IO", [this]
@@ -71,7 +73,19 @@ namespace console
 
 		void post_unpack() override
 		{
-			this->initialize();
+			game::Sys_ShowConsole();
+
+			if (!game::environment::is_dedi())
+			{
+				// Hide that shit
+				ShowWindow(console::get_window(), SW_MINIMIZE);
+			}
+
+			// Async console is not ready yet :/
+			//this->initialize();
+
+			std::lock_guard<std::mutex> _(this->mutex_);
+			this->console_initialized_ = true;
 		}
 
 	private:
@@ -84,15 +98,27 @@ namespace console
 
 		int handles_[2]{};
 
+		void event_frame()
+		{
+			MSG msg;
+			while (PeekMessageA(&msg, nullptr, NULL, NULL, PM_REMOVE))
+			{
+				if (msg.message == WM_QUIT)
+				{
+					command::execute("quit", false);
+					break;
+				}
+
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
+
 		void initialize()
 		{
 			utils::thread::create_named_thread("Console", [this]()
 			{
-				if (game::environment::is_dedi())
-				{
-					game::Sys_ShowConsole();
-				}
-				else if (!utils::flags::has_flag("noconsole"))
+				if (game::environment::is_dedi() || !utils::flags::has_flag("noconsole"))
 				{
 					game::Sys_ShowConsole();
 				}
@@ -195,7 +221,7 @@ namespace console
 
 		SetWindowPos(get_window(), nullptr, rect.left, rect.top, width, height, 0);
 
-		const auto logo_window = *reinterpret_cast<HWND*>(SELECT_VALUE(0x14A9F6080, 0x14B5B94D0));
+		auto* const logo_window = *reinterpret_cast<HWND*>(SELECT_VALUE(0x14A9F6080, 0x14B5B94D0));
 		SetWindowPos(logo_window, nullptr, 5, 5, width - 25, 60, 0);
 	}
 }
