@@ -1,10 +1,11 @@
 #pragma once
 
-#include "new/udp_server.hpp"
+#include "udp_server.hpp"
+#include "../byte_buffer.hpp"
 
 namespace demonware
 {
-	class server_stun : public udp_server
+	class stun_server : public udp_server
 	{
 	public:
 		using udp_server::udp_server;

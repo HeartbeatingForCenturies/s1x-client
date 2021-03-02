@@ -1,16 +1,9 @@
-#pragma once
+#include <std_include.hpp>
+#include "tcp_server.hpp"
 
-#include "base_server.hpp"
-
-#include <queue>
-#include <utils/concurrency.hpp>
-
-class tcp_server : public base_server
+namespace demonware
 {
-public:
-	using base_server::base_server;
-
-	void handle_input(const char* buf, size_t size)
+	void tcp_server::handle_input(const char* buf, size_t size)
 	{
 		in_queue_.access([&](data_queue& queue)
 		{
@@ -18,7 +11,7 @@ public:
 		});
 	}
 
-	size_t handle_output(char* buf, size_t size)
+	size_t tcp_server::handle_output(char* buf, size_t size)
 	{
 		if (out_queue_.get_raw().empty())
 		{
@@ -42,12 +35,12 @@ public:
 		});
 	}
 
-	bool pending_data() override
+	bool tcp_server::pending_data()
 	{
 		return !this->out_queue_.get_raw().empty();
 	}
 
-	void frame() override
+	void tcp_server::frame()
 	{
 		if (this->in_queue_.get_raw().empty())
 		{
@@ -78,10 +71,7 @@ public:
 		}
 	}
 
-protected:
-	virtual void handle(const std::string& data) = 0;
-
-	void send(const std::string& data)
+	void tcp_server::send(const std::string& data)
 	{
 		out_queue_.access([&](stream_queue& queue)
 		{
@@ -91,8 +81,4 @@ protected:
 			}
 		});
 	}
-
-private:
-	utils::concurrency::container<data_queue> in_queue_;
-	utils::concurrency::container<stream_queue> out_queue_;
-};
+}

@@ -1,10 +1,10 @@
 #include <std_include.hpp>
 #include "../demonware.hpp"
-#include "new/tcp_server.hpp"
+#include "tcp_server.hpp"
 
 namespace demonware
 {
-	server_lobby::server_lobby(std::string name) : tcp_server(std::move(name))
+	lobby_server::lobby_server(std::string name) : tcp_server(std::move(name))
 	{
 		this->register_service<bdAnticheat>();
 		this->register_service<bdBandwidthTest>();
@@ -26,13 +26,13 @@ namespace demonware
 		this->register_service<bdMarketing>();
 	};
 
-	void server_lobby::send_reply(reply* data)
+	void lobby_server::send_reply(reply* data)
 	{
 		if (!data) return;
 		this->send(data->data());
 	}
 
-	void server_lobby::handle(const std::string& packet)
+	void lobby_server::handle(const std::string& packet)
 	{
 		byte_buffer buffer(packet);
 		buffer.set_use_data_types(false);
@@ -75,9 +75,9 @@ namespace demonware
 
 				if (buffer.size() < size_t(size)) return;
 
-				uint8_t check_AB;
-				buffer.read_byte(&check_AB);
-				if (check_AB == 0xAB)
+				uint8_t check_ab;
+				buffer.read_byte(&check_ab);
+				if (check_ab == 0xAB)
 				{
 					uint8_t type;
 					buffer.read_byte(&type);
@@ -106,8 +106,8 @@ namespace demonware
 					}
 					else if (type == 0x85)
 					{
-						uint32_t msgCount;
-						buffer.read_uint32(&msgCount);
+						uint32_t msg_count;
+						buffer.read_uint32(&msg_count);
 
 						char seed[16];
 						buffer.read(16, &seed);
@@ -146,7 +146,7 @@ namespace demonware
 		}
 	}
 
-	void server_lobby::call_service(const std::uint8_t id, const std::string& data)
+	void lobby_server::call_service(const std::uint8_t id, const std::string& data)
 	{
 		const auto& it = this->services_.find(id);
 

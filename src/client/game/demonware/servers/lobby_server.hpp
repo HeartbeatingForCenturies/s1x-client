@@ -2,10 +2,10 @@
 
 namespace demonware
 {
-	class server_lobby : public tcp_server, service_server
+	class lobby_server : public tcp_server, service_server
 	{
 	public:
-		 server_lobby(std::string name);
+		 lobby_server(std::string name);
 
 		template <typename T>
 		void register_service()

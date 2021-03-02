@@ -41,17 +41,17 @@ namespace demonware
 	std::thread server_thread;
 	std::recursive_mutex server_mutex;
 	std::map<SOCKET, bool> sockets_blocking;
-	std::map<SOCKET, server_ptr> sockets;
-	std::map<std::uint32_t, server_ptr> servers;
+	std::map<SOCKET, tcp_server*> sockets;
+	std::map<std::uint32_t, std::unique_ptr<tcp_server>> servers;
 
-	void register_server(server_ptr server)
+	void register_server(std::unique_ptr<tcp_server>&& server)
 	{
 		std::lock_guard<std::recursive_mutex> $(server_mutex);
 
-		servers[server->get_address()] = server;
+		servers[server->get_address()] = std::move(server);
 	}
 
-	auto find_server_by_address(const std::uint32_t address) -> server_ptr
+	tcp_server* find_server_by_address(const std::uint32_t address)
 	{
 		std::lock_guard<std::recursive_mutex> $(server_mutex);
 
@@ -59,20 +59,20 @@ namespace demonware
 
 		if (it != servers.end())
 		{
-			return it->second;
+			return it->second.get();
 		}
 
-		return server_ptr(nullptr);
+		return nullptr;
 	}
 
-	auto find_server_by_name(const std::string& name) -> server_ptr
+	tcp_server* find_server_by_name(const std::string& name)
 	{
 		std::lock_guard<std::recursive_mutex> $(server_mutex);
 
 		return find_server_by_address(utils::cryptography::jenkins_one_at_a_time::compute(name));
 	}
 
-	auto find_server_by_socket(const SOCKET socket) -> server_ptr
+	tcp_server* find_server_by_socket(const SOCKET socket)
 	{
 		std::lock_guard<std::recursive_mutex> $(server_mutex);
 
@@ -83,7 +83,7 @@ namespace demonware
 			return it->second;
 		}
 
-		return server_ptr(nullptr);
+		return nullptr;
 	}
 
 	auto socket_link(const SOCKET socket, std::uint32_t address) -> bool
@@ -383,8 +383,8 @@ namespace demonware
 			register_server(std::make_shared<demonware::server_stun>("stun.jp.demonware.net"));
 			register_server(std::make_shared<demonware::server_stun>("stun.au.demonware.net"));*/
 
-			register_server(std::make_shared<demonware::server_auth3>("aw-pc-auth3.prod.demonware.net"));
-			register_server(std::make_shared<demonware::server_lobby>("aw-pc-lobby.prod.demonware.net"));
+			register_server(std::make_unique<demonware::auth3_server>("aw-pc-auth3.prod.demonware.net"));
+			register_server(std::make_unique<demonware::lobby_server>("aw-pc-lobby.prod.demonware.net"));
 		}
 
 		void post_load() override

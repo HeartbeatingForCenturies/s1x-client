@@ -1,16 +1,9 @@
-#pragma once
+#include <std_include.hpp>
+#include "udp_server.hpp"
 
-#include "base_server.hpp"
-
-#include <queue>
-#include <utils/concurrency.hpp>
-
-class udp_server : public base_server
+namespace demonware
 {
-public:
-	using base_server::base_server;
-
-	void handle_input(const char* buf, size_t size)
+	void udp_server::handle_input(const char* buf, size_t size)
 	{
 		in_queue_.access([&](data_queue& queue)
 		{
@@ -18,7 +11,7 @@ public:
 		});
 	}
 
-	size_t handle_output(char* buf, size_t size)
+	size_t udp_server::handle_output(char* buf, size_t size)
 	{
 		if (out_queue_.get_raw().empty())
 		{
@@ -42,15 +35,12 @@ public:
 		});
 	}
 
-	bool pending_data() override
+	bool udp_server::pending_data()
 	{
 		return !this->out_queue_.get_raw().empty();
 	}
 
-protected:
-	virtual void handle(const std::string& data) = 0;
-
-	void send(const std::string& data)
+	void udp_server::send(const std::string& data)
 	{
 		out_queue_.access([&](data_queue& queue)
 		{
@@ -58,11 +48,7 @@ protected:
 		});
 	}
 
-private:
-	utils::concurrency::container<data_queue> in_queue_;
-	utils::concurrency::container<data_queue> out_queue_;
-
-	void frame() override
+	void udp_server::frame()
 	{
 		if (this->in_queue_.get_raw().empty())
 		{
@@ -92,4 +78,4 @@ private:
 			this->handle(packet);
 		}
 	}
-};
+}	
