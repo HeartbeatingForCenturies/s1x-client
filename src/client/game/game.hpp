@@ -63,6 +63,8 @@ namespace game
 
 	int SV_Cmd_Argc();
 	const char* SV_Cmd_Argv(int index);
+
+	bool VirtualLobby_Loaded();
 }
 
 #include "symbols.hpp"

@@ -150,6 +150,9 @@ namespace dedicated
 				return;
 			}
 
+			// Disable VirtualLobby
+			dvars::override::Dvar_RegisterBool("virtualLobbyEnabled", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
+
 			// Disable r_preloadShaders
 			dvars::override::Dvar_RegisterBool("r_preloadShaders", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
 

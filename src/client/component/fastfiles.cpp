@@ -56,8 +56,11 @@ namespace fastfiles
 					return;
 				}
 
-				const char* name = params.get(1);
-				game::DB_LoadXAssets(&name, 1u, game::DBSyncMode::DB_LOAD_SYNC);
+				game::XZoneInfo info;
+				info.name = params.get(1);
+				info.allocFlags = 1;
+				info.freeFlags = 0;
+				game::DB_LoadXAssets(&info, 1u, game::DBSyncMode::DB_LOAD_SYNC);
 			});
 
 			command::add("materiallist", [](const command::params& params)

@@ -81,7 +81,7 @@ namespace bots
 
 			command::add("spawnBot", [](const command::params& params)
 			{
-				if (!game::SV_Loaded()) return;
+				if (!game::SV_Loaded() || game::VirtualLobby_Loaded()) return;
 
 				auto num_bots = 1;
 				if (params.size() == 2)
