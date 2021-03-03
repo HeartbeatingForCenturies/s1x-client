@@ -78,6 +78,9 @@ namespace gameplay
 			utils::hook::jump(0x14014DF91, pm_bouncing_stub_mp, true);
 			dvars::pm_bouncing = game::Dvar_RegisterBool("pm_bouncing", false,
 			                                             game::DVAR_FLAG_REPLICATED, "Enable bouncing");
+
+			// Change jump_slowdownEnable dvar flags to just "replicated"
+			utils::hook::set<uint8_t>(0x140135992, game::DVAR_FLAG_REPLICATED);
 		}
 	};
 }
