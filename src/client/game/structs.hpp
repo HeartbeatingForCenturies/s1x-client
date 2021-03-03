@@ -9,6 +9,11 @@ namespace game
 	typedef vec_t vec3_t[3];
 	typedef vec_t vec4_t[4];
 
+	enum scr_string_t
+	{
+		scr_string_t_dummy = 0x0,
+	};
+
 	enum Sys_Folder
 	{
 		SF_ZONE = 0x0,
@@ -810,6 +815,13 @@ namespace game
 		DB_LOAD_ASYNC_FORCE_FREE = 0x3,
 		DB_LOAD_ASYNC_NO_SYNC_THREADS = 0x4,
 		DB_LOAD_SYNC_SKIP_ALWAYS_LOADED = 0x5,
+	};
+
+	struct XZoneInfo
+	{
+		const char* name;
+		int allocFlags;
+		int freeFlags;
 	};
 
 	enum XAssetType

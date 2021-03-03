@@ -68,6 +68,9 @@ namespace party
 
 			perform_game_initialization();
 
+			// exit from virtuallobby
+			reinterpret_cast<void(*)()>(0x14020EB90)();
+
 			// CL_ConnectFromParty
 			char session_info[0x100] = {};
 			reinterpret_cast<void(*)(int, char*, const game::netadr_s*, const char*, const char*)>(0x140209360)(
@@ -212,7 +215,7 @@ namespace party
 
 			auto* current_mapname = game::Dvar_FindVar("mapname");
 			if (current_mapname && utils::string::to_lower(current_mapname->current.string) ==
-				utils::string::to_lower(mapname) && game::SV_Loaded())
+				utils::string::to_lower(mapname) && (game::SV_Loaded() && !game::VirtualLobby_Loaded()))
 			{
 				printf("Restarting map: %s\n", mapname.data());
 				command::execute("map_restart", false);
@@ -228,6 +231,13 @@ namespace party
 			}
 			command::execute(utils::string::va("ui_mapname %s", mapname.data()), true);
 
+			/*auto* maxclients = game::Dvar_FindVar("sv_maxclients");
+			if (maxclients)
+			{
+				command::execute(utils::string::va("ui_maxclients %i", maxclients->current.integer), true);
+				command::execute(utils::string::va("party_maxplayers %i", maxclients->current.integer), true);
+			}*/
+
 			// StartServer
 			reinterpret_cast<void(*)(unsigned int)>(0x140492260)(0);
 
@@ -238,7 +248,7 @@ namespace party
 
 	void send_disconnect()
 	{
-		if (game::CL_IsCgameInitialized())
+		if (game::CL_IsCgameInitialized() && !game::VirtualLobby_Loaded())
 		{
 			// CL_ForwardCommandToServer
 			reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
@@ -284,7 +294,7 @@ namespace party
 
 			command::add("map_restart", []()
 			{
-				if (!game::SV_Loaded())
+				if (!game::SV_Loaded() || game::VirtualLobby_Loaded())
 				{
 					return;
 				}
@@ -296,7 +306,7 @@ namespace party
 
 			command::add("fast_restart", []()
 			{
-				if (game::SV_Loaded())
+				if (game::SV_Loaded() && !game::VirtualLobby_Loaded())
 				{
 					game::SV_FastRestart(0);
 				}
