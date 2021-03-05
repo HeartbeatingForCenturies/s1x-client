@@ -3,23 +3,30 @@
 
 namespace demonware
 {
-	void udp_server::handle_input(const char* buf, size_t size)
+	void udp_server::handle_input(const char* buf, size_t size, endpoint_data endpoint)
 	{
-		in_queue_.access([&](data_queue& queue)
+		in_queue_.access([&](in_queue& queue)
 		{
-			queue.emplace(buf, size);
+			in_packet p;
+			p.data = std::string{buf, size};
+			p.endpoint = std::move(endpoint);
+
+			queue.emplace(std::move(p));
 		});
 	}
 
-	size_t udp_server::handle_output(char* buf, size_t size)
+	size_t udp_server::handle_output(SOCKET socket, char* buf, size_t size, sockaddr* address, int* addrlen)
 	{
-		if (out_queue_.get_raw().empty())
+		return out_queue_.access<size_t>([&](socket_queue_map& map) -> size_t
 		{
-			return 0;
-		}
+			const auto entry = map.find(socket);
+			if (entry == map.end())
+			{
+				return 0;
+			}
 
-		return out_queue_.access<size_t>([&](data_queue& queue) -> size_t
-		{
+			auto& queue = entry->second;
+
 			if (queue.empty())
 			{
 				return 0;
@@ -28,23 +35,38 @@ namespace demonware
 			auto data = std::move(queue.front());
 			queue.pop();
 
-			const auto copy_size = std::min(size, data.size());
-			std::memcpy(buf, data.data(), copy_size);
+			const auto copy_size = std::min(size, data.data.size());
+			std::memcpy(buf, data.data.data(), copy_size);
+			std::memcpy(address, &data.address, sizeof(data.address));
+			*addrlen = sizeof(data.address);
 
 			return copy_size;
 		});
 	}
 
-	bool udp_server::pending_data()
+	bool udp_server::pending_data(SOCKET socket)
 	{
-		return !this->out_queue_.get_raw().empty();
+		return this->out_queue_.access<bool>([&](const socket_queue_map& map)
+		{
+			const auto entry = map.find(socket);
+			if (entry == map.end())
+			{
+				return false;
+			}
+
+			return !entry->second.empty();
+		});
 	}
 
-	void udp_server::send(const std::string& data)
+	void udp_server::send(const endpoint_data& endpoint, std::string data)
 	{
-		out_queue_.access([&](data_queue& queue)
+		out_queue_.access([&](socket_queue_map& map)
 		{
-			queue.push(data);
+			out_packet p;
+			p.data = std::move(data);
+			p.address = endpoint.address;
+
+			map[endpoint.socket].emplace(std::move(p));
 		});
 	}
 
@@ -57,8 +79,8 @@ namespace demonware
 
 		while (true)
 		{
-			std::string packet{};
-			const auto result = this->in_queue_.access<bool>([&](data_queue& queue)
+			in_packet packet{};
+			const auto result = this->in_queue_.access<bool>([&](in_queue& queue)
 			{
 				if (queue.empty())
 				{
@@ -75,7 +97,7 @@ namespace demonware
 				break;
 			}
 
-			this->handle(packet);
+			this->handle(packet.endpoint, std::move(packet.data));
 		}
 	}
-}	
+}

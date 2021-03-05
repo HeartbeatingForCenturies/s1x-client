@@ -12,7 +12,7 @@ namespace demonware
 
 		void handle_input(const char* buf, size_t size);
 		size_t handle_output(char* buf, size_t size);
-		bool pending_data() override;
+		bool pending_data();
 		void frame() override;
 
 	protected:

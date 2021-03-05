@@ -20,6 +20,14 @@ namespace demonware
 			servers_[address] = std::move(server);
 		}
 
+		void for_each(const std::function<void(T&)>& callback) const
+		{
+			for (auto& server : servers_)
+			{
+				callback(*server.second);
+			}
+		}
+
 		T* find(const std::string& name)
 		{
 			const auto address = utils::cryptography::jenkins_one_at_a_time::compute(name);
@@ -43,16 +51,6 @@ namespace demonware
 			{
 				server.second->frame();
 			}
-		}
-
-		auto begin() const
-		{
-			return servers_.begin();
-		}
-
-		auto end() const
-		{
-			return servers_.begin();
 		}
 
 	private:

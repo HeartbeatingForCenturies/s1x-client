@@ -124,7 +124,6 @@ namespace demonware
 					server = udp_servers.find(name);
 				}
 
-
 				if (!server)
 				{
 #pragma warning(push)
@@ -133,14 +132,14 @@ namespace demonware
 #pragma warning(pop)
 				}
 
-				static thread_local in_addr address;
+				static thread_local in_addr address{};
 				address.s_addr = server->get_address();
 
-				static thread_local in_addr* addr_list[2];
+				static thread_local in_addr* addr_list[2]{};
 				addr_list[0] = &address;
 				addr_list[1] = nullptr;
 
-				static thread_local hostent host;
+				static thread_local hostent host{};
 				host.h_name = const_cast<char*>(name);
 				host.h_aliases = nullptr;
 				host.h_addrtype = AF_INET;
@@ -150,7 +149,7 @@ namespace demonware
 				return &host;
 			}
 
-			int connect_stub(SOCKET s, const struct sockaddr* addr, const int len)
+			int connect_stub(const SOCKET s, const struct sockaddr* addr, const int len)
 			{
 				if (len == sizeof(sockaddr_in))
 				{
@@ -161,7 +160,7 @@ namespace demonware
 				return connect(s, addr, len);
 			}
 
-			int closesocket_stub(SOCKET s)
+			int closesocket_stub(const SOCKET s)
 			{
 				remove_blocking_socket(s);
 				socket_unlink(s);
@@ -202,42 +201,44 @@ namespace demonware
 				return recv(s, buf, len, flags);
 			}
 
-			int sendto_stub(const SOCKET s, const char* buf, const int len, const int flags, const struct sockaddr* to,
+			int sendto_stub(const SOCKET s, const char* buf, const int len, const int flags, const sockaddr* to,
 			                const int tolen)
 			{
-				/*const auto* in_addr = reinterpret_cast<const sockaddr_in*>(to);
-				auto server = find_server_by_address(in_addr->sin_addr.s_addr);
-	
+				const auto* in_addr = reinterpret_cast<const sockaddr_in*>(to);
+				auto* server = udp_servers.find(in_addr->sin_addr.s_addr);
+
 				if (server)
 				{
-					socket_link(s, in_addr->sin_addr.s_addr);
-					return server->recv(buf, len);
-				}*/
+					server->handle_input(buf, len, {s, to, tolen});
+					return len;
+				}
 
 				return sendto(s, buf, len, flags, to, tolen);
 			}
 
-			int recvfrom_stub(SOCKET s, char* buf, int len, int flags, struct sockaddr* from, int* fromlen)
+			int recvfrom_stub(const SOCKET s, char* buf, const int len, const int flags, struct sockaddr* from,
+			                  int* fromlen)
 			{
-				/*auto server = find_server_by_socket(s);
-	
-				if (server)
+				// Not supported yet
+				if (is_socket_blocking(s, UDP_BLOCKING))
 				{
-					while (socket_is_blocking(s, UDP_BLOCKING) && !server->pending_data())
+					return recvfrom(s, buf, len, flags, from, fromlen);
+				}
+
+				size_t result = 0;
+				udp_servers.for_each([&](udp_server& server)
+				{
+					if (server.pending_data(s))
 					{
-						std::this_thread::sleep_for(1ms);
+						result = server.handle_output(
+							s, buf, static_cast<size_t>(len), from, fromlen);
 					}
-	
-					if (server->pending_data())
-					{
-						return server->send(buf, len);
-					}
-					else
-					{
-						WSASetLastError(WSAEWOULDBLOCK);
-						return -1;
-					}
-				}*/
+				});
+
+				if (result)
+				{
+					return static_cast<int>(result);
+				}
 
 				return recvfrom(s, buf, len, flags, from, fromlen);
 			}
@@ -245,7 +246,7 @@ namespace demonware
 			int select_stub(const int nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds,
 			                struct timeval* timeout)
 			{
-				int result = 0;
+				auto result = 0;
 				std::vector<SOCKET> read_sockets;
 				std::vector<SOCKET> write_sockets;
 
@@ -351,15 +352,15 @@ namespace demonware
 	public:
 		component()
 		{
-			/*register_server(std::make_shared<demonware::server_stun>("s1-stun.us.demonware.net"));
-			register_server(std::make_shared<demonware::server_stun>("s1-stun.eu.demonware.net"));
-			register_server(std::make_shared<demonware::server_stun>("s1-stun.jp.demonware.net"));
-			register_server(std::make_shared<demonware::server_stun>("s1-stun.au.demonware.net"));
+			udp_servers.create<stun_server>("s1-stun.us.demonware.net");
+			udp_servers.create<stun_server>("s1-stun.eu.demonware.net");
+			udp_servers.create<stun_server>("s1-stun.jp.demonware.net");
+			udp_servers.create<stun_server>("s1-stun.au.demonware.net");
 
-			register_server(std::make_shared<demonware::server_stun>("stun.us.demonware.net"));
-			register_server(std::make_shared<demonware::server_stun>("stun.eu.demonware.net"));
-			register_server(std::make_shared<demonware::server_stun>("stun.jp.demonware.net"));
-			register_server(std::make_shared<demonware::server_stun>("stun.au.demonware.net"));*/
+			udp_servers.create<stun_server>("stun.us.demonware.net");
+			udp_servers.create<stun_server>("stun.eu.demonware.net");
+			udp_servers.create<stun_server>("stun.jp.demonware.net");
+			udp_servers.create<stun_server>("stun.au.demonware.net");
 
 			tcp_servers.create<auth3_server>("aw-pc-auth3.prod.demonware.net");
 			tcp_servers.create<lobby_server>("aw-pc-lobby.prod.demonware.net");

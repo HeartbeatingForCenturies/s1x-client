@@ -22,7 +22,6 @@ namespace demonware
 		uint32_t get_address() const;
 
 		virtual void frame() = 0;
-		virtual bool pending_data() = 0;
 
 	private:
 		std::string name_;
