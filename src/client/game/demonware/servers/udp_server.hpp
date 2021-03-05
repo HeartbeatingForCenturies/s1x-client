@@ -14,6 +14,8 @@ namespace demonware
 		size_t handle_output(char* buf, size_t size);
 		bool pending_data() override;
 
+		void frame() override;
+
 	protected:
 		virtual void handle(const std::string& data) = 0;
 
@@ -22,7 +24,5 @@ namespace demonware
 	private:
 		utils::concurrency::container<data_queue> in_queue_;
 		utils::concurrency::container<data_queue> out_queue_;
-
-		void frame() override;
 	};
 }
