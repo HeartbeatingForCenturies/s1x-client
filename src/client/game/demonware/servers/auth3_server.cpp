@@ -3,13 +3,13 @@
 
 namespace demonware
 {
-	void server_auth3::send_reply(reply* data)
+	void auth3_server::send_reply(reply* data)
 	{
 		if (!data) return;
 		this->send(data->data());
 	}
 
-	void server_auth3::handle(const std::string& packet)
+	void auth3_server::handle(const std::string& packet)
 	{
 		if (packet.starts_with("POST /auth/"))
 		{
@@ -28,10 +28,14 @@ namespace demonware
 		j.Parse(packet.data(), packet.size());
 
 		if (j.HasMember("title_id") && j["title_id"].IsString())
+		{
 			title_id = std::stoul(j["title_id"].GetString());
+		}
 
 		if (j.HasMember("iv_seed") && j["iv_seed"].IsString())
+		{
 			iv_seed = std::stoul(j["iv_seed"].GetString());
+		}
 
 		if (j.HasMember("extra_data") && j["extra_data"].IsString())
 		{
@@ -64,14 +68,15 @@ namespace demonware
 		ticket.m_timeIssued = static_cast<uint32_t>(time(nullptr));
 		ticket.m_timeExpires = ticket.m_timeIssued + 30000;
 		ticket.m_licenseID = 0;
-		ticket.m_userID = reinterpret_cast<uint64_t>(token.data() +56);
+		ticket.m_userID = reinterpret_cast<uint64_t>(token.data() + 56);
 		strncpy_s(ticket.m_username, sizeof(ticket.m_username), reinterpret_cast<char*>(token.data() + 64), 64);
 		std::memcpy(ticket.m_sessionKey, session_key.data(), 24);
 
 		const auto iv = utils::cryptography::tiger::compute(std::string(reinterpret_cast<char*>(&iv_seed), 4));
 		std::string ticket_enc = utils::cryptography::des3::encrypt(
 			std::string(reinterpret_cast<char*>(&ticket), sizeof(ticket)), iv, auth_key);
-		std::string ticket_b64 = utils::cryptography::base64::encode(reinterpret_cast<const unsigned char*>(ticket_enc.data()), 128);
+		std::string ticket_b64 = utils::cryptography::base64::encode(
+			reinterpret_cast<const unsigned char*>(ticket_enc.data()), 128);
 
 		// server_ticket
 		uint8_t auth_data[128];
@@ -98,7 +103,8 @@ namespace demonware
 		auto seed = std::to_string(iv_seed);
 		doc.AddMember("iv_seed", rapidjson::StringRef(seed.data(), seed.size()), doc.GetAllocator());
 		doc.AddMember("client_ticket", rapidjson::StringRef(ticket_b64.data(), ticket_b64.size()), doc.GetAllocator());
-		doc.AddMember("server_ticket", rapidjson::StringRef(auth_data_b64.data(), auth_data_b64.size()), doc.GetAllocator());
+		doc.AddMember("server_ticket", rapidjson::StringRef(auth_data_b64.data(), auth_data_b64.size()),
+		              doc.GetAllocator());
 		doc.AddMember("client_id", "", doc.GetAllocator());
 		doc.AddMember("account_type", "steam", doc.GetAllocator());
 		doc.AddMember("crossplay_enabled", false, doc.GetAllocator());
@@ -108,7 +114,8 @@ namespace demonware
 		doc.AddMember("lsg_endpoint", value, doc.GetAllocator());
 
 		rapidjson::StringBuffer buffer{};
-		rapidjson::Writer<rapidjson::StringBuffer, rapidjson::Document::EncodingType, rapidjson::ASCII<>> writer(buffer);
+		rapidjson::Writer<rapidjson::StringBuffer, rapidjson::Document::EncodingType, rapidjson::ASCII<>>
+			writer(buffer);
 		doc.Accept(writer);
 
 		// http stuff

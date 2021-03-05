@@ -37,9 +37,13 @@
 #include "services/bdMarketing.hpp"         //139
 
 // servers
-#include "servers/server_auth3.hpp"
-#include "servers/server_lobby.hpp"
-#include "servers/server_stun.hpp"
+#include "servers/base_server.hpp"
+#include "servers/tcp_server.hpp"
+#include "servers/udp_server.hpp"
+
+#include "servers/auth3_server.hpp"
+#include "servers/lobby_server.hpp"
+#include "servers/stun_server.hpp"
 
 namespace demonware
 {

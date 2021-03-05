@@ -1,8 +1,5 @@
 #pragma once
 #include <utils/cryptography.hpp>
-#include "new/tcp_server.hpp"
-
-using server_ptr = std::shared_ptr<tcp_server>;
 
 namespace demonware
 {
@@ -23,7 +20,7 @@ namespace demonware
 	};
 #pragma pack(pop)
 
-	class server_auth3 : public tcp_server
+	class auth3_server : public tcp_server
 	{
 	public:
 		using tcp_server::tcp_server;
