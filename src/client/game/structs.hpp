@@ -9,10 +9,94 @@ namespace game
 	typedef vec_t vec3_t[3];
 	typedef vec_t vec4_t[4];
 
+	// * scripting
 	enum scr_string_t
 	{
 		scr_string_t_dummy = 0x0,
 	};
+
+	struct scr_entref_t
+	{
+		unsigned short entnum;
+		unsigned short classnum;
+	};
+
+	enum scriptType_e
+	{
+		SCRIPT_NONE = 0,
+		SCRIPT_OBJECT = 1,
+		SCRIPT_STRING = 2,
+		SCRIPT_VECTOR = 4,
+		SCRIPT_FLOAT = 5,
+		SCRIPT_INTEGER = 6,
+		SCRIPT_END = 8,
+	};
+
+	struct VariableStackBuffer
+	{
+		const char* pos;
+		unsigned __int16 size;
+		unsigned __int16 bufLen;
+		unsigned __int16 localId;
+		char time;
+		char buf[1];
+	};
+
+	union VariableUnion
+	{
+		int intValue;
+		unsigned int uintValue;
+		float floatValue;
+		unsigned int stringValue;
+		const float* vectorValue;
+		const char* codePosValue;
+		unsigned int pointerValue;
+		VariableStackBuffer* stackValue;
+		unsigned int entityOffset;
+	};
+
+	struct VariableValue
+	{
+		VariableUnion u;
+		int type;
+	};
+
+	struct function_stack_t
+	{
+		const char* pos;
+		unsigned int localId;
+		unsigned int localVarCount;
+		VariableValue* top;
+		VariableValue* startTop;
+	};
+
+	struct function_frame_t
+	{
+		function_stack_t fs;
+		int topType;
+	};
+
+	struct scrVmPub_t
+	{
+		unsigned int* localVars;
+		VariableValue* maxstack;
+		int function_count;
+		function_frame_t* function_frame;
+		VariableValue* top;
+		unsigned int inparamcount;
+		unsigned int outparamcount;
+		function_frame_t function_frame_start[32];
+		VariableValue stack[2048];
+	};
+
+	struct scr_classStruct_t
+	{
+		unsigned __int16 id;
+		unsigned __int16 entArrayId;
+		char charId;
+		const char* name;
+	};
+	// *
 
 	enum Sys_Folder
 	{

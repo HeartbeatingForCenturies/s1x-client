@@ -8,6 +8,9 @@ namespace game
 	 * Functions
 	 **************************************************************/
 
+	WEAK symbol<void(int type, VariableUnion u)> AddRefToValue{ 0x140315830, 0x1403F1F20 };
+	WEAK symbol<void(int type, VariableUnion u)> RemoveRefToValue{ 0x140317340, 0x1403F3A50 };
+
 	WEAK symbol<void(void*, void*)> AimAssist_AddToTargetList{ 0, 0x140001730 };
 
 	WEAK symbol<void(errorParm code, const char* message, ...)> Com_Error{ 0x1402F7570, 0x1403CE480 };
@@ -66,6 +69,14 @@ namespace game
 	WEAK symbol<long long(const char* qpath, char** buffer)> FS_ReadFile{ 0x140362390, 0x1404AF380 };
 	WEAK symbol<void(void* buffer)> FS_FreeFile{ 0x140362380, 0x1404AF370 };
 
+	WEAK symbol<void()> GScr_LoadConsts{ 0x140283970, 0x1403479C0 };
+	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{ 0x1403166D0, 0x1403F2DC0 };
+	WEAK symbol<scr_string_t(unsigned int parentId, unsigned int id)> GetVariableName{ 0x1403170E0, 0x1403F37F0 };
+	WEAK symbol<void(VariableValue* result, unsigned int classnum, int entnum, int offset)> GetEntityFieldValue{
+		0x14031AAD0, 0x1403F72A0
+	};
+	WEAK symbol<unsigned int(unsigned int)> GetObjectType{ 0x140316F70, 0x1403F3670 };
+
 	WEAK symbol<void()> G_Glass_Update{ 0x14021D540, 0x1402EDEE0 };
 
 	WEAK symbol<unsigned int(const char* name)> G_GetWeaponForName{ 0x140274590, 0x14033FF60 };
@@ -112,8 +123,15 @@ namespace game
 	WEAK symbol<float(int index)> Scr_GetFloat{ 0x14031C090, 0x1403F8820 };
 	WEAK symbol<int()> Scr_GetNumParam{ 0x14031C2A0, 0x1403F8980 };
 	WEAK symbol<void()> Scr_ClearOutParams{ 0x14031B7C0, 0x1403F8040 };
+	WEAK symbol<scr_entref_t(unsigned int entId)> Scr_GetEntityIdRef{ 0x14031A0D0, 0x1403F68A0 };
+	WEAK symbol<int(unsigned int classnum, int entnum, int offset)> Scr_SetObjectField{ 0x14026B620, 0x140339450 };
+	WEAK symbol<void(unsigned int id, scr_string_t stringValue, unsigned int paramcount)> Scr_NotifyId{
+		0x14031CB80, 0x1403F92D0
+	};
 
+	WEAK symbol<const char* (scr_string_t stringValue)> SL_ConvertToString{ 0x140314850, 0x1403F0F10 };
 	WEAK symbol<scr_string_t(const char* str)> SL_FindString{ 0x140314AF0, 0x1403F11C0 };
+	WEAK symbol<scr_string_t(const char* str, unsigned int user)> SL_GetString{ 0x140314D90, 0x1403F1440 };
 
 	WEAK symbol<void(const char* text_in)> SV_Cmd_TokenizeString{ 0, 0x1403B0640 };
 	WEAK symbol<void()> SV_Cmd_EndTokenizedString{ 0, 0x1403B0600 };
@@ -154,6 +172,9 @@ namespace game
 	WEAK symbol<void(unsigned int localClientNum, const char** args)> UI_RunMenuScript { 0, 0x140490060 };
 	WEAK symbol<int(const char* text, int maxChars, Font_s* font, float scale)> UI_TextWidth{ 0, 0x140492380 };
 
+	WEAK symbol<void* (jmp_buf* Buf, int Value)> longjmp{ 0x14059C5C0, 0x1406FD930 };
+	WEAK symbol<int(jmp_buf* Buf)> _setjmp{ 0x14059CD00, 0x1406FE070 };
+
 	/***************************************************************
 	 * Variables
 	 **************************************************************/
@@ -167,6 +188,13 @@ namespace game
 
 	WEAK symbol<int> dvarCount{ 0x14A7BFF34, 0x14B32AA30 };
 	WEAK symbol<dvar_t*> sortedDvars{ 0x14A7BFF50, 0x14B32AA50 };
+
+	WEAK symbol<unsigned int> levelEntityId{ 0x149AF55B0, 0x14815DEB0 };
+	WEAK symbol<int> g_script_error_level{ 0x14A1917A8, 0x1487F9FA4 };
+	WEAK symbol<jmp_buf> g_script_error{ 0x14A1917B0, 0x1487FA0C0 };
+	WEAK symbol<scr_classStruct_t> g_classMap{ 0x14080A840, 0x1409BE1B0 };
+
+	WEAK symbol<scrVmPub_t> scr_VmPub{ 0x14A1938C0, 0x1487FC1C0 };
 
 	WEAK symbol<const char*> command_whitelist{ 0x140808EF0, 0x1409B8DC0 };
 
