@@ -6,8 +6,6 @@
 #include "command.hpp"
 #include "game_console.hpp"
 
-#include <utils/hook.hpp>
-
 namespace stats
 {
 	class component final : public component_interface
@@ -29,11 +27,12 @@ namespace stats
 				}
 
 				// SL_FindString
-				auto lookupString = game::SL_FindString(params.get(1));
-				auto value = atoi(params.get(2));
+				const auto lookup_string = game::SL_FindString(params.get(1));
+				const auto value = atoi(params.get(2));
 
 				// SetPlayerDataInt
-				reinterpret_cast<void(*)(signed int, unsigned int, unsigned int, unsigned int)>(0x1403BF550)(0, lookupString, value, 0);
+				reinterpret_cast<void(*)(signed int, unsigned int, unsigned int, unsigned int)>(0x1403BF550)(
+					0, lookup_string, value, 0);
 			});
 
 			command::add("getPlayerDataInt", [](const command::params& params)
@@ -45,10 +44,11 @@ namespace stats
 				}
 
 				// SL_FindString
-				auto lookupString = game::SL_FindString(params.get(1));
+				const auto lookup_string = game::SL_FindString(params.get(1));
 
 				// GetPlayerDataInt
-				auto result = reinterpret_cast<int(*)(signed int, unsigned int, unsigned int)>(0x1403BE860)(0, lookupString, 0);
+				const auto result = reinterpret_cast<int(*)(signed int, unsigned int, unsigned int)>(0x1403BE860)(
+					0, lookup_string, 0);
 				game_console::print(game_console::con_type_info, "%d\n", result);
 			});
 

@@ -5,7 +5,9 @@
 #include <utils/thread.hpp>
 
 #include "game/game.hpp"
-#include "game/demonware/demonware.hpp"
+#include "game/demonware/servers/lobby_server.hpp"
+#include "game/demonware/servers/auth3_server.hpp"
+#include "game/demonware/servers/stun_server.hpp"
 #include "game/demonware/server_registry.hpp"
 
 #define TCP_BLOCKING true

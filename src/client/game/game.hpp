@@ -29,7 +29,7 @@ namespace game
 	public:
 		symbol(const size_t sp_address, const size_t mp_address)
 			: sp_object_(reinterpret_cast<T*>(sp_address))
-			, mp_object_(reinterpret_cast<T*>(mp_address))
+			  , mp_object_(reinterpret_cast<T*>(mp_address))
 		{
 		}
 
@@ -43,7 +43,7 @@ namespace game
 			return mp_object_;
 		}
 
-		operator T* () const
+		operator T*() const
 		{
 			return this->get();
 		}

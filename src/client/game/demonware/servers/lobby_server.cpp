@@ -1,6 +1,10 @@
 #include <std_include.hpp>
-#include "../demonware.hpp"
-#include "tcp_server.hpp"
+#include "lobby_server.hpp"
+
+#include "../services.hpp"
+#include "../keys.hpp"
+
+#include <utils/cryptography.hpp>
 
 namespace demonware
 {
@@ -54,7 +58,7 @@ namespace demonware
 				else if (size == 0xC8)
 				{
 #ifdef DEBUG
-					printf("[demonware]: [lobby]: received client_header_ack.\n");
+					printf("[DW]: [lobby]: received client_header_ack.\n");
 #endif
 
 					int c8;
@@ -62,13 +66,15 @@ namespace demonware
 					std::string packet_1 = buffer.get_remaining();
 					demonware::queue_packet_to_hash(packet_1);
 
-					const std::string packet_2("\x16\x00\x00\x00\xab\x81\xd2\x00\x00\x00\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37", 26);
+					const std::string packet_2(
+						"\x16\x00\x00\x00\xab\x81\xd2\x00\x00\x00\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37",
+						26);
 					demonware::queue_packet_to_hash(packet_2);
 
 					raw_reply reply(packet_2);
 					this->send_reply(&reply);
 #ifdef DEBUG
-					printf("[demonware]: [lobby]: sending server_header_ack.\n");
+					printf("[DW]: [lobby]: sending server_header_ack.\n");
 #endif
 					return;
 				}
@@ -85,7 +91,7 @@ namespace demonware
 					if (type == 0x82)
 					{
 #ifdef DEBUG
-						printf("[demonware]: [lobby]: received client_auth.\n");
+						printf("[DW]: [lobby]: received client_auth.\n");
 #endif
 						std::string packet_3(packet.data(), packet.size() - 8); // this 8 are client hash check?
 
@@ -100,7 +106,7 @@ namespace demonware
 						this->send_reply(&reply);
 
 #ifdef DEBUG
-						printf("[demonware]: [lobby]: sending server_auth_done.\n");
+						printf("[DW]: [lobby]: sending server_auth_done.\n");
 #endif
 						return;
 					}
@@ -117,7 +123,9 @@ namespace demonware
 						char hash[8];
 						std::memcpy(hash, &(enc.data()[enc.size() - 8]), 8);
 
-						std::string dec = utils::cryptography::aes::decrypt(std::string(enc.data(), enc.size() - 8), std::string(seed, 16), demonware::get_decrypt_key());
+						std::string dec = utils::cryptography::aes::decrypt(
+							std::string(enc.data(), enc.size() - 8), std::string(seed, 16),
+							demonware::get_decrypt_key());
 
 						byte_buffer serv(dec);
 						serv.set_use_data_types(false);
@@ -137,7 +145,7 @@ namespace demonware
 					}
 				}
 
-				printf("[demonware]: [lobby]: ERROR! received unk message.\n");
+				printf("[DW]: [lobby]: ERROR! received unk message.\n");
 				return;
 			}
 		}
@@ -146,7 +154,7 @@ namespace demonware
 		}
 	}
 
-	void lobby_server::call_service(const std::uint8_t id, const std::string& data)
+	void lobby_server::call_service(const uint8_t id, const std::string& data)
 	{
 		const auto& it = this->services_.find(id);
 
@@ -156,15 +164,14 @@ namespace demonware
 		}
 		else
 		{
-			printf("[demonware]: [lobby]: missing service '%s'\n", utils::string::va("%d", id));
+			printf("[DW]: [lobby]: missing service '%s'\n", utils::string::va("%d", id));
 
 			// return no error
 			byte_buffer buffer(data);
-			std::uint8_t task_id;
+			uint8_t task_id;
 			buffer.read_byte(&task_id);
 
 			this->create_reply(task_id)->send();
 		}
 	}
-
 }
