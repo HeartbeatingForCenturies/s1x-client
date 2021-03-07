@@ -1,25 +1,9 @@
 #pragma once
-#include <utils/cryptography.hpp>
+#include "tcp_server.hpp"
+#include "../reply.hpp"
 
 namespace demonware
 {
-#pragma pack(push, 1)
-	struct auth_ticket_t
-	{
-		unsigned int m_magicNumber;
-		char m_type;
-		unsigned int m_titleID;
-		unsigned int m_timeIssued;
-		unsigned int m_timeExpires;
-		unsigned __int64 m_licenseID;
-		unsigned __int64 m_userID;
-		char m_username[64];
-		char m_sessionKey[24];
-		char m_usingHashMagicNumber[3];
-		char m_hash[4];
-	};
-#pragma pack(pop)
-
 	class auth3_server : public tcp_server
 	{
 	public:

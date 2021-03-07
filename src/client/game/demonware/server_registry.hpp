@@ -1,6 +1,7 @@
 #pragma once
 
 #include "servers/base_server.hpp"
+#include <utils/cryptography.hpp>
 
 namespace demonware
 {

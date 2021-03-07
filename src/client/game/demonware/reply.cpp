@@ -1,5 +1,8 @@
 #include <std_include.hpp>
-#include "demonware.hpp"
+#include "keys.hpp"
+#include "reply.hpp"
+#include "servers/service_server.hpp"
+
 #include <utils/cryptography.hpp>
 
 namespace demonware
@@ -39,7 +42,7 @@ namespace demonware
 		std::string seed("\x5E\xED\x5E\xED\x5E\xED\x5E\xED\x5E\xED\x5E\xED\x5E\xED\x5E\xED", 16);
 
 		// encrypt
-		auto enc_data = utils::cryptography::aes::encrypt(aligned_data, seed, demonware::get_encrypt_key());
+		const auto enc_data = utils::cryptography::aes::encrypt(aligned_data, seed, demonware::get_encrypt_key());
 
 		// header : encrypted service data : hash
 		static std::int32_t msg_count = 0;

@@ -1,6 +1,10 @@
 #include <std_include.hpp>
-#include "../demonware.hpp"
-#include "tcp_server.hpp"
+#include "lobby_server.hpp"
+
+#include "../services.hpp"
+#include "../keys.hpp"
+
+#include <utils/cryptography.hpp>
 
 namespace demonware
 {
@@ -54,7 +58,7 @@ namespace demonware
 				else if (size == 0xC8)
 				{
 #ifdef DEBUG
-					printf("[demonware]: [lobby]: received client_header_ack.\n");
+					printf("[DW]: [lobby]: received client_header_ack.\n");
 #endif
 
 					int c8;
@@ -68,7 +72,7 @@ namespace demonware
 					raw_reply reply(packet_2);
 					this->send_reply(&reply);
 #ifdef DEBUG
-					printf("[demonware]: [lobby]: sending server_header_ack.\n");
+					printf("[DW]: [lobby]: sending server_header_ack.\n");
 #endif
 					return;
 				}
@@ -85,7 +89,7 @@ namespace demonware
 					if (type == 0x82)
 					{
 #ifdef DEBUG
-						printf("[demonware]: [lobby]: received client_auth.\n");
+						printf("[DW]: [lobby]: received client_auth.\n");
 #endif
 						std::string packet_3(packet.data(), packet.size() - 8); // this 8 are client hash check?
 
@@ -100,7 +104,7 @@ namespace demonware
 						this->send_reply(&reply);
 
 #ifdef DEBUG
-						printf("[demonware]: [lobby]: sending server_auth_done.\n");
+						printf("[DW]: [lobby]: sending server_auth_done.\n");
 #endif
 						return;
 					}
@@ -137,7 +141,7 @@ namespace demonware
 					}
 				}
 
-				printf("[demonware]: [lobby]: ERROR! received unk message.\n");
+				printf("[DW]: [lobby]: ERROR! received unk message.\n");
 				return;
 			}
 		}
@@ -146,7 +150,7 @@ namespace demonware
 		}
 	}
 
-	void lobby_server::call_service(const std::uint8_t id, const std::string& data)
+	void lobby_server::call_service(const uint8_t id, const std::string& data)
 	{
 		const auto& it = this->services_.find(id);
 
@@ -156,11 +160,11 @@ namespace demonware
 		}
 		else
 		{
-			printf("[demonware]: [lobby]: missing service '%s'\n", utils::string::va("%d", id));
+			printf("[DW]: [lobby]: missing service '%s'\n", utils::string::va("%d", id));
 
 			// return no error
 			byte_buffer buffer(data);
-			std::uint8_t task_id;
+			uint8_t task_id;
 			buffer.read_byte(&task_id);
 
 			this->create_reply(task_id)->send();

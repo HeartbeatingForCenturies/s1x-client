@@ -1,5 +1,5 @@
 #include <std_include.hpp>
-#include "demonware.hpp"
+#include "byte_buffer.hpp"
 
 namespace demonware
 {
@@ -266,7 +266,7 @@ namespace demonware
 
 	bool byte_buffer::write(const int bytes, const void* data)
 	{
-		this->buffer_.append(reinterpret_cast<const char*>(data), bytes);
+		this->buffer_.append(static_cast<const char*>(data), bytes);
 		this->current_byte_ += bytes;
 		return true;
 	}

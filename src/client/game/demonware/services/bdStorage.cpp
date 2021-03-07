@@ -1,7 +1,10 @@
 #include <std_include.hpp>
-#include "../demonware.hpp"
-#include "utils/nt.hpp"
-#include "utils/io.hpp"
+#include "../services.hpp"
+
+#include <utils/nt.hpp>
+#include <utils/io.hpp>
+#include <utils/cryptography.hpp>
+
 #include "game/game.hpp"
 
 namespace demonware
@@ -42,7 +45,7 @@ namespace demonware
         }
 
 #ifdef DEBUG
-        printf("[demonware]: [bdStorage]: missing publisher file: %s\n", name.data());
+        printf("[DW]: [bdStorage]: missing publisher file: %s\n", name.data());
 #endif
 
         return false;
@@ -85,7 +88,7 @@ namespace demonware
         buffer->read_string(&filename);
 
 #ifdef DEBUG
-        printf("[demonware]: [bdStorage]: loading publisher file: %s\n", filename.data());
+        printf("[DW]: [bdStorage]: loading publisher file: %s\n", filename.data());
 #endif
 
         std::string data;
@@ -93,7 +96,7 @@ namespace demonware
         if (this->load_publisher_resource(filename, data))
         {
 #ifdef DEBUG
-            printf("[demonware]: [bdStorage]: sending publisher file: %s, size: %lld\n", filename.data(), data.size());
+            printf("[DW]: [bdStorage]: sending publisher file: %s, size: %lld\n", filename.data(), data.size());
 #endif
 
             auto reply = server->create_reply(this->task_id());
@@ -152,7 +155,7 @@ namespace demonware
         buffer->read_string(&platform);
 
 #ifdef DEBUG
-        printf("[demonware]: [bdStorage]: user file: %s, %s, %s\n", game.data(), filename.data(), platform.data());
+        printf("[DW]: [bdStorage]: user file: %s, %s, %s\n", game.data(), filename.data(), platform.data());
 #endif
 
         const auto path = get_user_file_path(filename);

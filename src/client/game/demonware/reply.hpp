@@ -1,5 +1,9 @@
 #pragma once
 
+#include "bit_buffer.hpp"
+#include "byte_buffer.hpp"
+#include "data_types.hpp"
+
 namespace demonware
 {
 	class reply
@@ -89,8 +93,8 @@ namespace demonware
 		{
 		}
 
-		void send(bit_buffer* buffer, const bool encrypted);
-		void send(byte_buffer* buffer, const bool encrypted);
+		void send(bit_buffer* buffer, bool encrypted);
+		void send(byte_buffer* buffer, bool encrypted);
 
 		uint8_t type() const { return this->type_; }
 
