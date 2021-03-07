@@ -66,7 +66,9 @@ namespace demonware
 					std::string packet_1 = buffer.get_remaining();
 					demonware::queue_packet_to_hash(packet_1);
 
-					const std::string packet_2("\x16\x00\x00\x00\xab\x81\xd2\x00\x00\x00\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37", 26);
+					const std::string packet_2(
+						"\x16\x00\x00\x00\xab\x81\xd2\x00\x00\x00\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37",
+						26);
 					demonware::queue_packet_to_hash(packet_2);
 
 					raw_reply reply(packet_2);
@@ -121,7 +123,9 @@ namespace demonware
 						char hash[8];
 						std::memcpy(hash, &(enc.data()[enc.size() - 8]), 8);
 
-						std::string dec = utils::cryptography::aes::decrypt(std::string(enc.data(), enc.size() - 8), std::string(seed, 16), demonware::get_decrypt_key());
+						std::string dec = utils::cryptography::aes::decrypt(
+							std::string(enc.data(), enc.size() - 8), std::string(seed, 16),
+							demonware::get_decrypt_key());
 
 						byte_buffer serv(dec);
 						serv.set_use_data_types(false);
@@ -170,5 +174,4 @@ namespace demonware
 			this->create_reply(task_id)->send();
 		}
 	}
-
 }

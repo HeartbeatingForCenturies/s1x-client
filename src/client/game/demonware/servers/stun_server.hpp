@@ -1,7 +1,6 @@
 #pragma once
 
 #include "udp_server.hpp"
-#include "../byte_buffer.hpp"
 
 namespace demonware
 {

@@ -7,7 +7,6 @@
 
 namespace demonware
 {
-
 	std::string unencrypted_reply::data()
 	{
 		byte_buffer result;
@@ -29,9 +28,9 @@ namespace demonware
 		byte_buffer enc_buffer;
 		enc_buffer.set_use_data_types(false);
 
-		enc_buffer.write_uint32(static_cast<unsigned int>(this->buffer_.size()));	// service data size CHECKTHIS!!
-		enc_buffer.write_byte(this->type());										// TASK_REPLY type
-		enc_buffer.write(this->buffer_);											// service data
+		enc_buffer.write_uint32(static_cast<unsigned int>(this->buffer_.size())); // service data size CHECKTHIS!!
+		enc_buffer.write_byte(this->type()); // TASK_REPLY type
+		enc_buffer.write(this->buffer_); // service data
 
 		auto aligned_data = enc_buffer.get_buffer();
 		auto size = aligned_data.size();
@@ -45,7 +44,7 @@ namespace demonware
 		const auto enc_data = utils::cryptography::aes::encrypt(aligned_data, seed, demonware::get_encrypt_key());
 
 		// header : encrypted service data : hash
-		static std::int32_t msg_count = 0;
+		static auto msg_count = 0;
 		msg_count++;
 
 		byte_buffer response;
@@ -60,7 +59,8 @@ namespace demonware
 
 		// hash entire packet and append end
 		unsigned int outlen = 20;
-		auto hash_data = utils::cryptography::hmac_sha1::process(response.get_buffer(), demonware::get_hmac_key(), &outlen);
+		auto hash_data = utils::cryptography::hmac_sha1::process(response.get_buffer(), demonware::get_hmac_key(),
+		                                                         &outlen);
 		hash_data.resize(8);
 		response.write(8, hash_data.data());
 
@@ -86,5 +86,4 @@ namespace demonware
 
 		this->server_->send_reply(reply.get());
 	}
-
 }

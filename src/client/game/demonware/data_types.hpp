@@ -4,13 +4,18 @@
 
 namespace demonware
 {
-
 	class bdTaskResult
 	{
 	public:
 		virtual ~bdTaskResult() = default;
-		virtual void serialize(byte_buffer*) { }
-		virtual void deserialize(byte_buffer*) { }
+
+		virtual void serialize(byte_buffer*)
+		{
+		}
+
+		virtual void deserialize(byte_buffer*)
+		{
+		}
 	};
 
 	class bdFileData final : public bdTaskResult
@@ -136,5 +141,4 @@ namespace demonware
 			buffer->read_string(&this->timezone);
 		}
 	};
-
 }
