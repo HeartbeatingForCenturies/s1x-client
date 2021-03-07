@@ -676,7 +676,7 @@ namespace game
 	{
 		cmd_function_s* next;
 		const char* name;
-		void(__cdecl* function)();
+		void (__cdecl* function)();
 	};
 
 	enum DvarSetSource : std::uint32_t
@@ -850,7 +850,8 @@ namespace game
 		ASSET_TYPE_REVERB_CURVE,
 		ASSET_TYPE_SOUND_CONTEXT,
 		ASSET_TYPE_LOADED_SOUND,
-		ASSET_TYPE_CLIPMAP, // col_map
+		ASSET_TYPE_CLIPMAP,
+		// col_map
 		ASSET_TYPE_COMWORLD,
 		ASSET_TYPE_GLASSWORLD,
 		ASSET_TYPE_PATHDATA,
@@ -1080,7 +1081,6 @@ namespace game
 
 		struct playerState_s
 		{
-
 		};
 
 		struct clientHeader_t
@@ -1119,7 +1119,6 @@ namespace game
 
 		struct playerState_s
 		{
-
 		};
 	}
 

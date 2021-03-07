@@ -9,14 +9,14 @@ namespace demonware
 		this->register_task(3, &bdContentStreaming::unk3);
 	}
 
-	void bdContentStreaming::unk2(service_server* server, byte_buffer* buffer) const
+	void bdContentStreaming::unk2(service_server* server, byte_buffer* /*buffer*/) const
 	{
 		// TODO:
 		auto reply = server->create_reply(this->task_id());
 		reply->send();
 	}
 
-	void bdContentStreaming::unk3(service_server* server, byte_buffer* buffer) const
+	void bdContentStreaming::unk3(service_server* server, byte_buffer* /*buffer*/) const
 	{
 		// TODO:
 		auto reply = server->create_reply(this->task_id());

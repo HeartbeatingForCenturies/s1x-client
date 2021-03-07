@@ -8,7 +8,7 @@ namespace demonware
 		this->register_task(3, &bdProfiles::unk3);
 	}
 
-	void bdProfiles::unk3(service_server* server, byte_buffer* buffer) const
+	void bdProfiles::unk3(service_server* server, byte_buffer* /*buffer*/) const
 	{
 		// TODO:
 		auto reply = server->create_reply(this->task_id());

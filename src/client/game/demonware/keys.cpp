@@ -17,8 +17,8 @@ namespace demonware
 
 	std::string packet_buffer;
 
-	void calculate_hmacs_s1(const char* data_, unsigned int data_size, const char* key, unsigned int key_size,
-	                        char* dst, unsigned int dst_size)
+	void calculate_hmacs_s1(const char* data_, const unsigned int data_size, const char* key, const unsigned int key_size,
+	                        char* dst, const unsigned int dst_size)
 	{
 		char buffer[64];
 		unsigned int pos = 0;

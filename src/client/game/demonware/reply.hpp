@@ -41,7 +41,7 @@ namespace demonware
 	class typed_reply : public raw_reply
 	{
 	public:
-		typed_reply(uint8_t _type) : type_(_type)
+		typed_reply(const uint8_t _type) : type_(_type)
 		{
 		}
 
@@ -71,12 +71,12 @@ namespace demonware
 	class unencrypted_reply final : public typed_reply
 	{
 	public:
-		unencrypted_reply(uint8_t _type, bit_buffer* bbuffer) : typed_reply(_type)
+		unencrypted_reply(const uint8_t _type, bit_buffer* bbuffer) : typed_reply(_type)
 		{
 			this->buffer_.append(bbuffer->get_buffer());
 		}
 
-		unencrypted_reply(uint8_t _type, byte_buffer* bbuffer) : typed_reply(_type)
+		unencrypted_reply(const uint8_t _type, byte_buffer* bbuffer) : typed_reply(_type)
 		{
 			this->buffer_.append(bbuffer->get_buffer());
 		}
@@ -106,7 +106,7 @@ namespace demonware
 	class service_reply final
 	{
 	public:
-		service_reply(service_server* _server, uint8_t _type, uint32_t _error)
+		service_reply(service_server* _server, const uint8_t _type, const uint32_t _error)
 			: type_(_type), error_(_error), reply_(_server, 1)
 		{
 		}

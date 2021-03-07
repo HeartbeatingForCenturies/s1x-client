@@ -1,6 +1,8 @@
 #include <std_include.hpp>
 #include "stun_server.hpp"
 
+#include "../byte_buffer.hpp"
+
 namespace demonware
 {
 	void stun_server::handle(const endpoint_data& endpoint, const std::string& packet)
