@@ -1,8 +1,33 @@
 #include <std_include.hpp>
-#include "../demonware.hpp"
+
+#include "auth3_server.hpp"
+#include "../keys.hpp"
+
+#include <utils/cryptography.hpp>
+#include <utils/string.hpp>
 
 namespace demonware
 {
+	namespace
+	{
+#pragma pack(push, 1)
+		struct auth_ticket
+		{
+			unsigned int m_magicNumber;
+			char m_type;
+			unsigned int m_titleID;
+			unsigned int m_timeIssued;
+			unsigned int m_timeExpires;
+			unsigned __int64 m_licenseID;
+			unsigned __int64 m_userID;
+			char m_username[64];
+			char m_sessionKey[24];
+			char m_usingHashMagicNumber[3];
+			char m_hash[4];
+		};
+#pragma pack(pop)
+	}
+
 	void auth3_server::send_reply(reply* data)
 	{
 		if (!data) return;
@@ -14,7 +39,7 @@ namespace demonware
 		if (packet.starts_with("POST /auth/"))
 		{
 #ifdef DEBUG
-			printf("[demonware]: [auth]: user requested authentication.\n");
+			printf("[DW]: [auth]: user requested authentication.\n");
 #endif
 			return;
 		}
@@ -52,7 +77,7 @@ namespace demonware
 		}
 
 #ifdef DEBUG
-		printf("[demonware]: [auth]: authenticating user %s\n", token.data() + 64);
+		printf("[DW]: [auth]: authenticating user %s\n", token.data() + 64);
 #endif
 
 		std::string auth_key(reinterpret_cast<char*>(token.data() + 32), 24);
@@ -60,7 +85,7 @@ namespace demonware
 			"\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37\x13\x37", 24);
 
 		// client_ticket
-		auth_ticket_t ticket{};
+		auth_ticket ticket{};
 		std::memset(&ticket, 0x0, sizeof ticket);
 		ticket.m_magicNumber = 0x0EFBDADDE;
 		ticket.m_type = 0;
@@ -131,7 +156,7 @@ namespace demonware
 		this->send_reply(&reply);
 
 #ifdef DEBUG
-		printf("[demonware]: [auth]: user successfully authenticated.\n");
+		printf("[DW]: [auth]: user successfully authenticated.\n");
 #endif
 	}
 }

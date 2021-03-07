@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../reply.hpp"
+
 namespace demonware
 {
-
 	class service_server
 	{
 	public:

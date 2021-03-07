@@ -1,5 +1,7 @@
 #pragma once
 
+#include "byte_buffer.hpp"
+
 namespace demonware
 {
 
