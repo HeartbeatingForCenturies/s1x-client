@@ -98,22 +98,22 @@ namespace demonware
 		std::memcpy(ticket.m_sessionKey, session_key.data(), 24);
 
 		const auto iv = utils::cryptography::tiger::compute(std::string(reinterpret_cast<char*>(&iv_seed), 4));
-		std::string ticket_enc = utils::cryptography::des3::encrypt(
+		const auto ticket_enc = utils::cryptography::des3::encrypt(
 			std::string(reinterpret_cast<char*>(&ticket), sizeof(ticket)), iv, auth_key);
-		std::string ticket_b64 = utils::cryptography::base64::encode(
+		const auto ticket_b64 = utils::cryptography::base64::encode(
 			reinterpret_cast<const unsigned char*>(ticket_enc.data()), 128);
 
 		// server_ticket
 		uint8_t auth_data[128];
 		std::memset(&auth_data, 0, sizeof auth_data);
 		std::memcpy(auth_data, session_key.data(), 24);
-		std::string auth_data_b64 = utils::cryptography::base64::encode(auth_data, 128);
+		const auto auth_data_b64 = utils::cryptography::base64::encode(auth_data, 128);
 
 		demonware::set_session_key(session_key);
 
 		// header time
 		char date[64];
-		time_t now = time(nullptr);
+		const auto now = time(nullptr);
 		tm gmtm{};
 		gmtime_s(&gmtm, &now);
 		strftime(date, 64, "%a, %d %b %G %T", &gmtm);
