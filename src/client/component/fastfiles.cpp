@@ -16,11 +16,11 @@ namespace fastfiles
 	{
 		utils::hook::detour db_try_load_x_file_internal_hook;
 
-		void db_try_load_x_file_internal(const char* zoneName, const int flags)
+		void db_try_load_x_file_internal(const char* zone_name, const int flags)
 		{
-			game_console::print(game_console::con_type_info, "Loading fastfile %s\n", zoneName);
-			current_fastfile = zoneName;
-			return db_try_load_x_file_internal_hook.invoke<void>(zoneName, flags);
+			game_console::print(game_console::con_type_info, "Loading fastfile %s\n", zone_name);
+			current_fastfile = zone_name;
+			return db_try_load_x_file_internal_hook.invoke<void>(zone_name, flags);
 		}
 	}
 
