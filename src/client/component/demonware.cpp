@@ -327,6 +327,12 @@ namespace demonware
 
 				return ioctlsocket(s, cmd, argp);
 			}
+
+			BOOL internet_get_connected_state_stub(LPDWORD, DWORD)
+			{
+				// Allow offline play
+				return TRUE;
+			}
 		}
 
 		void bd_logger_stub(const char* const function, const char* const msg, ...)
@@ -388,6 +394,11 @@ namespace demonware
 				if (function == "#19") return io::send_stub;
 				if (function == "#20") return io::sendto_stub;
 				if (function == "#52") return io::gethostbyname_stub;
+			}
+
+			if (function == "InternetGetConnectedState")
+			{
+				return io::internet_get_connected_state_stub;
 			}
 
 			return nullptr;
