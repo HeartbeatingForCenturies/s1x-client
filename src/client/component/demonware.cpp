@@ -8,6 +8,7 @@
 #include "game/demonware/servers/lobby_server.hpp"
 #include "game/demonware/servers/auth3_server.hpp"
 #include "game/demonware/servers/stun_server.hpp"
+#include "game/demonware/servers/umbrella_server.hpp"
 #include "game/demonware/server_registry.hpp"
 
 #define TCP_BLOCKING true
@@ -366,6 +367,7 @@ namespace demonware
 
 			tcp_servers.create<auth3_server>("aw-pc-auth3.prod.demonware.net");
 			tcp_servers.create<lobby_server>("aw-pc-lobby.prod.demonware.net");
+			tcp_servers.create<umbrella_server>("prod.umbrella.demonware.net");
 		}
 
 		void post_load() override
@@ -405,6 +407,11 @@ namespace demonware
 			utils::hook::set<uint8_t>(0x140698BB2, 0x0); // CURLOPT_SSL_VERIFYPEER
 			utils::hook::set<uint8_t>(0x140698B69, 0xAF); // CURLOPT_SSL_VERIFYHOST
 			utils::hook::set<uint8_t>(0x14088D0E8, 0x0); // HTTPS -> HTTP
+
+			// HTTPS -> HTTP
+			utils::hook::inject(0x14003852E, "http://prod.umbrella.demonware.net/v1.0/");
+			utils::hook::inject(0x14003884F, "http://prod.umbrella.demonware.net/v1.0/");
+			utils::hook::inject(0x140038A07, "http://prod.umbrella.demonware.net/v1.0/");
 
 			utils::hook::set<uint8_t>(0x140437CC0, 0xC3); // SV_SendMatchData
 		}
