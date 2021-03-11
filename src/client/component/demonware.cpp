@@ -249,6 +249,11 @@ namespace demonware
 			int select_stub(const int nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds,
 			                struct timeval* timeout)
 			{
+				if (exit_server)
+				{
+					return select(nfds, readfds, writefds, exceptfds, timeout);
+				}
+
 				auto result = 0;
 				std::vector<SOCKET> read_sockets;
 				std::vector<SOCKET> write_sockets;
