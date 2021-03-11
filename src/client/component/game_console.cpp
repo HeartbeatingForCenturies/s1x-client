@@ -496,6 +496,7 @@ namespace game_console
 			{
 				clear();
 				con.line_count = 0;
+				con.display_line_offset = 0;
 				con.output.clear();
 				history_index = -1;
 				history.clear();
@@ -716,6 +717,7 @@ namespace game_console
 			{
 				clear();
 				con.line_count = 0;
+				con.display_line_offset = 0;
 				con.output.clear();
 				history_index = -1;
 				history.clear();
