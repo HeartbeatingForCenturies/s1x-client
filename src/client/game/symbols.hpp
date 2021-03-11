@@ -193,6 +193,8 @@ namespace game
 	WEAK symbol<SOCKET> query_socket{0, 0x14B5B9180};
 
 	WEAK symbol<void*> DB_XAssetPool{0x140804690, 0x1409B40D0};
+	WEAK symbol<unsigned int> db_hashTable{ 0x142C3E050, 0x143716B10 };
+	WEAK symbol<XAssetEntry> g_assetEntryPool{ 0x142CC2400, 0x14379F100 };
 	WEAK symbol<int> g_poolSize{0x140804140, 0x1409B4B90};
 	WEAK symbol<const char*> g_assetNames{0x140803C90, 0x1409B3180};
 
