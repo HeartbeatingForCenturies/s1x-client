@@ -63,39 +63,6 @@ namespace fastfiles
 				game::DB_LoadXAssets(&info, 1u, game::DBSyncMode::DB_LOAD_SYNC);
 			});
 
-			command::add("materiallist", [](const command::params& params)
-			{
-				game::DB_EnumXAssets_FastFile(game::ASSET_TYPE_MATERIAL, [](const game::XAssetHeader header, void*)
-				{
-					if (header.material && header.material->name)
-					{
-						printf("%s\n", header.material->name);
-					}
-				}, 0, false);
-			});
-
-			command::add("fontlist", [](const command::params& params)
-			{
-				game::DB_EnumXAssets_FastFile(game::ASSET_TYPE_FONT, [](const game::XAssetHeader header, void*)
-				{
-					if (header.font && header.font->fontName)
-					{
-						printf("%s\n", header.font->fontName);
-					}
-				}, 0, false);
-			});
-
-			command::add("rawfilelist", [](const command::params& params)
-			{
-				game::DB_EnumXAssets_FastFile(game::ASSET_TYPE_RAWFILE, [](const game::XAssetHeader header, void*)
-				{
-					if (header.rawfile && header.rawfile->name)
-					{
-						printf("%s\n", header.rawfile->name);
-					}
-				}, 0, false);
-			});
-
 			command::add("g_poolSizes", []()
 			{
 				for (auto i = 0; i < game::ASSET_TYPE_COUNT; i++)
