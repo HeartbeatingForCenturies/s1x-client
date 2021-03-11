@@ -379,7 +379,7 @@ namespace game_console
 			const auto height = ((con.screen_max[1] - con.screen_min[1]) - 32.0f) - 12.0f;
 
 			game::R_AddCmdDrawText(game::Dvar_FindVar("version")->current.string, 0x7FFFFFFF, console_font, x,
-			                       ((height - 16.0f) + y) + console_font->pixelHeight, 1.0f, 1.0f, 0.0f, color_s1, 0);
+			                       ((height - 12.0f) + y) + console_font->pixelHeight, 1.0f, 1.0f, 0.0f, color_s1, 0);
 
 			draw_output_scrollbar(x, y, width, height);
 			draw_output_text(x, y);
