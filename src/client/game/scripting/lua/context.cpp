@@ -41,7 +41,7 @@ namespace scripting::lua
 					if (operand && operand->type == UD_OP_REG && operand->base == UD_R_ECX)
 					{
 						operand = ud_insn_opr(&ud, 1);
-						if (operand && operand->type == UD_OP_IMM && operand->base == UD_R_RAX)
+						if (operand && operand->type == UD_OP_IMM && (operand->base == UD_R_RAX || operand->base == UD_R_EAX))
 						{
 							result.emplace_back(reinterpret_cast<const char**>(0x1409C1CE0)[operand->lval.udword]);
 						}
