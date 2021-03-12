@@ -2,6 +2,8 @@
 #include "engine.hpp"
 #include "context.hpp"
 
+#include "../execution.hpp"
+
 #include <utils/io.hpp>
 
 namespace scripting::lua::engine
@@ -43,6 +45,7 @@ namespace scripting::lua::engine
 			return;
 		}
 
+		clear_custom_fields();
 		get_scripts().clear();
 		load_scripts();
 	}

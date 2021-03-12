@@ -110,6 +110,29 @@ namespace scripting
 		return call_function(name, arguments);
 	}
 
+	static std::unordered_map<unsigned int, std::unordered_map<std::string, script_value>> custom_fields;
+
+	script_value get_custom_field(const entity& entity, const std::string& field)
+	{
+		auto fields = custom_fields[entity.get_entity_id()];
+		const auto _field = fields.find(field);
+		if (_field != fields.end())
+		{
+			return _field->second;
+		}
+		return {};
+	}
+
+	void set_custom_field(const entity& entity, const std::string& field, const script_value& value)
+	{
+		custom_fields[entity.get_entity_id()].insert(std::make_pair(field, value));
+	}
+
+	void clear_custom_fields()
+	{
+		custom_fields.clear();
+	}
+
 	void set_entity_field(const entity& entity, const std::string& field, const script_value& value)
 	{
 		const auto entref = entity.get_entity_reference();
@@ -131,6 +154,7 @@ namespace scripting
 		else
 		{
 			// Read custom fields
+			set_custom_field(entity, field, value);
 		}
 	}
 
@@ -159,6 +183,7 @@ namespace scripting
 		else
 		{
 			// Add custom fields
+			return get_custom_field(entity, field);
 		}
 
 		return {};
