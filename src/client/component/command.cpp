@@ -254,6 +254,75 @@ namespace command
 				*reinterpret_cast<int*>(1) = 0;
 			});
 
+			add("consoleList", [](const params& params)
+			{
+				std::string input = params.get(1);
+				std::vector<std::string> matches;
+				// "borrowed" these two functions from game_console
+				auto match_compare = [](const std::string& input, const std::string& text, bool exact)
+				{
+					if (exact && text == input) return true;
+					if (!exact && text.find(input) != std::string::npos) return true;
+					return false;
+				};
+
+				auto find_matches = [&matches, match_compare](std::string& input, std::vector<std::string>& suggestions,
+				                                              const bool exact)
+				{
+					input = utils::string::to_lower(input);
+
+					for (auto i = 0; i < *game::dvarCount; i++)
+					{
+						if (game::sortedDvars[i] && game::sortedDvars[i]->name)
+						{
+							auto name = utils::string::to_lower(game::sortedDvars[i]->name);
+
+							if (match_compare(input, name, exact))
+							{
+								matches.push_back(game::sortedDvars[i]->name);
+							}
+						}
+					}
+
+					game::cmd_function_s* cmd = (*game::cmd_functions);
+					while (cmd)
+					{
+						if (cmd->name)
+						{
+							auto name = utils::string::to_lower(cmd->name);
+
+							if (match_compare(input, name, exact))
+							{
+								suggestions.push_back(cmd->name);
+							}
+
+							if (exact && suggestions.size() > 1)
+							{
+								return;
+							}
+						}
+						cmd = cmd->next;
+					}
+				};
+
+				find_matches(input, matches, false);
+
+				for(auto& match : matches)
+				{
+					auto* dvar = game::Dvar_FindVar(match.c_str());
+					if (!dvar)
+					{
+						game_console::print(game_console::con_type_info, "[CMD]\t %s", match.c_str());
+					}
+					else
+					{
+						game_console::print(game_console::con_type_info, "[DVAR]\t%s \"%s\"", match.c_str(), game::Dvar_ValueToString(dvar, dvar->current));
+					}
+				}
+				
+				game_console::print(game_console::con_type_info, "Total %i matches", matches.size());
+			});
+
 			add("dvarDump", []()
 			{
 				game_console::print(game_console::con_type_info,
@@ -342,7 +411,7 @@ namespace command
 									{
 										num_type_assets++;
 										num_type_override_assets++;
-										game::XAssetEntry* entry_override = &game::g_assetEntryPool[hash_override];
+										const auto* entry_override = &game::g_assetEntryPool[hash_override];
 										hash_override = game::g_assetEntryPool[hash_override].nextOverride;
 										game_console::print(game_console::con_type_info, "%s | override",
 															game::DB_GetXAssetName(&entry_override->asset));
