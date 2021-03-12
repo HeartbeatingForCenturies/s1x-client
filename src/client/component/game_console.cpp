@@ -171,57 +171,7 @@ namespace game_console
 			const auto _y = con.globals.font_height + con.globals.y + (con.globals.font_height * (line + 1)) + 15.0f;
 
 			game::R_AddCmdDrawText(text, 0x7FFFFFFF, console_font, con.globals.x + offset, _y, 1.0f, 1.0f, 0.0f, color,
-			                       0);
-		}
-
-		bool match_compare(const std::string& input, const std::string& text, const bool exact)
-		{
-			if (exact && text == input) return true;
-			if (!exact && text.find(input) != std::string::npos) return true;
-			return false;
-		}
-
-		void find_matches(std::string input, std::vector<std::string>& suggestions, const bool exact)
-		{
-			input = utils::string::to_lower(input);
-
-			for (int i = 0; i < *game::dvarCount; i++)
-			{
-				if (game::sortedDvars[i] && game::sortedDvars[i]->name)
-				{
-					std::string name = utils::string::to_lower(game::sortedDvars[i]->name);
-
-					if (match_compare(input, name, exact))
-					{
-						suggestions.push_back(game::sortedDvars[i]->name);
-					}
-
-					if (exact && suggestions.size() > 1)
-					{
-						return;
-					}
-				}
-			}
-
-			game::cmd_function_s* cmd = (*game::cmd_functions);
-			while (cmd)
-			{
-				if (cmd->name)
-				{
-					std::string name = utils::string::to_lower(cmd->name);
-
-					if (match_compare(input, name, exact))
-					{
-						suggestions.push_back(cmd->name);
-					}
-
-					if (exact && suggestions.size() > 1)
-					{
-						return;
-					}
-				}
-				cmd = cmd->next;
-			}
+				0);
 		}
 
 		void draw_input()
@@ -674,6 +624,56 @@ namespace game_console
 		}
 
 		return true;
+	}
+
+	bool match_compare(const std::string& input, const std::string& text, const bool exact)
+	{
+		if (exact && text == input) return true;
+		if (!exact && text.find(input) != std::string::npos) return true;
+		return false;
+	}
+
+	void find_matches(std::string input, std::vector<std::string>& suggestions, const bool exact)
+	{
+		input = utils::string::to_lower(input);
+
+		for (int i = 0; i < *game::dvarCount; i++)
+		{
+			if (game::sortedDvars[i] && game::sortedDvars[i]->name)
+			{
+				std::string name = utils::string::to_lower(game::sortedDvars[i]->name);
+
+				if (game_console::match_compare(input, name, exact))
+				{
+					suggestions.push_back(game::sortedDvars[i]->name);
+				}
+
+				if (exact && suggestions.size() > 1)
+				{
+					return;
+				}
+			}
+		}
+
+		game::cmd_function_s* cmd = (*game::cmd_functions);
+		while (cmd)
+		{
+			if (cmd->name)
+			{
+				std::string name = utils::string::to_lower(cmd->name);
+
+				if (game_console::match_compare(input, name, exact))
+				{
+					suggestions.push_back(cmd->name);
+				}
+
+				if (exact && suggestions.size() > 1)
+				{
+					return;
+				}
+			}
+			cmd = cmd->next;
+		}
 	}
 
 	class component final : public component_interface

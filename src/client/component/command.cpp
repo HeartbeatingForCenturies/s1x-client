@@ -256,57 +256,10 @@ namespace command
 
 			add("consoleList", [](const params& params)
 			{
-				std::string input = params.get(1);
-
-				// "borrowed" these two functions from game_console
-				auto match_compare = [](const std::string& input, const std::string& text, bool exact)
-				{
-					if (exact && text == input) return true;
-					if (!exact && text.find(input) != std::string::npos) return true;
-					return false;
-				};
-
-				auto find_matches = [match_compare](std::string& input, std::vector<std::string>& suggestions,
-				                                              const bool exact)
-				{
-					input = utils::string::to_lower(input);
-
-					for (auto i = 0; i < *game::dvarCount; i++)
-					{
-						if (game::sortedDvars[i] && game::sortedDvars[i]->name)
-						{
-							auto name = utils::string::to_lower(game::sortedDvars[i]->name);
-
-							if (match_compare(input, name, exact))
-							{
-								suggestions.push_back(game::sortedDvars[i]->name);
-							}
-						}
-					}
-
-					auto* cmd = (*game::cmd_functions);
-					while (cmd)
-					{
-						if (cmd->name)
-						{
-							auto name = utils::string::to_lower(cmd->name);
-
-							if (match_compare(input, name, exact))
-							{
-								suggestions.push_back(cmd->name);
-							}
-
-							if (exact && suggestions.size() > 1)
-							{
-								return;
-							}
-						}
-						cmd = cmd->next;
-					}
-				};
+				const std::string input = params.get(1);
 
 				std::vector<std::string> matches;
-				find_matches(input, matches, false);
+				game_console::find_matches(input, matches, false);
 
 				for(auto& match : matches)
 				{
