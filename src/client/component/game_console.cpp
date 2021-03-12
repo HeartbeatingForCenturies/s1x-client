@@ -494,7 +494,9 @@ namespace game_console
 		if (key == game::keyNum_t::K_F10)
 		{
 			if (game::mp::svs_clients[localClientNum].header.state >= 1)
+			{
 				return false;
+			}
 			
 			game::Cmd_ExecuteSingleCommand(localClientNum, 0, "lui_open menu_systemlink_join\n");
 		}
