@@ -257,7 +257,7 @@ namespace command
 			add("consoleList", [](const params& params)
 			{
 				std::string input = params.get(1);
-				std::vector<std::string> matches;
+
 				// "borrowed" these two functions from game_console
 				auto match_compare = [](const std::string& input, const std::string& text, bool exact)
 				{
@@ -266,7 +266,7 @@ namespace command
 					return false;
 				};
 
-				auto find_matches = [&matches, match_compare](std::string& input, std::vector<std::string>& suggestions,
+				auto find_matches = [match_compare](std::string& input, std::vector<std::string>& suggestions,
 				                                              const bool exact)
 				{
 					input = utils::string::to_lower(input);
@@ -279,12 +279,12 @@ namespace command
 
 							if (match_compare(input, name, exact))
 							{
-								matches.push_back(game::sortedDvars[i]->name);
+								suggestions.push_back(game::sortedDvars[i]->name);
 							}
 						}
 					}
 
-					game::cmd_function_s* cmd = (*game::cmd_functions);
+					auto* cmd = (*game::cmd_functions);
 					while (cmd)
 					{
 						if (cmd->name)
@@ -305,6 +305,7 @@ namespace command
 					}
 				};
 
+				std::vector<std::string> matches;
 				find_matches(input, matches, false);
 
 				for(auto& match : matches)
