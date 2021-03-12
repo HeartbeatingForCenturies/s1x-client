@@ -226,6 +226,46 @@ namespace command
 		}
 	}
 
+	void list_asset_pool(const game::XAssetType type)
+	{
+		if (type < 0 || type >= game::XAssetType::ASSET_TYPE_COUNT)
+		{
+			game_console::print(game_console::con_type_error,
+							"Invalid pool passed must be between [%d, %d]", 0,
+								game::XAssetType::ASSET_TYPE_COUNT - 1);
+			return;
+		}
+
+		game_console::print(game_console::con_type_info, "Listing assets in pool %s",
+							game::g_assetNames[type]);
+		
+		auto db_size = 121000;
+		unsigned int* table = game::db_hashTable;
+		game::XAssetEntry* entry;
+
+		while (db_size--)
+		{
+			for (auto hash = *table; hash; hash = entry->nextHash)
+			{
+				entry = &game::g_assetEntryPool[hash];
+				if (entry->asset.type == type)
+				{
+					game_console::print(game_console::con_type_info, "%s",
+										game::DB_GetXAssetName(&entry->asset));
+					auto hash_override = entry->nextOverride;
+					while (hash_override)
+					{
+						const auto* entry_override = &game::g_assetEntryPool[hash_override];
+						hash_override = game::g_assetEntryPool[hash_override].nextOverride;
+						game_console::print(game_console::con_type_info, "%s | override",
+											game::DB_GetXAssetName(&entry_override->asset));
+					}
+				}
+			}
+			table++;
+		}
+	}
+
 	class component final : public component_interface
 	{
 	public:
@@ -322,62 +362,15 @@ namespace command
 					game_console::print(game_console::con_type_info,
 									"listassetpool <poolnumber>: list all the assets in the specified pool\n");
 
-					for (int i = 0; i < game::ASSET_TYPE_COUNT; i++)
+					for (auto i = 0; i < game::XAssetType::ASSET_TYPE_COUNT; i++)
 					{
 						game_console::print(game_console::con_type_info, "%d %s\n", i, game::g_assetNames[i]);
 					}
 				}
 				else
 				{
-					const auto type_index = atoi(params.get(1));
-
-					if (type_index < 0 || type_index >= game::XAssetType::ASSET_TYPE_COUNT)
-					{
-						game_console::print(game_console::con_type_error,
-										"Invalid pool passed must be between [%d, %d]", 0, 
-											game::XAssetType::ASSET_TYPE_COUNT - 1);
-						return;
-					}
-
-					const auto type = static_cast<game::XAssetType>(type_index);
-					game_console::print(game_console::con_type_info, "Listing assets in pool %s",
-										game::g_assetNames[type]);
-
-					auto db_size = 121000;
-					unsigned int* table = game::db_hashTable;
-					game::XAssetEntry* entry;
-					auto num_type_assets = 0, num_type_override_assets = 0;
-
-					do
-					{
-						for (auto hash = *table; hash; hash = entry->nextHash)
-						{
-							entry = &game::g_assetEntryPool[hash];
-							if (entry->asset.type == type)
-							{
-								num_type_assets++;
-								game_console::print(game_console::con_type_info, "%s",
-													game::DB_GetXAssetName(&entry->asset));
-								auto hash_override = entry->nextOverride;
-								if (hash_override)
-								{
-									do
-									{
-										num_type_assets++;
-										num_type_override_assets++;
-										const auto* entry_override = &game::g_assetEntryPool[hash_override];
-										hash_override = game::g_assetEntryPool[hash_override].nextOverride;
-										game_console::print(game_console::con_type_info, "%s | override",
-															game::DB_GetXAssetName(&entry_override->asset));
-									} while (hash_override);
-								}
-							}
-						}
-						table++;
-					} while (db_size--);
-					game_console::print(game_console::con_type_info,
-									"Total of type: %d | Overrides: %d", 
-										num_type_assets, num_type_override_assets);
+					const auto type = static_cast<game::XAssetType>(atoi(params.get(1)));
+					list_asset_pool(type);
 				}
 			});
 		}
