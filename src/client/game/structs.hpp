@@ -851,7 +851,6 @@ namespace game
 		ASSET_TYPE_SOUND_CONTEXT,
 		ASSET_TYPE_LOADED_SOUND,
 		ASSET_TYPE_CLIPMAP,
-		// col_map
 		ASSET_TYPE_COMWORLD,
 		ASSET_TYPE_GLASSWORLD,
 		ASSET_TYPE_PATHDATA,
@@ -1017,6 +1016,16 @@ namespace game
 		const char* buffer;
 	};
 
+	struct ScriptFile
+	{
+		const char* name;
+		int compressedLen;
+		int len;
+		int bytecodeLen;
+		const char* buffer;
+		char* bytecode;
+	};
+
 	struct StringTableCell
 	{
 		const char* string;
@@ -1031,13 +1040,23 @@ namespace game
 		StringTableCell* values;
 	};
 
+	struct LuaFile
+	{
+		const char* name;
+		int len;
+		char strippingType;
+		const char* buffer;
+	};
+
 	union XAssetHeader
 	{
 		void* data;
 		Material* material;
 		Font_s* font;
 		RawFile* rawfile;
+		ScriptFile* scriptfile;
 		StringTable* stringTable;
+		LuaFile* luaFile;
 	};
 
 	enum TestClientType
