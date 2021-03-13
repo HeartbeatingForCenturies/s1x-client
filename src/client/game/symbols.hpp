@@ -41,6 +41,10 @@ namespace game
 
 	WEAK symbol<void(XAssetType type, void (__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)>
 	DB_EnumXAssets_FastFile{0x14017D7C0, 0x14026EC10};
+	WEAK symbol<void(XAssetType type, void(__cdecl* func)(game::XAssetHeader, void*), const void* inData, bool includeOverride)>
+	DB_EnumXAssets_Internal{ 0x14017D830, 0x14026EC80 };
+	WEAK symbol<game::XAssetEntry(game::XAssetType type, const char* name)>
+	DB_FindXAssetEntry{ 0x14017D830, 0x14026F020 };
 	WEAK symbol<const char* (const XAsset* asset)> DB_GetXAssetName{0x140151C00, 0x140240DD0};
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{0x140151C20, 0x140240DF0};
 	WEAK symbol<void(XZoneInfo* zoneInfo, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{
