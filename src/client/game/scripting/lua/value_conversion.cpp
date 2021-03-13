@@ -52,6 +52,18 @@ namespace scripting::lua
 				current = var.nextSibling;
 			}
 
+			table["getkeys"] = [values]()
+			{
+				std::vector<std::string> _keys;
+
+				for (const auto& entry : values)
+				{
+					_keys.push_back(entry.first);
+				}
+
+				return _keys;
+			};
+
 			auto metatable = sol::table::create(state);
 
 			metatable[sol::meta_function::new_index] = [state, values](const sol::table t, const sol::this_state s,
@@ -94,18 +106,6 @@ namespace scripting::lua
 			};
 
 			table[sol::metatable_key] = metatable;
-
-			table["getkeys"] = [values]()
-			{
-				std::vector<std::string> _keys;
-
-				for (const auto& entry : values)
-				{
-					_keys.push_back(entry.first);
-				}
-
-				return _keys;
-			};
 
 			return table;
 		}
