@@ -44,12 +44,13 @@ namespace discord
 				//utils::string::strip(host_name, host_name, static_cast<int>(strlen(host_name)) + 1);
 
 				//discord_presence.state = host_name;
-				discord_presence.state = "Placeholder";
+				discord_presence.state = game::Dvar_FindVar("sv_hostname")->current.string;
 
 				// cgArray does not exist
 				/*discord_presence.partySize = game::mp::cgArray->snap != nullptr
 					? game::mp::cgArray->snap->numClients
 					: 1; */
+				discord_presence.partySize = 1;
 				discord_presence.partyMax = game::Dvar_FindVar("sv_maxclients")->current.integer;
 
 				if (!discord_presence.startTimestamp)
