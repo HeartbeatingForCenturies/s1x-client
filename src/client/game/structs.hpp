@@ -30,6 +30,7 @@ namespace game
 		SCRIPT_FLOAT = 5,
 		SCRIPT_INTEGER = 6,
 		SCRIPT_END = 8,
+		SCRIPT_ARRAY = 22
 	};
 
 	struct VariableStackBuffer
@@ -95,6 +96,96 @@ namespace game
 		unsigned __int16 entArrayId;
 		char charId;
 		const char* name;
+	};
+
+	struct ObjectVariableChildren
+	{
+		unsigned __int16 firstChild;
+		unsigned __int16 lastChild;
+	};
+
+	struct ObjectVariableValue_u_f
+	{
+		unsigned __int16 prev;
+		unsigned __int16 next;
+	};
+
+	union ObjectVariableValue_u_o_u
+	{
+		unsigned __int16 size;
+		unsigned __int16 entnum;
+		unsigned __int16 nextEntId;
+		unsigned __int16 self;
+	};
+
+	struct	ObjectVariableValue_u_o
+	{
+		unsigned __int16 refCount;
+		ObjectVariableValue_u_o_u u;
+	};
+
+	union ObjectVariableValue_w
+	{
+		unsigned int type;
+		unsigned int classnum;
+		unsigned int notifyName;
+		unsigned int waitTime;
+		unsigned int parentLocalId;
+	};
+
+	struct ChildVariableValue_u_f
+	{
+		unsigned __int16 prev;
+		unsigned __int16 next;
+	};
+
+	union ChildVariableValue_u
+	{
+		ChildVariableValue_u_f f;
+		VariableUnion u;
+	};
+
+	struct ChildBucketMatchKeys_keys
+	{
+		unsigned __int16 name_hi;
+		unsigned __int16 parentId;
+	};
+
+	union ChildBucketMatchKeys
+	{
+		ChildBucketMatchKeys_keys keys;
+		unsigned int match;
+	};
+
+	struct	ChildVariableValue
+	{
+		ChildVariableValue_u u;
+		unsigned __int16 next;
+		char type;
+		char name_lo;
+		ChildBucketMatchKeys k;
+		unsigned __int16 nextSibling;
+		unsigned __int16 prevSibling;
+	};
+
+	union ObjectVariableValue_u
+	{
+		ObjectVariableValue_u_f f;
+		ObjectVariableValue_u_o o;
+	};
+
+	struct ObjectVariableValue
+	{
+		ObjectVariableValue_u u;
+		ObjectVariableValue_w w;
+	};
+
+	struct scrVarGlob_t
+	{
+		ObjectVariableValue objectVariableValue[40960];
+		ObjectVariableChildren objectVariableChildren[40960];
+		unsigned __int16 childVariableBucket[65536];
+		ChildVariableValue childVariableValue[102400];
 	};
 	// *
 
@@ -935,7 +1026,6 @@ namespace game
 		ASSET_TYPE_SOUND_CONTEXT,
 		ASSET_TYPE_LOADED_SOUND,
 		ASSET_TYPE_CLIPMAP,
-		// col_map
 		ASSET_TYPE_COMWORLD,
 		ASSET_TYPE_GLASSWORLD,
 		ASSET_TYPE_PATHDATA,
@@ -1101,6 +1191,16 @@ namespace game
 		const char* buffer;
 	};
 
+	struct ScriptFile
+	{
+		const char* name;
+		int compressedLen;
+		int len;
+		int bytecodeLen;
+		const char* buffer;
+		char* bytecode;
+	};
+
 	struct StringTableCell
 	{
 		const char* string;
@@ -1115,13 +1215,23 @@ namespace game
 		StringTableCell* values;
 	};
 
+	struct LuaFile
+	{
+		const char* name;
+		int len;
+		char strippingType;
+		const char* buffer;
+	};
+
 	union XAssetHeader
 	{
 		void* data;
 		Material* material;
 		Font_s* font;
 		RawFile* rawfile;
+		ScriptFile* scriptfile;
 		StringTable* stringTable;
+		LuaFile* luaFile;
 	};
 
 	enum TestClientType
