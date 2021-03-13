@@ -214,6 +214,7 @@ namespace game
 	WEAK symbol<jmp_buf> g_script_error{0x14A1917B0, 0x1487FA0C0};
 	WEAK symbol<scr_classStruct_t> g_classMap{0x14080A840, 0x1409BE1B0};
 
+	WEAK symbol<scrVarGlob_t> scr_VarGlob{ 0x149B1D680, 0x148185F80 };
 	WEAK symbol<scrVmPub_t> scr_VmPub{0x14A1938C0, 0x1487FC1C0};
 
 	WEAK symbol<const char*> command_whitelist{0x140808EF0, 0x1409B8DC0};
