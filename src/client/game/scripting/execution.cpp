@@ -125,7 +125,25 @@ namespace scripting
 
 	void set_custom_field(const entity& entity, const std::string& field, const script_value& value)
 	{
-		custom_fields[entity.get_entity_id()].insert(std::make_pair(field, value));
+		const auto id = entity.get_entity_id();
+
+		if (custom_fields[id].find(field) != custom_fields[id].end())
+		{
+			custom_fields[id][field] = value;
+			return;
+		}
+
+		custom_fields[id].insert(std::make_pair(field, value));
+	}
+
+	void clear_entity_fields(const entity& entity)
+	{
+		const auto id = entity.get_entity_id();
+
+		if (custom_fields.find(id) != custom_fields.end())
+		{
+			custom_fields[id].clear();
+		}
 	}
 
 	void clear_custom_fields()
