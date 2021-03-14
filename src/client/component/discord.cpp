@@ -40,18 +40,24 @@ namespace discord
 
 				discord_presence.details = utils::string::va("%s on %s", gametype, map);
 
-				//auto* const host_name = reinterpret_cast<char*>(0x14187EBC4);
-				//utils::string::strip(host_name, host_name, static_cast<int>(strlen(host_name)) + 1);
+				auto* const host_name = reinterpret_cast<char*>(0x141646CC6);
+				utils::string::strip(host_name, host_name, static_cast<int>(strlen(host_name)) + 1);
 
-				//discord_presence.state = host_name;
-				discord_presence.state = game::Dvar_FindVar("sv_hostname")->current.string;
+				if (!strcmp(host_name, "key"))
+				{
+					discord_presence.state = game::Dvar_FindVar("sv_hostname")->current.string;
+				}
+				else 
+				{
+					discord_presence.state = host_name;
+				}
 
-				// cgArray does not exist
+				// disable for now
 				/*discord_presence.partySize = game::mp::cgArray->snap != nullptr
 					? game::mp::cgArray->snap->numClients
-					: 1; */
+					: 1;
 				discord_presence.partySize = 1;
-				discord_presence.partyMax = game::Dvar_FindVar("sv_maxclients")->current.integer;
+				discord_presence.partyMax = game::Dvar_FindVar("sv_maxclients")->current.integer; */
 
 				if (!discord_presence.startTimestamp)
 				{
