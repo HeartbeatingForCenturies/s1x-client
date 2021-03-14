@@ -65,7 +65,9 @@ namespace discord
 						std::chrono::system_clock::now().time_since_epoch()).count();
 				}
 
-				discord_presence.largeImageKey = game::Dvar_FindVar("ui_mapname")->current.string;
+				//discord_presence.largeImageKey = game::Dvar_FindVar("ui_mapname")->current.string;
+				discord_presence.largeImageKey = "s1x";
+				discord_presence.largeImageText = game::UI_GetGameTypeDisplayName(game::Dvar_FindVar("ui_mapname")->current.string);
 			}
 
 			Discord_UpdatePresence(&discord_presence);
