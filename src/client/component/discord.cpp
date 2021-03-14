@@ -28,7 +28,8 @@ namespace discord
 
 				discord_presence.startTimestamp = 0;
 
-				discord_presence.largeImageKey = game::environment::is_sp() ? "menu_singleplayer" : "menu_multiplayer";
+				//discord_presence.largeImageKey = game::environment::is_sp() ? "menu_singleplayer" : "menu_multiplayer";
+				discord_presence.largeImageKey = "s1x";
 			}
 			else
 			{
