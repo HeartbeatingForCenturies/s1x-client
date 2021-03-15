@@ -105,7 +105,7 @@ namespace scripting::lua
 
 					for (auto arg : va)
 					{
-						arguments.push_back(convert(arg));
+						arguments.push_back(convert({s, arg}));
 					}
 
 					return convert(s, entity.call(name, arguments));
@@ -119,9 +119,9 @@ namespace scripting::lua
 					{
 						return convert(s, entity.get(constant));
 					},
-					[constant](const entity& entity, const sol::lua_value& value)
+					[constant](const entity& entity, const sol::this_state s, const sol::lua_value& value)
 					{
-						entity.set(constant, convert(value));
+						entity.set(constant, convert({s, value}));
 					});
 			}
 
@@ -136,13 +136,14 @@ namespace scripting::lua
 				return convert(s, entity.get(field));
 			};
 
-			entity_type["notify"] = [](const entity& entity, const std::string& event, sol::variadic_args va)
+			entity_type["notify"] = [](const entity& entity, const sol::this_state s, const std::string& event, 
+									   sol::variadic_args va)
 			{
 				std::vector<script_value> arguments{};
 
 				for (auto arg : va)
 				{
-					arguments.push_back(convert(arg));
+					arguments.push_back(convert({s, arg}));
 				}
 
 				notify(entity, event, arguments);
@@ -179,7 +180,7 @@ namespace scripting::lua
 
 				for (auto arg : va)
 				{
-					arguments.push_back(convert(arg));
+					arguments.push_back(convert({s, arg}));
 				}
 
 				return convert(s, entity.call(function, arguments));
@@ -211,7 +212,7 @@ namespace scripting::lua
 
 					for (auto arg : va)
 					{
-						arguments.push_back(convert(arg));
+						arguments.push_back(convert({s, arg}));
 					}
 
 					return convert(s, call(name, arguments));
@@ -225,7 +226,7 @@ namespace scripting::lua
 
 				for (auto arg : va)
 				{
-					arguments.push_back(convert(arg));
+					arguments.push_back(convert({s, arg}));
 				}
 
 				return convert(s, call(function, arguments));
