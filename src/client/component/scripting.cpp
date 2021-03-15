@@ -78,6 +78,9 @@ namespace scripting
 			scr_load_level_hook.create(SELECT_VALUE(0x140005260, 0x140325B90), scr_load_level_stub);
 			g_shutdown_game_hook.create(SELECT_VALUE(0x140228BA0, 0x1402F8C10), g_shutdown_game_stub);
 
+			// Ignore G_FindConfigstringIndex: overflow
+			utils::hook::set<uint8_t>(SELECT_VALUE(0x140019779, 0x14003E3DD), 0xEB);
+
 			scheduler::loop([]()
 			{
 				lua::engine::run_frame();
