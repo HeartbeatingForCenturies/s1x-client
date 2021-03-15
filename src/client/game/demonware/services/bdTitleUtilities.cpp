@@ -10,7 +10,7 @@ namespace demonware
 
 	void bdTitleUtilities::get_server_time(service_server* server, byte_buffer* /*buffer*/) const
 	{
-		const auto time_result = new bdTimeStamp;
+		auto* const time_result = new bdTimeStamp;
 		time_result->unix_time = uint32_t(time(nullptr));
 
 		auto reply = server->create_reply(this->task_id());

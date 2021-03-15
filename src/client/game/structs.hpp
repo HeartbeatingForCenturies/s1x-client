@@ -1234,6 +1234,22 @@ namespace game
 		LuaFile* luaFile;
 	};
 
+	struct XAsset
+	{
+		XAssetType type;
+		XAssetHeader header;
+	};
+
+	struct XAssetEntry
+	{
+		XAsset asset;
+		char zoneIndex;
+		volatile char inuseMask;
+		unsigned int nextHash;
+		unsigned int nextOverride;
+		unsigned int nextPoolEntry;
+	};
+
 	enum TestClientType
 	{
 		TC_NONE = 0x0,

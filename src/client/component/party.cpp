@@ -210,6 +210,12 @@ namespace party
 
 			if (!game::environment::is_dedi())
 			{
+				if(game::SV_Loaded())
+				{
+					const auto* args = "Leave";
+					game::UI_RunMenuScript(0, &args);
+				}
+				
 				perform_game_initialization();
 			}
 
@@ -238,11 +244,8 @@ namespace party
 				command::execute(utils::string::va("party_maxplayers %i", maxclients->current.integer), true);
 			}*/
 
-			// StartServer
-			reinterpret_cast<void(*)(unsigned int)>(0x140492260)(0);
-
-			//game::SV_StartMapForParty(0, mapname.data(), false, false);
-			//return;
+			const auto* args = "StartServer";
+			game::UI_RunMenuScript(0, &args);
 		}
 	}
 

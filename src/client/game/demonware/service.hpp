@@ -41,7 +41,7 @@ namespace demonware
 
 		virtual void exec_task(service_server* server, const std::string& data)
 		{
-			std::lock_guard $(this->mutex_);
+			std::lock_guard<std::mutex> _(this->mutex_);
 
 			byte_buffer buffer(data);
 
@@ -52,14 +52,14 @@ namespace demonware
 			if (it != this->tasks_.end())
 			{
 #ifdef DEBUG
-				printf("demonware::%s: executing task '%d'\n", name_.data(), this->task_id_);
+				printf("[DW] %s: executing task '%d'\n", name_.data(), this->task_id_);
 #endif
 
 				it->second(server, &buffer);
 			}
 			else
 			{
-				printf("demonware::%s: missing task '%d'\n", name_.data(), this->task_id_);
+				printf("[DW] %s: missing task '%d'\n", name_.data(), this->task_id_);
 
 				// return no error
 				server->create_reply(this->task_id_)->send();

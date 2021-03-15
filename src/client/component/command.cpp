@@ -226,6 +226,15 @@ namespace command
 		}
 	}
 
+	void enum_assets(const game::XAssetType type, const std::function<void(game::XAssetHeader)>& callback, const bool includeOverride)
+	{
+		game::DB_EnumXAssets_Internal(type, static_cast<void(*)(game::XAssetHeader, void*)>([](game::XAssetHeader header, void* data)
+			{
+				const auto& cb = *static_cast<const std::function<void(game::XAssetHeader)>*>(data);
+				cb(header);
+			}), &callback, includeOverride);
+	}
+
 	class component final : public component_interface
 	{
 	public:
@@ -252,6 +261,29 @@ namespace command
 			add("crash", []()
 			{
 				*reinterpret_cast<int*>(1) = 0;
+			});
+
+			add("consoleList", [](const params& params)
+			{
+				const std::string input = params.get(1);
+
+				std::vector<std::string> matches;
+				game_console::find_matches(input, matches, false);
+
+				for(auto& match : matches)
+				{
+					auto* dvar = game::Dvar_FindVar(match.c_str());
+					if (!dvar)
+					{
+						game_console::print(game_console::con_type_info, "[CMD]\t %s", match.c_str());
+					}
+					else
+					{
+						game_console::print(game_console::con_type_info, "[DVAR]\t%s \"%s\"", match.c_str(), game::Dvar_ValueToString(dvar, dvar->current));
+					}
+				}
+				
+				game_console::print(game_console::con_type_info, "Total %i matches", matches.size());
 			});
 
 			add("dvarDump", []()
@@ -290,6 +322,44 @@ namespace command
 				game_console::print(game_console::con_type_info, "\n%i command indexes\n", i);
 				game_console::print(game_console::con_type_info,
 				                    "================================ END COMMAND DUMP =================================\n");
+			});
+
+			add("listassetpool", [](const params& params)
+			{
+				if (params.size() < 2)
+				{
+					game_console::print(game_console::con_type_info,
+									"listassetpool <poolnumber>: list all the assets in the specified pool\n");
+
+					for (auto i = 0; i < game::XAssetType::ASSET_TYPE_COUNT; i++)
+					{
+						game_console::print(game_console::con_type_info, "%d %s\n", i, game::g_assetNames[i]);
+					}
+				}
+				else
+				{
+					const auto type = static_cast<game::XAssetType>(atoi(params.get(1)));
+
+					if (type < 0 || type >= game::XAssetType::ASSET_TYPE_COUNT)
+					{
+						game_console::print(game_console::con_type_error,
+											"Invalid pool passed must be between [%d, %d]", 0,
+											game::XAssetType::ASSET_TYPE_COUNT - 1);
+						return;
+					}
+
+					game_console::print(game_console::con_type_info, "Listing assets in pool %s",
+										game::g_assetNames[type]);
+
+					enum_assets(type, [type](game::XAssetHeader header)
+					{
+						const auto asset = game::XAsset{ type, header };
+						const auto* const asset_name = game::DB_GetXAssetName(&asset);
+						//const auto entry = game::DB_FindXAssetEntry(type, asset_name);
+						//TODO: display which zone the asset is from
+						game_console::print(game_console::con_type_info, "%s", asset_name);
+					}, true);
+				}
 			});
 		}
 

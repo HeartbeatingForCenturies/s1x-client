@@ -25,7 +25,7 @@ namespace demonware
 		this->register_service<bdUNK63>();
 		this->register_service<bdUNK80>();
 		this->register_service<bdPresence>();
-		this->register_service<bdUNK104>();
+		this->register_service<bdMarketingComms>();
 		this->register_service<bdMatchMaking2>();
 		this->register_service<bdMarketing>();
 	};
