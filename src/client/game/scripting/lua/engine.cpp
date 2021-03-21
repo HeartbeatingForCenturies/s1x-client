@@ -46,7 +46,6 @@ namespace scripting::lua::engine
 			return;
 		}
 
-		logfile::clear_callbacks();
 		clear_custom_fields();
 		get_scripts().clear();
 		load_scripts();
@@ -54,6 +53,7 @@ namespace scripting::lua::engine
 
 	void stop()
 	{
+		logfile::clear_callbacks();
 		get_scripts().clear();
 	}
 
