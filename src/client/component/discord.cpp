@@ -21,7 +21,15 @@ namespace discord
 				game::Dvar_FindVar("virtualLobbyActive")->current.enabled == 1)
 			{
 				discord_presence.details = game::environment::is_sp() ? "Singleplayer" : "Multiplayer";
-				discord_presence.state = "Main Menu";
+				
+				if (game::Dvar_FindVar("virtualLobbyInFiringRange")->current.enabled == 1)
+				{
+					discord_presence.state = "Firing Range";
+				}
+				else
+				{
+					discord_presence.state = "Main Menu";
+				}
 
 				discord_presence.partySize = 0;
 				discord_presence.partyMax = 0;
