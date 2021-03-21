@@ -69,7 +69,7 @@ namespace logfile
 
 			const auto _weapon = get_weapon_name(weapon, isAlternate);
 
-			for (const auto& callback : player_damage_callbacks)
+			for (const auto& callback : player_killed_callbacks)
 			{
 				const auto state = callback.lua_state();
 
