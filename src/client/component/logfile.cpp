@@ -214,7 +214,7 @@ namespace logfile
 			utils::hook::jump(0x1402E99CC, say_stub, true);
 
 			scr_player_damage_hook.create(0x140332150, scr_player_damage_stub);
-			scr_player_killed_hook.create(0x1403322D0, scr_player_killed_stub);
+			scr_player_killed_hook.create(0x1403323D0, scr_player_killed_stub);
 		}
 	};
 }
