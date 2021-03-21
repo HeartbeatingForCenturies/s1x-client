@@ -56,7 +56,7 @@ namespace fastfiles
 					return;
 				}
 
-				game::XZoneInfo info;
+				game::XZoneInfo info{};
 				info.name = params.get(1);
 				info.allocFlags = 1;
 				info.freeFlags = 0;

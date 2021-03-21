@@ -56,7 +56,8 @@ namespace system_check
 
 			static std::unordered_map<std::string, std::string> sp_zone_hashes =
 			{
-				{"patch_common.ff", "4624A974C6C7F8BECD9C343E7951722D8378889AC08ED4F2B22459B171EC553C"},
+				// Steam doesn't necessarily deliver this file :(
+				//{"patch_common.ff", "4624A974C6C7F8BECD9C343E7951722D8378889AC08ED4F2B22459B171EC553C"},
 				{"patch_common_zm_mp.ff", "DA16B546B7233BBC4F48E1E9084B49218CB9271904EA7120A0EB4CB8723C19CF"},
 			};
 
