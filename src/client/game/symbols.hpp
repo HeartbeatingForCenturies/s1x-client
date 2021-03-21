@@ -13,6 +13,8 @@ namespace game
 
 	WEAK symbol<void(void*, void*)> AimAssist_AddToTargetList{0, 0x140001730};
 
+	WEAK symbol<void(unsigned int weapon, bool isAlternate, char* output, unsigned int maxStringLen)> BG_GetWeaponNameComplete{0x0, 0x140165580};
+
 	WEAK symbol<void(errorParm code, const char* message, ...)> Com_Error{0x1402F7570, 0x1403CE480};
 	WEAK symbol<void()> Com_Frame_Try_Block_Function{0x1402F7E10, 0x1403CEF30};
 	WEAK symbol<CodPlayMode()> Com_GetCurrentCoDPlayMode{0, 0x1404C9690};
@@ -45,9 +47,9 @@ namespace game
 	WEAK symbol<void(XAssetType type, void (__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)>
 	DB_EnumXAssets_FastFile{0x14017D7C0, 0x14026EC10};
 	WEAK symbol<void(XAssetType type, void(__cdecl* func)(game::XAssetHeader, void*), const void* inData, bool includeOverride)>
-	DB_EnumXAssets_Internal{ 0x14017D830, 0x14026EC80 };
+	DB_EnumXAssets_Internal{0x14017D830, 0x14026EC80};
 	WEAK symbol<game::XAssetEntry(game::XAssetType type, const char* name)>
-	DB_FindXAssetEntry{ 0x14017D830, 0x14026F020 };
+	DB_FindXAssetEntry{0x14017D830, 0x14026F020};
 	WEAK symbol<const char* (const XAsset* asset)> DB_GetXAssetName{0x140151C00, 0x140240DD0};
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{0x140151C20, 0x140240DF0};
 	WEAK symbol<void(XZoneInfo* zoneInfo, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{
@@ -219,7 +221,7 @@ namespace game
 	WEAK symbol<jmp_buf> g_script_error{0x14A1917B0, 0x1487FA0C0};
 	WEAK symbol<scr_classStruct_t> g_classMap{0x14080A840, 0x1409BE1B0};
 
-	WEAK symbol<scrVarGlob_t> scr_VarGlob{ 0x149B1D680, 0x148185F80 };
+	WEAK symbol<scrVarGlob_t> scr_VarGlob{0x149B1D680, 0x148185F80};
 	WEAK symbol<scrVmPub_t> scr_VmPub{0x14A1938C0, 0x1487FC1C0};
 
 	WEAK symbol<const char*> command_whitelist{0x140808EF0, 0x1409B8DC0};

@@ -3,6 +3,7 @@
 #include "context.hpp"
 
 #include "../execution.hpp"
+#include "../../../component/logfile.hpp"
 
 #include <utils/io.hpp>
 
@@ -45,6 +46,7 @@ namespace scripting::lua::engine
 			return;
 		}
 
+		logfile::clear_callbacks();
 		clear_custom_fields();
 		get_scripts().clear();
 		load_scripts();
