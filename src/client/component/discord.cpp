@@ -17,8 +17,7 @@ namespace discord
 		{
 			Discord_RunCallbacks();
 
-			if (!game::CL_IsCgameInitialized() ||
-				game::Dvar_FindVar("virtualLobbyActive")->current.enabled == 1)
+			if (!game::CL_IsCgameInitialized() || game::Dvar_FindVar("virtualLobbyActive")->current.enabled == 1)
 			{
 				discord_presence.details = game::environment::is_sp() ? "Singleplayer" : "Multiplayer";
 				
