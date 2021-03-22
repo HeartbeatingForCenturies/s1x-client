@@ -106,7 +106,7 @@ namespace scripting::lua
 
 			table[sol::metatable_key] = metatable;
 
-			return { state, table };
+			return {state, table};
 		}
 	}
 
