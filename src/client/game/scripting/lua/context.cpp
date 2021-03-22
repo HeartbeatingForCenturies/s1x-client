@@ -7,6 +7,7 @@
 #include "../functions.hpp"
 
 #include "../../../component/command.hpp"
+#include "../../../component/logfile.hpp"
 
 #include <utils/string.hpp>
 
@@ -247,6 +248,16 @@ namespace scripting::lua
 			game_type["executecommand"] = [](const game&, const std::string& command)
 			{
 				command::execute(command, false);
+			};
+
+			game_type["onplayerdamage"] = [](const game&, const sol::protected_function& callback)
+			{
+				logfile::add_player_damage_callback(callback);
+			};
+
+			game_type["onplayerkilled"] = [](const game&, const sol::protected_function& callback)
+			{
+				logfile::add_player_killed_callback(callback);
 			};
 		}
 	}
