@@ -7,6 +7,7 @@
 #include "network.hpp"
 #include "scheduler.hpp"
 #include "server_list.hpp"
+#include "game_console.hpp"
 
 #include "steam/steam.hpp"
 
@@ -204,7 +205,7 @@ namespace party
 		{
 			if (!game::SV_MapExists(mapname.data()))
 			{
-				printf("Map '%s' doesn't exist.\n", mapname.data());
+				game_console::print(game_console::con_type_info, "Map '%s' doesn't exist.\n", mapname.data());
 				return;
 			}
 
@@ -212,7 +213,7 @@ namespace party
 			if (current_mapname && utils::string::to_lower(current_mapname->current.string) ==
 				utils::string::to_lower(mapname) && (game::SV_Loaded() && !game::VirtualLobby_Loaded()))
 			{
-				printf("Restarting map: %s\n", mapname.data());
+				game_console::print(game_console::con_type_info, "Restarting map: %s\n", mapname.data());
 				command::execute("map_restart", false);
 				return;
 			}
@@ -228,7 +229,7 @@ namespace party
 				perform_game_initialization();
 			}
 
-			printf("Starting map: %s\n", mapname.data());
+			game_console::print(game_console::con_type_info, "Starting map: %s\n", mapname.data());
 
 			auto* gametype = game::Dvar_FindVar("g_gametype");
 			if (gametype && gametype->current.string)
@@ -326,7 +327,7 @@ namespace party
 			{
 				if (params.size() < 2)
 				{
-					printf("usage: kickClient <num>\n");
+					game_console::print(game_console::con_type_info, "usage: kickClient <num>\n");
 					return;
 				}
 				const auto client_num = atoi(params.get(1));
@@ -342,7 +343,7 @@ namespace party
 			{
 				if (params.size() < 2)
 				{
-					printf("usage: kick <name>\n");
+					game_console::print(game_console::con_type_info, "usage: kick <name>\n");
 					return;
 				}
 

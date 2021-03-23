@@ -73,7 +73,10 @@ namespace console
 
 		void post_unpack() override
 		{
-			game::Sys_ShowConsole();
+			if (game::environment::is_dedi() || !utils::flags::has_flag("noconsole"))
+			{
+				game::Sys_ShowConsole();
+			}
 
 			if (!game::environment::is_dedi())
 			{

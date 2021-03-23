@@ -22,7 +22,7 @@ namespace stats
 			{
 				if (params.size() < 2)
 				{
-					printf("usage: setPlayerDataInt <data>, <value>");
+					game_console::print(game_console::con_type_info, "usage: setPlayerDataInt <data>, <value>");
 					return;
 				}
 
@@ -39,7 +39,7 @@ namespace stats
 			{
 				if (params.size() < 2)
 				{
-					printf("usage: getPlayerDataInt <data>\n");
+					game_console::print(game_console::con_type_info, "usage: getPlayerDataInt <data>\n");
 					return;
 				}
 
