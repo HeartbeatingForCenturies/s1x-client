@@ -67,7 +67,7 @@ namespace fastfiles
 			{
 				for (auto i = 0; i < game::ASSET_TYPE_COUNT; i++)
 				{
-					printf("g_poolSize[%i]: %i // %s\n", i, game::g_poolSize[i], game::g_assetNames[i]);
+					game_console::print(game_console::con_type_info, "g_poolSize[%i]: %i // %s\n", i, game::g_poolSize[i], game::g_assetNames[i]);
 				}
 			});
 
