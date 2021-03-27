@@ -237,6 +237,9 @@ namespace patches
 			utils::hook::jump(0x1403BD290, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable
 			utils::hook::jump(0x1403BAF60, is_item_unlocked); // idk ( unlocks loot etc )
 
+			// isProfanity
+			utils::hook::set(0x14023BDC0, 0xC3C033);
+
 			// disable emblems
 			dvars::override::Dvar_RegisterInt("emblems_active", 0, 0, 0, game::DVAR_FLAG_NONE);
 			utils::hook::set<uint8_t>(0x140479590, 0xC3); // don't register commands
