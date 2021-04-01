@@ -1128,11 +1128,14 @@ namespace game
 			clientHeader_t header;
 			char __pad0[268972];
 			gentity_s* gentity; // 268976
-			char __pad1[588];
+			char name[16]; // 268984
+			char __pad1[24];
+			int nextSnapshotTime; // 269024
+			char __pad2[544];
 			LiveClientDropType liveDropRequest; //269572
-			char __pad2[24];
+			char __pad3[24];
 			TestClientType testClient; // 269600
-			char __pad3[391700];
+			char __pad4[391700];
 		}; // size = 661304
 	}
 

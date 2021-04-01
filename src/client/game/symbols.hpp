@@ -13,6 +13,7 @@ namespace game
 	WEAK symbol<void(errorParm code, const char* message, ...)> Com_Error{0x1402F7570, 0x1403CE480};
 	WEAK symbol<void()> Com_Frame_Try_Block_Function{0x1402F7E10, 0x1403CEF30};
 	WEAK symbol<CodPlayMode()> Com_GetCurrentCoDPlayMode{0, 0x1404C9690};
+	WEAK symbol<void(float, float, int)> Com_SetSlowMotion{0, 0x1403D19B0};
 	WEAK symbol<void()> Com_Quit_f{0x1402F9390, 0x1403D08C0};
 
 	WEAK symbol<void(const char* cmdName, void (), cmd_function_s* allocedCmd)> Cmd_AddCommandInternal{
@@ -163,6 +164,8 @@ namespace game
 		0, 0x140438490
 	};
 
+	WEAK symbol<void(int index, const char* string)> SV_SetConfigstring{0, 0x14043FCA0};
+
 	WEAK symbol<void(char* path, int pathSize, Sys_Folder folder, const char* filename, const char* ext)>
 	Sys_BuildAbsPath{0x14037BBE0, 0x1404CC7E0};
 	WEAK symbol<HANDLE(int folder, const char* baseFileName)> Sys_CreateFile{0x14037BCA0, 0x1404CC8A0};
@@ -212,6 +215,9 @@ namespace game
 		WEAK symbol<gentity_s> g_entities{0, 0x144758C70};
 		WEAK symbol<client_t> svs_clients{0, 0x1496C4B10};
 		WEAK symbol<int> svs_numclients{0, 0x1496C4B0C};
+
+		WEAK symbol<int> gameTime{0, 0x144959C2C};
+		WEAK symbol<int> serverTime{0, 0x1496C4B00};
 
 		WEAK symbol<int> sv_serverId_value{0, 0x1488A9A60};
 
