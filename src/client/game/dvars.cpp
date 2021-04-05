@@ -24,6 +24,8 @@ namespace dvars
 
 	game::dvar_t* r_fullbright = nullptr;
 
+	game::dvar_t* cg_legacyCrashHandling = nullptr;
+
 	std::string dvar_get_vector_domain(const int components, const game::dvar_limits& domain)
 	{
 		if (domain.vector.min == -FLT_MAX)
