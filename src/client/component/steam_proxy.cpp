@@ -17,7 +17,7 @@ namespace steam_proxy
 {
 	namespace
 	{
-		utils::binary_resource runner_file(RUNNER, "runner.exe");
+		utils::binary_resource runner_file(RUNNER, "s1x-runner.exe");
 
 		bool is_disabled()
 		{
