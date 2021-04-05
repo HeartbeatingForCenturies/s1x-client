@@ -102,7 +102,6 @@ namespace discord
 			handlers.spectateGame = nullptr;
 			handlers.joinRequest = nullptr;
 
-			// change ID
 			Discord_Initialize("823223724013912124", &handlers, 1, nullptr);
 
 			scheduler::once([]()

@@ -40,14 +40,14 @@ namespace steam_proxy
 			this->clean_up_on_error();
 
 #ifndef DEV_BUILD
-	try
-	{
-		this->start_mod("\xF0\x9F\x94\xB1" " S1x: "s + game::environment::get_string(), game::environment::is_sp() ? 209650 : 209660);
-	}
-	catch (std::exception& e)
-	{
-		printf("Steam: %s\n", e.what());
-	}
+			try
+			{
+				this->start_mod("\xF0\x9F\x94\xB1" " S1x: "s + game::environment::get_string(), game::environment::is_sp() ? 209650 : 209660);
+			}
+			catch (std::exception& e)
+			{
+				printf("Steam: %s\n", e.what());
+			}
 #endif
 		}
 
