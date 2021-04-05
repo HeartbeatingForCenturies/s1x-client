@@ -17,11 +17,13 @@ namespace discord
 		{
 			Discord_RunCallbacks();
 
-			if (!game::CL_IsCgameInitialized() || game::Dvar_FindVar("virtualLobbyActive")->current.enabled == 1)
+			auto* dvar = game::Dvar_FindVar("virtualLobbyActive");
+			if (!game::CL_IsCgameInitialized() || (dvar && dvar->current.enabled == 1))
 			{
 				discord_presence.details = game::environment::is_sp() ? "Singleplayer" : "Multiplayer";
-				
-				if (game::Dvar_FindVar("virtualLobbyInFiringRange")->current.enabled == 1)
+
+				dvar = game::Dvar_FindVar("virtualLobbyInFiringRange");
+				if (dvar && dvar->current.enabled == 1)
 				{
 					discord_presence.state = "Firing Range";
 				}
@@ -103,10 +105,11 @@ namespace discord
 			// change ID
 			Discord_Initialize("823223724013912124", &handlers, 1, nullptr);
 
-			scheduler::on_game_initialized([]()
+			scheduler::once([]()
 			{
+				scheduler::once(update_discord, scheduler::pipeline::async);
 				scheduler::loop(update_discord, scheduler::pipeline::async, 20s);
-			});
+			}, scheduler::pipeline::main);
 
 			initialized_ = true;
 		}
