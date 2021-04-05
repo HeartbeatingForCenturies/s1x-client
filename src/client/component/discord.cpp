@@ -101,9 +101,12 @@ namespace discord
 			handlers.joinRequest = nullptr;
 
 			// change ID
-			Discord_Initialize("820306675873087529", &handlers, 1, nullptr);
+			Discord_Initialize("823223724013912124", &handlers, 1, nullptr);
 
-			scheduler::loop(update_discord, scheduler::pipeline::async, 20s);
+			scheduler::on_game_initialized([]()
+			{
+				scheduler::loop(update_discord, scheduler::pipeline::async, 20s);
+			});
 
 			initialized_ = true;
 		}
