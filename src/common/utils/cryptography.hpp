@@ -20,7 +20,8 @@ namespace utils::cryptography
 
 			bool is_valid() const;
 
-			ecc_key* get();
+			ecc_key& get();
+			const ecc_key& get() const;
 
 			std::string get_public_key() const;
 
@@ -42,8 +43,11 @@ namespace utils::cryptography
 
 		key generate_key(int bits);
 		key generate_key(int bits, const std::string& entropy);
-		std::string sign_message(key& key, const std::string& message);
-		bool verify_message(key& key, const std::string& message, const std::string& signature);
+		std::string sign_message(const key& key, const std::string& message);
+		bool verify_message(const key& key, const std::string& message, const std::string& signature);
+
+		bool encrypt(const key& key, std::string& data);
+		bool decrypt(const key& key, std::string& data);
 	}
 
 	namespace rsa
@@ -71,7 +75,7 @@ namespace utils::cryptography
 
 	namespace hmac_sha1
 	{
-		std::string process(const std::string& data, const std::string& key, unsigned int* len);
+		std::string compute(const std::string& data, const std::string& key);
 	}
 
 	namespace sha1

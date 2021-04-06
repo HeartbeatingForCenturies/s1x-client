@@ -58,9 +58,7 @@ namespace demonware
 		response.write(enc_data);
 
 		// hash entire packet and append end
-		unsigned int outlen = 20;
-		auto hash_data = utils::cryptography::hmac_sha1::process(response.get_buffer(), demonware::get_hmac_key(),
-		                                                         &outlen);
+		auto hash_data = utils::cryptography::hmac_sha1::compute(response.get_buffer(), demonware::get_hmac_key());
 		hash_data.resize(8);
 		response.write(8, hash_data.data());
 

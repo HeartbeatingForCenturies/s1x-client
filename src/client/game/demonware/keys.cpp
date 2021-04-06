@@ -17,7 +17,8 @@ namespace demonware
 
 	std::string packet_buffer;
 
-	void calculate_hmacs_s1(const char* data_, const unsigned int data_size, const char* key, const unsigned int key_size,
+	void calculate_hmacs_s1(const char* data_, const unsigned int data_size, const char* key,
+	                        const unsigned int key_size,
 	                        char* dst, const unsigned int dst_size)
 	{
 		char buffer[64];
@@ -35,9 +36,7 @@ namespace demonware
 		pos++;
 
 		// calculate hmac
-		unsigned int out_len = 20;
-		result = utils::cryptography::hmac_sha1::process(std::string(buffer, pos), std::string(data_, data_size),
-		                                                 &out_len);
+		result = utils::cryptography::hmac_sha1::compute(std::string(buffer, pos), std::string(data_, data_size));
 
 		// save output
 		std::memcpy(dst, result.data(), std::min(20u, (dst_size - out_offset)));
@@ -65,9 +64,7 @@ namespace demonware
 			pos++;
 
 			// calculate hmac
-			unsigned int outlen = 20;
-			result = utils::cryptography::hmac_sha1::process(std::string(buffer, pos), std::string(data_, data_size),
-			                                                 &outlen);
+			result = utils::cryptography::hmac_sha1::compute(std::string(buffer, pos), std::string(data_, data_size));
 
 			// save output
 			std::memcpy(dst + out_offset, result.data(), std::min(20u, (dst_size - out_offset)));
@@ -79,8 +76,7 @@ namespace demonware
 	{
 		const auto out_1 = utils::cryptography::sha1::compute(packet_buffer); // out_1 size 20
 
-		unsigned int len = 20;
-		auto data_3 = utils::cryptography::hmac_sha1::process(data.m_session_key, out_1, &len);
+		auto data_3 = utils::cryptography::hmac_sha1::compute(data.m_session_key, out_1);
 
 		char out_2[16];
 		calculate_hmacs_s1(data_3.data(), 20, "CLIENTCHAL", 10, out_2, 16);
