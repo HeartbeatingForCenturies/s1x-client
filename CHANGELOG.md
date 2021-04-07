@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Map command ingame [#13](https://github.com/XLabsProject/s1x-client/issues/13)
 -   Replicated dvars are reset upon map start/restart [#14](https://github.com/XLabsProject/s1x-client/issues/14)
 -   Process sometimes doesn't exit [#17](https://github.com/XLabsProject/s1x-client/issues/17)
--   Steam Files causing "Outdated Game Files" error. [#39](https://github.com/XLabsProject/s1x-client/issues/39)
+-   Steam Files causing Outdated Game Files error. [#39](https://github.com/XLabsProject/s1x-client/issues/39)
 -   Killcam Lags/Skips [#53](https://github.com/XLabsProject/s1x-client/issues/53)
 
 ### Pull Requests
