@@ -1,8 +1,6 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 #include "server_list.hpp"
-#include "game_console.hpp"
-#include "command.hpp"
 #include "localized_strings.hpp"
 #include "network.hpp"
 #include "scheduler.hpp"
@@ -44,7 +42,7 @@ namespace server_list
 
 		size_t server_list_index = 0;
 		int server_list_page = 0;
-		
+
 		volatile bool update_server_list = false;
 
 		void refresh_server_list()
@@ -98,12 +96,12 @@ namespace server_list
 				update_server_list = false;
 				return 0;
 			}
-			auto count = static_cast<int>(servers.size());
+			const auto count = static_cast<int>(servers.size());
 			return count > 15 ? 15 : count;
 		}
 
-		const char* ui_feeder_item_text(int /*localClientNum*/, void* /*a2*/, void* /*a3*/, const size_t index,
-		                                const size_t column)
+		const char* ui_feeder_item_text(int /*localClientNum*/, void* /*a2*/, void* /*a3*/, const int index,
+		                                const int column)
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
@@ -126,12 +124,22 @@ namespace server_list
 
 			if (column == 2)
 			{
-				return utils::string::va("%d/%d [%d]", servers[i].clients, servers[index].max_clients, servers[i].bots);
+				return servers[i].game_type.empty() ? "" : utils::string::va("%s", servers[i].game_type.data());
 			}
 
 			if (column == 3)
 			{
-				return servers[i].game_type.empty() ? "" : utils::string::va("%s", servers[i].game_type.data());
+				auto num_spaces = 20;
+				if (servers[i].clients >= 10) num_spaces -= 2;
+				if (servers[i].max_clients >= 10) num_spaces -= 2;
+				if (servers[i].bots >= 10) num_spaces -= 2;
+				std::string spaces;
+				while (num_spaces > 0)
+				{
+					spaces.append(" ");
+					num_spaces--;
+				}
+				return utils::string::va("%d/%d [%d]%s%d", servers[i].clients, servers[index].max_clients, servers[i].bots, spaces.data(), servers[i].ping);
 			}
 
 			return "";
@@ -141,7 +149,7 @@ namespace server_list
 		{
 			std::stable_sort(servers.begin(), servers.end(), [](const server_info& a, const server_info& b)
 			{
-				if(a.clients == b.clients)
+				if (a.clients == b.clients)
 				{
 					return a.ping < b.ping;
 				}
@@ -255,7 +263,7 @@ namespace server_list
 		}
 
 		void lui_open_menu_stub(int /*controllerIndex*/, const char* /*menu*/, int /*a3*/, int /*a4*/,
-			unsigned int /*a5*/)
+		                        unsigned int /*a5*/)
 		{
 			refresh_server_list();
 			game::Cmd_ExecuteSingleCommand(0, 0, "lui_open menu_systemlink_join\n");
@@ -288,14 +296,14 @@ namespace server_list
 	void handle_info_response(const game::netadr_s& address, const utils::info_string& info)
 	{
 		// Don't show servers that aren't running!
-		auto sv_running = std::atoi(info.get("sv_running").data());
+		const auto sv_running = std::atoi(info.get("sv_running").data());
 		if (!sv_running)
 		{
 			return;
 		}
 
 		// Only handle servers of the same playmode!
-		auto playmode = game::CodPlayMode(std::atoi(info.get("playmode").data()));
+		const auto playmode = game::CodPlayMode(std::atoi(info.get("playmode").data()));
 		if (game::Com_GetCurrentCoDPlayMode() != playmode)
 		{
 			return;
@@ -346,7 +354,9 @@ namespace server_list
 			localized_strings::override("LUA_MENU_STORE", "Server List");
 			localized_strings::override("LUA_MENU_STORE_DESC", "Browse available servers.");
 
-			localized_strings::override("MENU_NUMPLAYERS", "Players");
+			// shitty ping workaround
+			localized_strings::override("MENU_NUMPLAYERS", "Type");
+			localized_strings::override("MENU_TYPE1", "Players"s + "                  " + "Ping");
 
 			// hook LUI_OpenMenu to show server list instead of store popup
 			utils::hook::call(0x1404D5550, &lui_open_menu_stub);

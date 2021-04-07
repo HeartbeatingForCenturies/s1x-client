@@ -17,7 +17,7 @@ namespace steam_proxy
 {
 	namespace
 	{
-		utils::binary_resource runner_file(RUNNER, "runner.exe");
+		utils::binary_resource runner_file(RUNNER, "s1x-runner.exe");
 
 		bool is_disabled()
 		{
@@ -40,14 +40,14 @@ namespace steam_proxy
 			this->clean_up_on_error();
 
 #ifndef DEV_BUILD
-	try
-	{
-		this->start_mod("\xF0\x9F\x90\xA4" " S1x: "s + (game::environment::is_sp() ? "Singleplayer" : "Multiplayer"), game::environment::is_sp() ? 209650 : 209660);
-	}
-	catch (std::exception& e)
-	{
-		printf("Steam: %s\n", e.what());
-	}
+			try
+			{
+				this->start_mod("\xF0\x9F\x94\xB1" " S1x: "s + game::environment::get_string(), game::environment::is_sp() ? 209650 : 209660);
+			}
+			catch (std::exception& e)
+			{
+				printf("Steam: %s\n", e.what());
+			}
 #endif
 		}
 

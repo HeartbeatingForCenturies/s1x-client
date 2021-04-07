@@ -2,8 +2,6 @@
 #include "loader/component_loader.hpp"
 
 #include "game/game.hpp"
-
-#include "command.hpp"
 #include "game_console.hpp"
 
 #include <utils/hook.hpp>
@@ -12,21 +10,69 @@ namespace logger
 {
 	namespace
 	{
-		void print_error(const char* msg)
+		void print_error(const char* msg, ...)
 		{
-			game_console::print(game_console::con_type_error, msg);
+			char buffer[2048];
+
+			va_list ap;
+			va_start(ap, msg);
+
+			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+			va_end(ap);
+
+			game_console::print(game_console::con_type_error, buffer);
 		}
 
-		void print_warning(const char* msg)
+		void print_warning(const char* msg, ...)
 		{
-			game_console::print(game_console::con_type_warning, msg);
+			char buffer[2048];
+
+			va_list ap;
+			va_start(ap, msg);
+
+			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+			va_end(ap);
+
+			game_console::print(game_console::con_type_warning, buffer);
 		}
 
-		void print(const char* msg)
+		void print(const char* msg, ...)
 		{
-			game_console::print(game_console::con_type_info, msg);
+			char buffer[2048];
+
+			va_list ap;
+			va_start(ap, msg);
+
+			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+			va_end(ap);
+
+			game_console::print(game_console::con_type_info, buffer);
 		}
-		
+
+		void print_dev(const char* msg, ...)
+		{
+			static auto* enabled =
+				game::Dvar_RegisterBool("logger_dev", false, game::DVAR_FLAG_SAVED, "Print dev stuff");
+			if (!enabled->current.enabled)
+			{
+				return;
+			}
+
+			char buffer[2048];
+
+			va_list ap;
+			va_start(ap, msg);
+
+			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+			va_end(ap);
+
+			game_console::print(game_console::con_type_info, buffer);
+		}
+
 		// nullsub_56
 		void nullsub_56()
 		{
@@ -60,6 +106,18 @@ namespace logger
 			utils::hook::call(0x1400DAE67, print_warning);
 			utils::hook::call(0x1400DB019, print_warning);
 		}
+
+		// sub_1400E7420
+		void sub_1400E7420()
+		{
+			utils::hook::call(0x1400CEC1C, print_warning);
+			utils::hook::call(0x1400D218E, print_warning);
+			utils::hook::call(0x1400D2319, print_warning);
+			utils::hook::call(0x1400D65BC, print_dev);
+			utils::hook::call(0x1400D7C94, print_dev);
+			utils::hook::call(0x1400DAB6A, print_dev);
+			utils::hook::call(0x1400DB9BC, print_dev);
+		}
 	}
 
 	class component final : public component_interface
@@ -70,6 +128,7 @@ namespace logger
 			if (!game::environment::is_mp()) return;
 
 			nullsub_56();
+			sub_1400E7420();
 		}
 	};
 }

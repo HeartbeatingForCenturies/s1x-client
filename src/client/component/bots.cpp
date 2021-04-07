@@ -5,14 +5,13 @@
 #include "game/game.hpp"
 #include "party.hpp"
 
-#include <utils/hook.hpp>
 #include <utils/string.hpp>
 
 namespace bots
 {
 	namespace
 	{
-		bool can_spawn()
+		bool can_add()
 		{
 			if (party::get_client_count() < *game::mp::svs_numclients)
 			{
@@ -21,9 +20,37 @@ namespace bots
 			return false;
 		}
 
+		void bot_team_join(unsigned int entity_num)
+		{
+			scheduler::once([entity_num]()
+			{
+				// auto-assign
+				game::SV_ExecuteClientCommand(&game::mp::svs_clients[entity_num],
+				                              utils::string::va("lui 125 2 %i",
+				                                                *game::mp::sv_serverId_value), false);
+
+				scheduler::once([entity_num]()
+				{
+					// select class ( they don't select it? )
+					game::SV_ExecuteClientCommand(&game::mp::svs_clients[entity_num],
+					                              utils::string::va("lui 9 %i %i", (rand() % (104 - 100 + 1) + 100),
+					                                                *game::mp::sv_serverId_value), false);
+				}, scheduler::pipeline::server, 1s);
+			}, scheduler::pipeline::server, 1s);
+		}
+
+		void spawn_bot(const int entity_num)
+		{
+			game::SV_SpawnTestClient(&game::mp::g_entities[entity_num]);
+			if (game::Com_GetCurrentCoDPlayMode() == game::CODPLAYMODE_CORE)
+			{
+				//bot_team_join(entity_num); // super bugger rn
+			}
+		}
+
 		void add_bot()
 		{
-			if (!can_spawn())
+			if (!can_add())
 			{
 				return;
 			}
@@ -33,9 +60,9 @@ namespace bots
 			auto* bot_ent = game::SV_AddBot(bot_name);
 			if (bot_ent)
 			{
-				game::SV_SpawnTestClient(bot_ent);
+				spawn_bot(bot_ent->s.entityNum);
 			}
-			else if (can_spawn()) // workaround since first bot won't ever spawn
+			else if (can_add()) // workaround since first bot won't ever spawn
 			{
 				add_bot();
 			}
@@ -54,7 +81,7 @@ namespace bots
 
 			command::add("spawnBot", [](const command::params& params)
 			{
-				if (!game::SV_Loaded()) return;
+				if (!game::SV_Loaded() || game::VirtualLobby_Loaded()) return;
 
 				auto num_bots = 1;
 				if (params.size() == 2)

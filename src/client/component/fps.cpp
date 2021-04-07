@@ -12,12 +12,12 @@ namespace fps
 {
 	namespace
 	{
-		float fps_color_good[4] = { 0.6f, 1.0f, 0.0f, 1.0f };
-		float fps_color_ok[4] = { 1.0f, 0.7f, 0.3f, 1.0f };
-		float fps_color_bad[4] = { 1.0f, 0.3f, 0.3f, 1.0f };
+		float fps_color_good[4] = {0.6f, 1.0f, 0.0f, 1.0f};
+		float fps_color_ok[4] = {1.0f, 0.7f, 0.3f, 1.0f};
+		float fps_color_bad[4] = {1.0f, 0.3f, 0.3f, 1.0f};
 
 		//float origin_color[4] = { 1.0f, 0.67f, 0.13f, 1.0f };
-		float ping_color[4] = { 1.0f, 1.0f, 1.0f, 0.65f };
+		float ping_color[4] = {1.0f, 1.0f, 1.0f, 0.65f};
 
 		struct cg_perf_data
 		{
@@ -161,13 +161,15 @@ namespace fps
 			// change cg_drawfps flags to saved
 			utils::hook::call(SELECT_VALUE(0x1400EF951, 0x1401A4B8E), &cg_draw_fps_register_stub);
 
+			// fix ping value
+			utils::hook::nop(0x140213031, 2);
+
 			scheduler::loop(cg_draw_fps, scheduler::pipeline::renderer);
 			if (game::environment::is_mp())
 			{
 				game::Dvar_RegisterInt("cg_drawPing", 0, 0, 1, 0, "Choose to draw ping");
 				scheduler::loop(cg_draw_ping, scheduler::pipeline::renderer);
 			}
-			
 		}
 	};
 }

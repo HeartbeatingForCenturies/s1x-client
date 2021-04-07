@@ -41,7 +41,7 @@ build:
   verbosity: minimal
 
 artifacts:
-#  - path: build/version.txt
-#  - path: build/bin/**/iw6x.exe
+  - path: build/version.txt
+  - path: build/bin/**/s1x.exe
 #  - path: build/bin/**/*.exe
 #  - path: build/bin/**/*.pdb
