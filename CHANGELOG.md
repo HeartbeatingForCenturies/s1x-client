@@ -37,5 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Make it possible to open the client without console [#45](https://github.com/XLabsProject/s1x-client/pull/45) ([@Joelrau](https://github.com/Joelrau))
 -   Fix slowmotion on dedicated [#54](https://github.com/XLabsProject/s1x-client/pull/54) ([@Joelrau](https://github.com/Joelrau))
 -   Discord RPC - party size + party size max [#59](https://github.com/XLabsProject/s1x-client/pull/59) ([@mjkzy](https://github.com/mjkzy))
+-   discord presence - host name address [#64](https://github.com/XLabsProject/s1x-client/pull/64) ([@mjkzy](https://github.com/mjkzy))
 
 [Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v0.0.1...HEAD
