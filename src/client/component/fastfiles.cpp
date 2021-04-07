@@ -29,15 +29,37 @@ namespace fastfiles
 		return current_fastfile.data();
 	}
 
-	void reallocate_asset_pool(const game::XAssetType type, const unsigned int new_size)
+	constexpr int get_asset_type_size(const game::XAssetType type)
 	{
-		const size_t element_size = game::DB_GetXAssetTypeSize(type);
+		constexpr int asset_type_sizes[] =
+		{
+			96, 88, 128, 56, 40, 216, 56, 680,
+			480, 32, 32, 32, 32, 32, 352, 1456,
+			104, 32, 24, 152, 152, 152, 16, 64,
+			640, 40, 16, 408, 24, 288, 176, 2800,
+			48, -1, 40, 24, 200, 88, 16, 120,
+			3560, 32, 64, 16, 16, -1, -1, -1,
+			-1, 24, 40, 24, 40, 24, 128, 2256,
+			136, 32, 72, 24, 64, 88, 48, 32,
+			96, 152, 64, 32,
+		};
 
-		auto* new_pool = utils::memory::get_allocator()->allocate(new_size * element_size);
-		std::memmove(new_pool, game::DB_XAssetPool[type], game::g_poolSize[type] * element_size);
+		return asset_type_sizes[type];
+	}
 
-		game::DB_XAssetPool[type] = new_pool;
-		game::g_poolSize[type] = new_size;
+	template <game::XAssetType Type, size_t Size>
+	char* reallocate_asset_pool()
+	{
+		constexpr auto element_size = get_asset_type_size(Type);
+		static char new_pool[element_size * Size] = {0};
+		assert(get_asset_type_size(Type) == game::DB_GetXAssetTypeSize(Type));
+
+		std::memmove(new_pool, game::DB_XAssetPool[Type], game::g_poolSize[Type] * element_size);
+
+		game::DB_XAssetPool[Type] = new_pool;
+		game::g_poolSize[Type] = Size;
+
+		return new_pool;
 	}
 
 	class component final : public component_interface
@@ -67,11 +89,22 @@ namespace fastfiles
 			{
 				for (auto i = 0; i < game::ASSET_TYPE_COUNT; i++)
 				{
-					game_console::print(game_console::con_type_info, "g_poolSize[%i]: %i // %s\n", i, game::g_poolSize[i], game::g_assetNames[i]);
+					game_console::print(game_console::con_type_info, "g_poolSize[%i]: %i // %s\n", i,
+					                    game::g_poolSize[i], game::g_assetNames[i]);
 				}
 			});
 
-			reallocate_asset_pool(game::ASSET_TYPE_FONT, 48);
+			reallocate_asset_pool<game::ASSET_TYPE_FONT, 48>();
+
+			if (!game::environment::is_sp())
+			{
+				const auto* xmodel_pool = reallocate_asset_pool<game::ASSET_TYPE_XMODEL, 8832>();
+				utils::hook::inject(0x14026FD63, xmodel_pool + 8);
+				utils::hook::inject(0x14026FDB3, xmodel_pool + 8);
+				utils::hook::inject(0x14026FFAC, xmodel_pool + 8);
+				utils::hook::inject(0x14027463C, xmodel_pool + 8);
+				utils::hook::inject(0x140274689, xmodel_pool + 8);
+			}
 		}
 	};
 }
