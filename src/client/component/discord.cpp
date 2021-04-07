@@ -6,6 +6,7 @@
 #include <utils/string.hpp>
 
 #include <discord_rpc.h>
+#include <component/party.hpp>
 
 namespace discord
 {
@@ -34,11 +35,9 @@ namespace discord
 
 				discord_presence.partySize = 0;
 				discord_presence.partyMax = 0;
-
 				discord_presence.startTimestamp = 0;
 
-				//discord_presence.largeImageKey = game::environment::is_sp() ? "menu_singleplayer" : "menu_multiplayer";
-				discord_presence.largeImageKey = "s1x";
+				discord_presence.largeImageKey = game::environment::is_sp() ? "menu_singleplayer" : "menu_multiplayer";
 			}
 			else
 			{
@@ -61,12 +60,13 @@ namespace discord
 					discord_presence.state = host_name;
 				}
 
-				// disable for now
-				/*discord_presence.partySize = game::mp::cgArray->snap != nullptr
-					? game::mp::cgArray->snap->numClients
-					: 1;
-				discord_presence.partySize = 1;
-				discord_presence.partyMax = game::Dvar_FindVar("sv_maxclients")->current.integer; */
+				dvar = game::Dvar_FindVar("sv_maxclients");
+				if (dvar)
+				{
+					auto clients = party::get_client_count();
+					discord_presence.partySize = clients;
+					discord_presence.partyMax = dvar->current.integer;
+				}
 
 				if (!discord_presence.startTimestamp)
 				{
@@ -74,8 +74,7 @@ namespace discord
 						std::chrono::system_clock::now().time_since_epoch()).count();
 				}
 
-				//discord_presence.largeImageKey = game::Dvar_FindVar("ui_mapname")->current.string;
-				discord_presence.largeImageKey = "s1x";
+				discord_presence.largeImageKey = game::Dvar_FindVar("ui_mapname")->current.string;
 				discord_presence.largeImageText = game::UI_GetGameTypeDisplayName(game::Dvar_FindVar("ui_mapname")->current.string);
 			}
 
