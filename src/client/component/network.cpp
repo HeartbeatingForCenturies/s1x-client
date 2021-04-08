@@ -235,6 +235,9 @@ namespace network
 				// increase cl_maxpackets
 				dvars::override::Dvar_RegisterInt("cl_maxpackets", 1000, 1, 1000, 0x1);
 
+				// increase snaps
+				dvars::override::Dvar_RegisterInt("sv_remote_client_snapshot_msec", 33, 33, 100, 0);
+
 				// ignore impure client
 				utils::hook::jump(0x14043AC0D, reinterpret_cast<void*>(0x14043ACA3));
 
