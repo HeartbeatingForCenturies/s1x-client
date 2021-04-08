@@ -8,6 +8,8 @@
 #include <utils/thread.hpp>
 #include <utils/flags.hpp>
 
+#define ASYNC_CONSOLE
+
 namespace console
 {
 	namespace
@@ -43,10 +45,14 @@ namespace console
 
 		void post_start() override
 		{
+			this->terminate_runner_ = false;
+
 			scheduler::loop([this]()
 			{
 				this->log_messages();
+#ifndef ASYNC_CONSOLE
 				this->event_frame();
+#endif
 			}, scheduler::pipeline::main);
 
 			this->console_runner_ = utils::thread::create_named_thread("Console IO", [this]
@@ -67,12 +73,20 @@ namespace console
 				this->console_runner_.join();
 			}
 
+			if (this->console_thread_.joinable())
+			{
+				this->console_thread_.join();
+			}
+
 			_close(this->handles_[0]);
 			_close(this->handles_[1]);
 		}
 
 		void post_unpack() override
 		{
+#ifdef ASYNC_CONSOLE
+			this->initialize();
+#else
 			if (game::environment::is_dedi() || !utils::flags::has_flag("noconsole"))
 			{
 				game::Sys_ShowConsole();
@@ -84,11 +98,9 @@ namespace console
 				ShowWindow(console::get_window(), SW_MINIMIZE);
 			}
 
-			// Async console is not ready yet :/
-			//this->initialize();
-
 			std::lock_guard<std::mutex> _(this->mutex_);
 			this->console_initialized_ = true;
+#endif
 		}
 
 	private:
@@ -97,10 +109,12 @@ namespace console
 
 		std::mutex mutex_;
 		std::thread console_runner_;
+		std::thread console_thread_;
 		std::queue<std::string> message_queue_;
 
 		int handles_[2]{};
 
+#ifndef ASYNC_CONSOLE
 		void event_frame()
 		{
 			MSG msg;
@@ -116,10 +130,10 @@ namespace console
 				DispatchMessage(&msg);
 			}
 		}
-
+#else
 		void initialize()
 		{
-			utils::thread::create_named_thread("Console", [this]()
+			this->console_thread_ = utils::thread::create_named_thread("Console", [this]()
 			{
 				if (game::environment::is_dedi() || !utils::flags::has_flag("noconsole"))
 				{
@@ -142,7 +156,11 @@ namespace console
 				{
 					if (PeekMessageA(&msg, nullptr, NULL, NULL, PM_REMOVE))
 					{
-						if (msg.message == WM_QUIT) break;
+						if (msg.message == WM_QUIT)
+						{
+							command::execute("quit", false);
+							break;
+						}
 
 						TranslateMessage(&msg);
 						DispatchMessage(&msg);
@@ -152,13 +170,13 @@ namespace console
 						std::this_thread::sleep_for(1ms);
 					}
 				}
-				exit(0);
-			}).detach();
+			});
 		}
+#endif
 
 		void log_messages()
 		{
-			while (this->console_initialized_ && !this->message_queue_.empty())
+			/*while*/if (this->console_initialized_ && !this->message_queue_.empty())
 			{
 				std::queue<std::string> message_queue_copy;
 
