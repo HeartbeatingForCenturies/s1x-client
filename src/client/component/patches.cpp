@@ -41,9 +41,12 @@ namespace patches
 		{
 			char username[UNLEN + 1];
 			DWORD username_len = UNLEN + 1;
-			GetUserNameA(username, &username_len);
+			if (!GetUserNameA(username, &username_len))
+			{
+				return "Unknown Soldier";
+			}
 
-			return username;
+			return std::string{username, username_len - 1};
 		}
 
 		utils::hook::detour com_register_dvars_hook;
@@ -115,7 +118,7 @@ namespace patches
 			return 0;
 		}
 
-		const char* db_read_raw_file_stub(const char* filename, char* buf, int size)
+		const char* db_read_raw_file_stub(const char* filename, char* buf, const int size)
 		{
 			std::string file_name = filename;
 			if (file_name.find(".cfg") == std::string::npos)
