@@ -37,6 +37,15 @@ namespace patches
 			return sv_kick_client_num_hook.invoke<void>(client_num, reason);
 		}
 
+		std::string get_login_username()
+		{
+			char username[UNLEN + 1];
+			DWORD username_len = UNLEN + 1;
+			GetUserNameA(username, &username_len);
+
+			return username;
+		}
+
 		utils::hook::detour com_register_dvars_hook;
 
 		void com_register_dvars_stub()
@@ -44,7 +53,7 @@ namespace patches
 			if (game::environment::is_mp())
 			{
 				// Make name save
-				game::Dvar_RegisterString("name", "Unknown Soldier", game::DVAR_FLAG_SAVED, "Player name.");
+				game::Dvar_RegisterString("name", get_login_username().data(), game::DVAR_FLAG_SAVED, "Player name.");
 
 				// Disable data validation error popup
 				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, 0, "");
