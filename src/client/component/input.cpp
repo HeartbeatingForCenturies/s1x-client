@@ -15,7 +15,7 @@ namespace input
 		utils::hook::detour cl_char_event_hook;
 		utils::hook::detour cl_key_event_hook;
 
-		void cl_char_event_stub(int local_client_num, int key)
+		void cl_char_event_stub(const int local_client_num, const int key)
 		{
 			if (!game_console::console_char_event(local_client_num, key))
 			{
@@ -25,7 +25,7 @@ namespace input
 			cl_char_event_hook.invoke<void>(local_client_num, key);
 		}
 
-		void cl_key_event_stub(unsigned int local_client_num, int key, signed int down, int arg4)
+		void cl_key_event_stub(const int local_client_num, const int key, const signed int down, const int arg4)
 		{
 			if (!game_console::console_key_event(local_client_num, key, down))
 			{
