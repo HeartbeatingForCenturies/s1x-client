@@ -156,6 +156,17 @@ namespace patches
 		{
 			return 0; // 0 == yes
 		}
+
+		void set_client_dvar_from_server_stub(void* a1, void* a2, const char* dvar, const char* value)
+		{
+			if (dvar == "cg_fov"s)
+			{
+				return;
+			}
+
+			// CG_SetClientDvarFromServer
+			reinterpret_cast<void(*)(void*, void*, const char*, const char*)>(0x1401BF0A0)(a1, a2, dvar, value);
+		}
 	}
 
 	class component final : public component_interface
@@ -256,6 +267,9 @@ namespace patches
 
 			// patch "Server is different version" to show the server client version
 			utils::hook::inject(0x1404398B2, VERSION);
+
+			// prevent servers overriding our fov
+			utils::hook::call(0x1401BB782, set_client_dvar_from_server_stub);
 		}
 
 		static void patch_sp()
