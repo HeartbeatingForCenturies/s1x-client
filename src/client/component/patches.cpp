@@ -270,6 +270,9 @@ namespace patches
 
 			// prevent servers overriding our fov
 			utils::hook::call(0x1401BB782, set_client_dvar_from_server_stub);
+
+			// some anti tamper thing that kills performance
+			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_NONE);
 		}
 
 		static void patch_sp()
