@@ -243,6 +243,10 @@ namespace dedicated
 			utils::hook::nop(0x1404CC471, 2); // ^
 			utils::hook::set<uint8_t>(0x140279B80, 0xC3); // Disable image pak file loading
 
+			// Reduce min required memory
+			utils::hook::set<uint64_t>(0x1404D140D, 0x80000000);
+			utils::hook::set<uint64_t>(0x1404D14BF, 0x80000000);
+
 			// initialize the game after onlinedataflags is 32 (workaround)
 			scheduler::schedule([=]()
 			{
