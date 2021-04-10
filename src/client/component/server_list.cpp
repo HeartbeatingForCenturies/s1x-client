@@ -70,13 +70,12 @@ namespace server_list
 			const auto i = static_cast<size_t>(index) + server_list_index;
 			if (i < servers.size())
 			{
-				// double click disabled for now
-				/*static size_t last_index = 0xFFFFFFFF;
+				static size_t last_index = ~0;
 				if (last_index != i)
 				{
 					last_index = i;
 				}
-				else*/
+				else
 				{
 					party::connect(servers[i].address);
 				}
