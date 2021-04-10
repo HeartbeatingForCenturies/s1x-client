@@ -70,7 +70,7 @@ namespace server_list
 			const auto i = static_cast<size_t>(index) + server_list_index;
 			if (i < servers.size())
 			{
-				static size_t last_index = ~0;
+				static auto last_index = ~0ull;
 				if (last_index != i)
 				{
 					last_index = i;
