@@ -25,7 +25,7 @@ namespace game
 
 	bool VirtualLobby_Loaded()
 	{
-		return *mp::virtualLobby_loaded == 1;
+		return !game::environment::is_sp() && *mp::virtualLobby_loaded == 1;
 	}
 
 	namespace environment
