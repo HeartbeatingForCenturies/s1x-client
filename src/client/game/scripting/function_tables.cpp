@@ -656,7 +656,7 @@ namespace scripting
 		{"setwaypointedgestyle_rotatingicon", 32985},
 		{"setcursorhint", 32986},
 		{"sethintstring", 32987},
-		{"forceusehintoff", 32988},
+		{"sub_140328620", 32988},
 		{"forceusehinton", 32989},
 		{"sub_1403208f0", 32990},
 		{"makesoft", 32991},

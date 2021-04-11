@@ -26,6 +26,7 @@ namespace game
 		SCRIPT_NONE = 0,
 		SCRIPT_OBJECT = 1,
 		SCRIPT_STRING = 2,
+		SCRIPT_ISTRING = 3,
 		SCRIPT_VECTOR = 4,
 		SCRIPT_FLOAT = 5,
 		SCRIPT_INTEGER = 6,
@@ -185,7 +186,7 @@ namespace game
 		ObjectVariableValue objectVariableValue[40960];
 		ObjectVariableChildren objectVariableChildren[40960];
 		unsigned __int16 childVariableBucket[65536];
-		ChildVariableValue childVariableValue[102400];
+		ChildVariableValue childVariableValue[384000];
 	};
 	// *
 
