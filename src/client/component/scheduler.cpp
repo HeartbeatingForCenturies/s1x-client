@@ -24,7 +24,7 @@ namespace scheduler
 		public:
 			void add(task&& task)
 			{
-				new_callbacks.access([&task](task_list& tasks)
+				new_callbacks_.access([&task](task_list& tasks)
 				{
 					tasks.emplace_back(std::move(task));
 				});
@@ -32,7 +32,7 @@ namespace scheduler
 
 			void execute()
 			{
-				callbacks.access([&](task_list& tasks)
+				callbacks_.access([&](task_list& tasks)
 				{
 					this->merge_callbacks();
 
@@ -63,14 +63,14 @@ namespace scheduler
 			}
 
 		private:
-			utils::concurrency::container<task_list> new_callbacks;
-			utils::concurrency::container<task_list, std::recursive_mutex> callbacks;
+			utils::concurrency::container<task_list> new_callbacks_;
+			utils::concurrency::container<task_list, std::recursive_mutex> callbacks_;
 
 			void merge_callbacks()
 			{
-				callbacks.access([&](task_list& tasks)
+				callbacks_.access([&](task_list& tasks)
 				{
-					new_callbacks.access([&](task_list& new_tasks)
+					new_callbacks_.access([&](task_list& new_tasks)
 					{
 						tasks.insert(tasks.end(), std::move_iterator<task_list::iterator>(new_tasks.begin()), std::move_iterator<task_list::iterator>(new_tasks.end()));
 						new_tasks = {};

@@ -16,25 +16,50 @@ namespace scripting::lua
 
 	void scheduler::run_frame()
 	{
-		for (auto task : this->tasks_)
+		callbacks_.access([&](task_list& tasks)
 		{
-			const auto now = std::chrono::steady_clock::now();
-			if ((now - task->last_execution) > task->delay)
+			this->merge_callbacks();
+
+			for (auto i = tasks.begin(); i != tasks.end();)
 			{
-				task->last_execution = now;
-				if (task->is_volatile)
+				const auto now = std::chrono::high_resolution_clock::now();
+				const auto diff = now - i->last_call;
+
+				if (diff < i->delay)
 				{
-					this->tasks_.remove(task);
+					++i;
+					continue;
 				}
 
-				handle_error(task->callback());
+				i->last_call = now;
+
+				if (!i->is_deleted)
+				{
+					handle_error(i->callback());
+				}
+
+				if (i->is_volatile || i->is_deleted)
+				{
+					i = tasks.erase(i);
+				}
+				else
+				{
+					++i;
+				}
 			}
-		}
+		});
 	}
 
 	void scheduler::clear()
 	{
-		this->tasks_.clear();
+		callbacks_.access([&](task_list& tasks)
+		{
+			new_callbacks_.access([&](task_list& new_tasks)
+			{
+				new_tasks.clear();
+				tasks.clear();
+			});
+		});
 	}
 
 	task_handle scheduler::add(const sol::protected_function& callback, const long long milliseconds,
@@ -46,27 +71,49 @@ namespace scripting::lua
 	task_handle scheduler::add(const sol::protected_function& callback, const std::chrono::milliseconds delay,
 	                           const bool is_volatile)
 	{
+		const uint64_t id = ++this->current_task_id_;
+
 		task task;
 		task.is_volatile = is_volatile;
 		task.callback = callback;
 		task.delay = delay;
-		task.last_execution = std::chrono::steady_clock::now();
-		task.id = ++this->current_task_id_;
+		task.last_call = std::chrono::steady_clock::now();
 
-		this->tasks_.add(task);
+		new_callbacks_.access([&task](task_list& tasks)
+		{
+			tasks.emplace_back(std::move(task));
+		});
 
-		return {task.id};
+		return {id};
 	}
 
 	void scheduler::remove(const task_handle& handle)
 	{
-		for (auto task : this->tasks_)
+		auto mask_as_deleted = [&](task_list& tasks)
 		{
-			if (task->id == handle.id)
+			for (auto& task : tasks)
 			{
-				this->tasks_.remove(task);
-				break;
+				if (task.id == handle.id)
+				{
+					task.is_deleted = true;
+				}
 			}
-		}
+		};
+
+		callbacks_.access(mask_as_deleted);
+		new_callbacks_.access(mask_as_deleted);
+	}
+
+	void scheduler::merge_callbacks()
+	{
+		callbacks_.access([&](task_list& tasks)
+		{
+			new_callbacks_.access([&](task_list& new_tasks)
+			{
+				tasks.insert(tasks.end(), std::move_iterator<task_list::iterator>(new_tasks.begin()),
+				             std::move_iterator<task_list::iterator>(new_tasks.end()));
+				new_tasks = {};
+			});
+		});
 	}
 }

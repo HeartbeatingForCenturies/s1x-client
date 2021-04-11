@@ -31,42 +31,87 @@ namespace scripting::lua
 	void event_handler::dispatch_to_specific_listeners(const event& event,
 	                                                   const event_arguments& arguments)
 	{
-		for (auto listener : this->event_listeners_)
+		callbacks_.access([&](task_list& tasks)
 		{
-			if (listener->event == event.name && listener->entity == event.entity)
+			this->merge_callbacks();
+
+			for (auto i = tasks.begin(); i != tasks.end();)
 			{
-				if (listener->is_volatile)
+				if (i->event != event.name || i->entity != event.entity)
 				{
-					this->event_listeners_.remove(listener);
+					++i;
+					continue;
 				}
 
-				handle_error(listener->callback(sol::as_args(arguments)));
+				if (!i->is_deleted)
+				{
+					handle_error(i->callback(sol::as_args(arguments)));
+				}
+
+				if (i->is_volatile || i->is_deleted)
+				{
+					i = tasks.erase(i);
+				}
+				else
+				{
+					++i;
+				}
 			}
-		}
+		});
 	}
 
 	event_listener_handle event_handler::add_event_listener(event_listener&& listener)
 	{
 		const uint64_t id = ++this->current_listener_id_;
 		listener.id = id;
-		this->event_listeners_.add(std::move(listener));
+
+		new_callbacks_.access([&listener](task_list& tasks)
+		{
+			tasks.emplace_back(std::move(listener));
+		});
+
 		return {id};
 	}
 
 	void event_handler::clear()
 	{
-		this->event_listeners_.clear();
+		callbacks_.access([&](task_list& tasks)
+		{
+			new_callbacks_.access([&](task_list& new_tasks)
+			{
+				new_tasks.clear();
+				tasks.clear();
+			});
+		});
 	}
 
 	void event_handler::remove(const event_listener_handle& handle)
 	{
-		for (const auto task : this->event_listeners_)
+		auto mask_as_deleted = [&](task_list& tasks)
 		{
-			if (task->id == handle.id)
+			for (auto& task : tasks)
 			{
-				this->event_listeners_.remove(task);
-				return;
+				if (task.id == handle.id)
+				{
+					task.is_deleted = true;
+				}
 			}
-		}
+		};
+
+		callbacks_.access(mask_as_deleted);
+		new_callbacks_.access(mask_as_deleted);
+	}
+
+	void event_handler::merge_callbacks()
+	{
+		callbacks_.access([&](task_list& tasks)
+		{
+			new_callbacks_.access([&](task_list& new_tasks)
+			{
+				tasks.insert(tasks.end(), std::move_iterator<task_list::iterator>(new_tasks.begin()),
+				             std::move_iterator<task_list::iterator>(new_tasks.end()));
+				new_tasks = {};
+			});
+		});
 	}
 }
