@@ -78,6 +78,8 @@ namespace scripting::lua
 		task.callback = callback;
 		task.delay = delay;
 		task.last_call = std::chrono::steady_clock::now();
+		task.id = id;
+		task.is_deleted = false;
 
 		new_callbacks_.access([&task](task_list& tasks)
 		{
@@ -96,6 +98,7 @@ namespace scripting::lua
 				if (task.id == handle.id)
 				{
 					task.is_deleted = true;
+					break;
 				}
 			}
 		};

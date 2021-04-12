@@ -64,6 +64,7 @@ namespace scripting::lua
 	{
 		const uint64_t id = ++this->current_listener_id_;
 		listener.id = id;
+		listener.is_deleted = false;
 
 		new_callbacks_.access([&listener](task_list& tasks)
 		{
@@ -94,6 +95,7 @@ namespace scripting::lua
 				if (task.id == handle.id)
 				{
 					task.is_deleted = true;
+					break;
 				}
 			}
 		};
