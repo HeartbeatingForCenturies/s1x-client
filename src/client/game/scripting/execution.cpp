@@ -93,7 +93,8 @@ namespace scripting
 
 		if (!safe_execution::call(function, entref))
 		{
-			throw std::runtime_error("Error executing "s + (is_method_call ? "method" : "function") +" '" + name + "'");
+			throw std::runtime_error(
+				"Error executing "s + (is_method_call ? "method" : "function") + " '" + name + "'");
 		}
 
 		return get_return_value();
@@ -198,12 +199,8 @@ namespace scripting
 
 			return value;
 		}
-		else
-		{
-			// Add custom fields
-			return get_custom_field(entity, field);
-		}
 
-		return {};
+		// Add custom fields
+		return get_custom_field(entity, field);
 	}
 }
