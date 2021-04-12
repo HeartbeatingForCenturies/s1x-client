@@ -106,8 +106,8 @@ namespace auth
 			if (xuid != key.get_hash())
 			{
 				//MessageBoxA(nullptr, steam_id.data(), std::to_string(key.get_hash()).data(), 0);
-				//network::send(*from, "error", "XUID doesn't match the certificate!", '\n');
-				//return;
+				network::send(*from, "error", "XUID doesn't match the certificate!", '\n');
+				return;
 			}
 
 			if (!key.is_valid() || !verify_message(key, challenge, info.signature()))
@@ -138,12 +138,12 @@ namespace auth
 
 	uint64_t get_guid()
 	{
-		//if (game::environment::is_dedi())
+		if (game::environment::is_dedi())
 		{
 			return 0x110000100000000 | (::utils::cryptography::random::get_integer() & ~0x80000000);
 		}
 
-		//return get_key().get_hash();
+		return get_key().get_hash();
 	}
 
 	class component final : public component_interface
