@@ -2,7 +2,7 @@
 #include "loader/component_loader.hpp"
 
 #include "game/game.hpp"
-#include "game_console.hpp"
+#include "console.hpp"
 
 #include <utils/hook.hpp>
 
@@ -21,7 +21,7 @@ namespace logger
 
 			va_end(ap);
 
-			game_console::print(game_console::con_type_error, buffer);
+			console::error(buffer);
 		}
 
 		void print_warning(const char* msg, ...)
@@ -35,7 +35,7 @@ namespace logger
 
 			va_end(ap);
 
-			game_console::print(game_console::con_type_warning, buffer);
+			console::warn(buffer);
 		}
 
 		void print(const char* msg, ...)
@@ -49,7 +49,7 @@ namespace logger
 
 			va_end(ap);
 
-			game_console::print(game_console::con_type_info, buffer);
+			console::info(buffer);
 		}
 
 		void print_dev(const char* msg, ...)
@@ -70,7 +70,7 @@ namespace logger
 
 			va_end(ap);
 
-			game_console::print(game_console::con_type_info, buffer);
+			console::info(buffer);
 		}
 
 		// nullsub_56

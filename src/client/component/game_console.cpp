@@ -2,6 +2,7 @@
 #include "loader/component_loader.hpp"
 #include "game_console.hpp"
 #include "command.hpp"
+#include "console.hpp"
 #include "scheduler.hpp"
 
 #include "game/game.hpp"
@@ -10,6 +11,7 @@
 #include <utils/string.hpp>
 #include <utils/hook.hpp>
 #include <utils/concurrency.hpp>
+
 #include "version.hpp"
 
 #define console_font game::R_RegisterFont("fonts/consolefont")
@@ -83,12 +85,6 @@ namespace game_console
 					output.pop_front();
 				}
 			});
-		}
-
-		void print(const std::string& data)
-		{
-			print_internal(data);
-			printf("%s\n", data.data());
 		}
 
 		void toggle_console()
@@ -385,21 +381,17 @@ namespace game_console
 		}
 	}
 
-	void print(const int type, const char* fmt, ...)
+	void print(const int type, const std::string& data)
 	{
-		char va_buffer[0x200] = {0};
+		if (game::environment::is_dedi())
+		{
+			return;
+		}
 
-		va_list ap;
-		va_start(ap, fmt);
-		vsprintf_s(va_buffer, fmt, ap);
-		va_end(ap);
-
-		const auto formatted = std::string(va_buffer);
-		const auto lines = utils::string::split(formatted, '\n');
-
+		const auto lines = utils::string::split(data, '\n');
 		for (const auto& line : lines)
 		{
-			print(type == con_type_info ? line : "^"s.append(std::to_string(type)).append(line));
+			print_internal(type == console::con_type_info ? line : "^"s.append(std::to_string(type)).append(line));
 		}
 	}
 
@@ -630,7 +622,7 @@ namespace game_console
 
 					history.push_front(con.buffer);
 
-					print("]"s.append(con.buffer));
+					console::info("]%s\n", con.buffer);
 
 					if (history.size() > 10)
 					{

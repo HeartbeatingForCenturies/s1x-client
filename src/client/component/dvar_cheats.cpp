@@ -3,7 +3,7 @@
 
 #include "game/game.hpp"
 
-#include "game_console.hpp"
+#include "console.hpp"
 #include "scheduler.hpp"
 
 #include <utils/hook.hpp>
@@ -40,13 +40,13 @@ namespace dvar_cheats
 	{
 		if ((dvar->flags & game::DvarFlags::DVAR_FLAG_WRITE))
 		{
-			game_console::print(game_console::con_type_error, "%s is write protected", dvar->name);
+			console::error("%s is write protected\n", dvar->name);
 			return false;
 		}
 
 		if ((dvar->flags & game::DvarFlags::DVAR_FLAG_READ))
 		{
-			game_console::print(game_console::con_type_error, "%s is read only", dvar->name);
+			console::error("%s is read only\n", dvar->name);
 			return false;
 		}
 
@@ -59,14 +59,14 @@ namespace dvar_cheats
 			if ((dvar->flags & game::DvarFlags::DVAR_FLAG_REPLICATED) && (cl_ingame && cl_ingame->current.enabled) && (
 				sv_running && !sv_running->current.enabled))
 			{
-				game_console::print(game_console::con_type_error, "%s can only be changed by the server", dvar->name);
+				console::error("%s can only be changed by the server\n", dvar->name);
 				return false;
 			}
 
 			const auto sv_cheats = game::Dvar_FindVar("sv_cheats");
 			if ((dvar->flags & game::DvarFlags::DVAR_FLAG_CHEAT) && (sv_cheats && !sv_cheats->current.enabled))
 			{
-				game_console::print(game_console::con_type_error, "%s is cheat protected", dvar->name);
+				console::error("%s is cheat protected\n", dvar->name);
 				return false;
 			}
 		}
@@ -171,10 +171,12 @@ namespace dvar_cheats
 			utils::hook::jump(0x1404C3A9A, dvar_flag_checks_stub, true); // check extra dvar flags when setting values
 
 			utils::hook::nop(0x1402E2E03, 5); // remove error in PlayerCmd_SetClientDvar if setting a non-network dvar
-			utils::hook::set<uint8_t>(0x1402E2DCF, 0xEB); // don't check flags on the dvars, send any existing dvar instead
+			utils::hook::set<uint8_t>(0x1402E2DCF, 0xEB);
+			// don't check flags on the dvars, send any existing dvar instead
 			utils::hook::jump(0x1402E2E4A, player_cmd_set_client_dvar, true); // send non-network dvars as string
-			utils::hook::call(0x1401BB782, cg_set_client_dvar_from_server); // check for dvars being sent as string before parsing ids
-			
+			utils::hook::call(0x1401BB782, cg_set_client_dvar_from_server);
+			// check for dvars being sent as string before parsing ids
+
 			scheduler::once([]()
 			{
 				game::Dvar_RegisterBool("sv_cheats", false, game::DvarFlags::DVAR_FLAG_REPLICATED,

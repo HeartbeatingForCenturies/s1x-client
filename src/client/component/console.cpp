@@ -2,18 +2,24 @@
 #include "console.hpp"
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
-#include "scheduler.hpp"
 #include "command.hpp"
 
 #include <utils/thread.hpp>
 #include <utils/flags.hpp>
+#include <utils/concurrency.hpp>
 
-#define ASYNC_CONSOLE
+namespace game_console
+{
+	void print(int type, const std::string& data);
+}
 
 namespace console
 {
 	namespace
 	{
+		using message_queue = std::queue<std::string>;
+		utils::concurrency::container<message_queue> messages;
+
 		void hide_console()
 		{
 			auto* const con_window = GetConsoleWindow();
@@ -25,6 +31,25 @@ namespace console
 			{
 				ShowWindow(con_window, SW_HIDE);
 			}
+		}
+
+		std::string format(va_list* ap, const char* message)
+		{
+			static thread_local char buffer[0x1000];
+
+			const auto count = _vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), message, *ap);
+
+			if (count < 0) return {};
+			return {buffer, static_cast<size_t>(count)};
+		}
+
+		void dispatch_message(const int type, const std::string& message)
+		{
+			game_console::print(type, message);
+			messages.access([&message](message_queue& msgs)
+			{
+				msgs.emplace(message);
+			});
 		}
 	}
 
@@ -46,14 +71,6 @@ namespace console
 		void post_start() override
 		{
 			this->terminate_runner_ = false;
-
-			/*scheduler::loop([this]()
-			{
-				this->log_messages();
-#ifndef ASYNC_CONSOLE
-				this->event_frame();
-#endif
-			}, scheduler::pipeline::main);*/
 
 			this->console_runner_ = utils::thread::create_named_thread("Console IO", [this]
 			{
@@ -80,57 +97,27 @@ namespace console
 
 			_close(this->handles_[0]);
 			_close(this->handles_[1]);
+
+			messages.access([&](message_queue& msgs)
+			{
+				msgs = {};
+			});
 		}
 
 		void post_unpack() override
 		{
-#ifdef ASYNC_CONSOLE
 			this->initialize();
-#else
-			if (game::environment::is_dedi() || !utils::flags::has_flag("noconsole"))
-			{
-				game::Sys_ShowConsole();
-			}
-
-			if (!game::environment::is_dedi())
-			{
-				// Hide that shit
-				ShowWindow(console::get_window(), SW_MINIMIZE);
-			}
-
-			std::lock_guard<std::mutex> _(this->mutex_);
-			this->console_initialized_ = true;
-#endif
 		}
 
 	private:
 		volatile bool console_initialized_ = false;
 		volatile bool terminate_runner_ = false;
 
-		std::mutex mutex_;
 		std::thread console_runner_;
 		std::thread console_thread_;
-		std::queue<std::string> message_queue_;
 
 		int handles_[2]{};
 
-#ifndef ASYNC_CONSOLE
-		void event_frame()
-		{
-			MSG msg;
-			while (PeekMessageA(&msg, nullptr, NULL, NULL, PM_REMOVE))
-			{
-				if (msg.message == WM_QUIT)
-				{
-					command::execute("quit", false);
-					break;
-				}
-
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-		}
-#else
 		void initialize()
 		{
 			this->console_thread_ = utils::thread::create_named_thread("Console", [this]()
@@ -147,8 +134,10 @@ namespace console
 				}
 
 				{
-					std::lock_guard<std::mutex> _(this->mutex_);
-					this->console_initialized_ = true;
+					messages.access([&](message_queue&)
+					{
+						this->console_initialized_ = true;
+					});
 				}
 
 				MSG msg;
@@ -173,18 +162,20 @@ namespace console
 				}
 			});
 		}
-#endif
 
 		void log_messages()
 		{
-			/*while*/if (this->console_initialized_ && !this->message_queue_.empty())
+			/*while*/
+			if (this->console_initialized_ && !messages.get_raw().empty())
 			{
 				std::queue<std::string> message_queue_copy;
 
 				{
-					std::lock_guard<std::mutex> _(this->mutex_);
-					message_queue_copy = std::move(this->message_queue_);
-					this->message_queue_ = {};
+					messages.access([&](message_queue& msgs)
+					{
+						message_queue_copy = std::move(msgs);
+						msgs = {};
+					});
 				}
 
 				while (!message_queue_copy.empty())
@@ -213,8 +204,7 @@ namespace console
 				const auto len = _read(this->handles_[0], buffer, sizeof(buffer));
 				if (len > 0)
 				{
-					std::lock_guard<std::mutex> _(this->mutex_);
-					this->message_queue_.push(std::string(buffer, len));
+					dispatch_message(con_type_info, std::string(buffer, len));
 				}
 				else
 				{
@@ -245,6 +235,16 @@ namespace console
 
 		auto* const logo_window = *reinterpret_cast<HWND*>(SELECT_VALUE(0x14A9F6080, 0x14B5B94D0));
 		SetWindowPos(logo_window, nullptr, 5, 5, width - 25, 60, 0);
+	}
+
+	void print(const int type, const char* fmt, ...)
+	{
+		va_list ap;
+		va_start(ap, fmt);
+		const auto result = format(&ap, fmt);
+		va_end(ap);
+
+		dispatch_message(type, result);
 	}
 }
 

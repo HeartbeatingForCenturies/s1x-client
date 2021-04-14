@@ -4,7 +4,7 @@
 #include "game/game.hpp"
 
 #include "command.hpp"
-#include "game_console.hpp"
+#include "console.hpp"
 
 namespace stats
 {
@@ -22,7 +22,7 @@ namespace stats
 			{
 				if (params.size() < 2)
 				{
-					game_console::print(game_console::con_type_info, "usage: setPlayerDataInt <data>, <value>");
+					console::info("usage: setPlayerDataInt <data>, <value>\n");
 					return;
 				}
 
@@ -39,7 +39,7 @@ namespace stats
 			{
 				if (params.size() < 2)
 				{
-					game_console::print(game_console::con_type_info, "usage: getPlayerDataInt <data>\n");
+					console::info("usage: getPlayerDataInt <data>\n");
 					return;
 				}
 
@@ -49,7 +49,7 @@ namespace stats
 				// GetPlayerDataInt
 				const auto result = reinterpret_cast<int(*)(signed int, unsigned int, unsigned int)>(0x1403BE860)(
 					0, lookup_string, 0);
-				game_console::print(game_console::con_type_info, "%d\n", result);
+				console::info("%d\n", result);
 			});
 
 			command::add("unlockstats", []()

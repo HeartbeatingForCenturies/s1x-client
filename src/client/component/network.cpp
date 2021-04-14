@@ -3,7 +3,7 @@
 
 #include "command.hpp"
 #include "network.hpp"
-#include "game_console.hpp"
+#include "console.hpp"
 #include "dvars.hpp"
 
 #include <utils/hook.hpp>
@@ -260,15 +260,7 @@ namespace network
 				on("print", [](const game::netadr_s& addr, const std::string_view& data)
 				{
 					const std::string message{data};
-
-					if (game::environment::is_dedi())
-					{
-						printf("%s\n", message.data());
-					}
-					else
-					{
-						game_console::print(game_console::con_type_info, "%s\n", message.data());
-					}
+					console::info("%s\n", message.data());
 				});
 			}
 		}
