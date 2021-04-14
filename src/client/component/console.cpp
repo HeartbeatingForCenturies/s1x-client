@@ -7,6 +7,7 @@
 #include <utils/thread.hpp>
 #include <utils/flags.hpp>
 #include <utils/concurrency.hpp>
+#include <utils/hook.hpp>
 
 namespace game_console
 {
@@ -50,6 +51,11 @@ namespace console
 			{
 				msgs.emplace(message);
 			});
+		}
+
+		void append_text(const char* text)
+		{
+			dispatch_message(con_type_info, text);
 		}
 	}
 
@@ -106,6 +112,9 @@ namespace console
 
 		void post_unpack() override
 		{
+			// Redirect input (]command)
+			utils::hook::jump(SELECT_VALUE(0x14038F3E0, 0x1404D9200), append_text);
+
 			this->initialize();
 		}
 
