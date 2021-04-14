@@ -47,13 +47,13 @@ namespace console
 		{
 			this->terminate_runner_ = false;
 
-			scheduler::loop([this]()
+			/*scheduler::loop([this]()
 			{
 				this->log_messages();
 #ifndef ASYNC_CONSOLE
 				this->event_frame();
 #endif
-			}, scheduler::pipeline::main);
+			}, scheduler::pipeline::main);*/
 
 			this->console_runner_ = utils::thread::create_named_thread("Console IO", [this]
 			{
@@ -167,6 +167,7 @@ namespace console
 					}
 					else
 					{
+						this->log_messages();
 						std::this_thread::sleep_for(1ms);
 					}
 				}

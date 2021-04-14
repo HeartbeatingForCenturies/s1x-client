@@ -20,38 +20,38 @@ namespace game_console
 	{
 		struct console_globals
 		{
-			float x;
-			float y;
-			float left_x;
-			float font_height;
-			bool may_auto_complete;
-			char auto_complete_choice[64];
-			int info_line_count;
+			float x{};
+			float y{};
+			float left_x{};
+			float font_height{};
+			bool may_auto_complete{};
+			char auto_complete_choice[64]{};
+			int info_line_count{};
 		};
 
 		struct ingame_console
 		{
-			char buffer[256];
-			int cursor;
-			int font_height;
-			int visible_line_count;
-			int visible_pixel_width;
-			float screen_min[2]; //left & top
-			float screen_max[2]; //right & bottom
-			console_globals globals;
-			bool output_visible;
-			int display_line_offset;
-			int line_count;
-			std::deque<std::string> output;
+			char buffer[256]{};
+			int cursor{};
+			int font_height{};
+			int visible_line_count{};
+			int visible_pixel_width{};
+			float screen_min[2]{}; //left & top
+			float screen_max[2]{}; //right & bottom
+			console_globals globals{};
+			bool output_visible{};
+			int display_line_offset{};
+			int line_count{};
+			std::deque<std::string> output{};
 		};
 
-		ingame_console con;
+		ingame_console con{};
 
 		std::int32_t history_index = -1;
-		std::deque<std::string> history;
+		std::deque<std::string> history{};
 
-		std::string fixed_input;
-		std::vector<std::string> matches;
+		std::string fixed_input{};
+		std::vector<std::string> matches{};
 
 		float color_white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 		float color_s1[4] = {1.0f, 0.90f, 0.0f, 1.0f};
@@ -71,7 +71,7 @@ namespace game_console
 			{
 				con.display_line_offset++;
 			}
-			con.output.push_back(data.data());
+			con.output.push_back(data);
 			if (con.output.size() > 512)
 			{
 				con.output.pop_front();
@@ -80,7 +80,7 @@ namespace game_console
 
 		void print(const std::string& data)
 		{
-			print_internal(data.data());
+			print_internal(data);
 			printf("%s\n", data.data());
 		}
 
@@ -226,7 +226,7 @@ namespace game_console
 			}
 			else if (matches.size() == 1)
 			{
-				const auto dvar = game::Dvar_FindVar(matches[0].data());
+				auto* const dvar = game::Dvar_FindVar(matches[0].data());
 				const auto line_count = dvar ? 2 : 1;
 
 				draw_hint_box(line_count, dvars::con_inputHintBoxColor->current.vector);
@@ -257,7 +257,7 @@ namespace game_console
 
 				for (size_t i = 0; i < matches.size(); i++)
 				{
-					const auto dvar = game::Dvar_FindVar(matches[i].data());
+					auto* const dvar = game::Dvar_FindVar(matches[i].data());
 
 					draw_hint_text(static_cast<int>(i), matches[i].data(),
 					               dvar
@@ -368,7 +368,7 @@ namespace game_console
 		const auto formatted = std::string(va_buffer);
 		const auto lines = utils::string::split(formatted, '\n');
 
-		for (auto& line : lines)
+		for (const auto& line : lines)
 		{
 			print_internal(line);
 		}
@@ -386,7 +386,7 @@ namespace game_console
 		const auto formatted = std::string(va_buffer);
 		const auto lines = utils::string::split(formatted, '\n');
 
-		for (auto& line : lines)
+		for (const auto& line : lines)
 		{
 			print(type == con_type_info ? line : "^"s.append(std::to_string(type)).append(line));
 		}
@@ -405,13 +405,13 @@ namespace game_console
 			{
 				if (con.globals.may_auto_complete)
 				{
-					const auto firstChar = con.buffer[0];
+					const auto first_char = con.buffer[0];
 
 					clear();
 
-					if (firstChar == '\\' || firstChar == '/')
+					if (first_char == '\\' || first_char == '/')
 					{
-						con.buffer[0] = firstChar;
+						con.buffer[0] = first_char;
 						con.buffer[1] = '\0';
 					}
 
@@ -434,7 +434,7 @@ namespace game_console
 					return false;
 				}
 
-				for (auto i = 0; i < clipboard.length(); i++)
+				for (size_t i = 0; i < clipboard.length(); i++)
 				{
 					console_char_event(localClientNum, clipboard[i]);
 				}
@@ -639,15 +639,14 @@ namespace game_console
 	{
 		input = utils::string::to_lower(input);
 
-		for (int i = 0; i < *game::dvarCount; i++)
+		for (auto i = 0; i < *game::dvarCount; i++)
 		{
 			if (game::sortedDvars[i] && game::sortedDvars[i]->name)
 			{
-				std::string name = utils::string::to_lower(game::sortedDvars[i]->name);
-
+				auto name = utils::string::to_lower(game::sortedDvars[i]->name);
 				if (game_console::match_compare(input, name, exact))
 				{
-					suggestions.push_back(game::sortedDvars[i]->name);
+					suggestions.emplace_back(game::sortedDvars[i]->name);
 				}
 
 				if (exact && suggestions.size() > 1)
@@ -657,16 +656,15 @@ namespace game_console
 			}
 		}
 
-		game::cmd_function_s* cmd = (*game::cmd_functions);
+		auto* cmd = *game::cmd_functions;
 		while (cmd)
 		{
 			if (cmd->name)
 			{
-				std::string name = utils::string::to_lower(cmd->name);
-
+				auto name = utils::string::to_lower(cmd->name);
 				if (game_console::match_compare(input, name, exact))
 				{
-					suggestions.push_back(cmd->name);
+					suggestions.emplace_back(cmd->name);
 				}
 
 				if (exact && suggestions.size() > 1)

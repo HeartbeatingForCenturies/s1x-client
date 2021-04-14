@@ -149,7 +149,7 @@ namespace patches
 		void missing_content_error_stub(int /*mode*/, const char* /*message*/)
 		{
 			game::Com_Error(game::ERR_DROP,
-			                utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile()));
+			                utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile().data()));
 		}
 
 		void bsp_sys_error_stub(const char* error, const char* arg1)
