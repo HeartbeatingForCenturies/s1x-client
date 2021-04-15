@@ -288,8 +288,8 @@ namespace patches
 			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_NONE);
 			
 			// unlock safeArea_*
-			utils::hook::nop(0x140219F62, 5); // not allowing change on horizontal
-			//utils::hook::nop(0x140219F89, 5);
+			utils::hook::jump(0x140219F5E, 0x140219F67);
+			utils::hook::jump(0x140219F80, 0x140219F8E);
 			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
 			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
 			dvars::override::Dvar_RegisterFloat("safeArea_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
