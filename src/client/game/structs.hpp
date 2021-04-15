@@ -1270,8 +1270,8 @@ namespace game
 		struct gclient_s
 		{
 			char __pad0[20708];
-			char name[16]; // 20708
-			char __pad1[684];
+			char name[32]; // 20708
+			char __pad1[668];
 			int flags; // 21408
 		}; // size = ?
 
@@ -1297,15 +1297,17 @@ namespace game
 		struct clientHeader_t
 		{
 			int state;
+			char __pad0[36];
+			netadr_s remoteAddress;
 		}; // size = ?
 
 		struct client_t
 		{
 			clientHeader_t header;
-			char __pad0[268972];
+			char __pad0[268916];
 			gentity_s* gentity; // 268976
-			char name[16]; // 268984
-			char __pad1[24];
+			char name[32]; // 268984
+			char __pad1[8];
 			int nextSnapshotTime; // 269024
 			char __pad2[544];
 			LiveClientDropType liveDropRequest; //269572

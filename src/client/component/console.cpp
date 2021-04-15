@@ -4,6 +4,8 @@
 #include "game/game.hpp"
 #include "command.hpp"
 
+#include "rcon.hpp"
+
 #include <utils/thread.hpp>
 #include <utils/flags.hpp>
 #include <utils/concurrency.hpp>
@@ -46,6 +48,11 @@ namespace console
 
 		void dispatch_message(const int type, const std::string& message)
 		{
+			if (rcon::message_redirect(message))
+			{
+				return;
+			}
+
 			game_console::print(type, message);
 			messages.access([&message](message_queue& msgs)
 			{
