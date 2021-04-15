@@ -286,6 +286,13 @@ namespace patches
 
 			// some anti tamper thing that kills performance
 			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_NONE);
+			
+			// un-cheat and un-readonly safeArea_* & give dvars saved flags (WIP)
+			// look into: safeArea_adjusted_* always being set to 1?
+			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::Dvar_RegisterFloat("safeArea_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::Dvar_RegisterFloat("safeArea_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
 		}
 
 		static void patch_sp()
