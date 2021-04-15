@@ -294,6 +294,13 @@ namespace server_list
 
 	void handle_info_response(const game::netadr_s& address, const utils::info_string& info)
 	{
+		// Don't show servers that aren't dedicated!
+		const auto dedicated = std::atoi(info.get("dedicated").data());
+		if (!dedicated)
+		{
+			return;
+		}
+
 		// Don't show servers that aren't running!
 		const auto sv_running = std::atoi(info.get("sv_running").data());
 		if (!sv_running)

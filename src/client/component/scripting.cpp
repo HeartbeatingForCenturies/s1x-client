@@ -50,7 +50,6 @@ namespace scripting
 
 		void scr_load_level_stub()
 		{
-			
 			scr_load_level_hook.invoke<void>();
 			if (!game::VirtualLobby_Loaded())
 			{

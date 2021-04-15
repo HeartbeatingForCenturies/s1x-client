@@ -29,6 +29,12 @@ namespace dedicated
 
 		void send_heartbeat()
 		{
+			auto* const dvar = game::Dvar_FindVar("sv_lanOnly");
+			if (dvar && dvar->current.enabled)
+			{
+				return;
+			}
+
 			game::netadr_s target{};
 			if (server_list::get_master_server(target))
 			{
@@ -149,6 +155,12 @@ namespace dedicated
 			{
 				return;
 			}
+
+			// Register dedicated dvar
+			game::Dvar_RegisterBool("dedicated", 1, game::DVAR_FLAG_READ, "Dedicated server");
+
+			// Add lanonly mode
+			game::Dvar_RegisterBool("sv_lanOnly", 0, game::DVAR_FLAG_NONE, "Don't send heartbeat");
 
 			// Disable VirtualLobby
 			dvars::override::Dvar_RegisterBool("virtualLobbyEnabled", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);

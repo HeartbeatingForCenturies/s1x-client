@@ -33,6 +33,8 @@ namespace game
 
 	WEAK symbol<void(const char* message)> Conbuf_AppendText{0x14038F220, 0x1404D9040};
 
+	WEAK symbol<char*(int start)> ConcatArgs{0x14021A7E0, 0x1402E9670};
+
 	WEAK symbol<void(int localClientNum, void (*)(int localClientNum))> Cbuf_AddCall{0x1402ED820, 0x1403AECF0};
 	WEAK symbol<void(int localClientNum, const char* text)> Cbuf_AddText{0x1402ED890, 0x1403AED70};
 	WEAK symbol<void(int localClientNum, int controllerIndex, const char* buffer,
@@ -97,6 +99,7 @@ namespace game
 
 	WEAK symbol<void()> G_Glass_Update{0x14021D540, 0x1402EDEE0};
 
+	WEAK symbol<int(int clientNum)> G_GetClientScore{0, 0x1402F6AB0};
 	WEAK symbol<unsigned int(const char* name)> G_GetWeaponForName{0x140274590, 0x14033FF60};
 	WEAK symbol<int(playerState_s* ps, unsigned int weapon, int dualWield, int startInAltMode, int, int, int, char,
 	                ...)>
@@ -156,6 +159,7 @@ namespace game
 	WEAK symbol<scr_string_t(const char* str)> SL_FindString{0x140314AF0, 0x1403F11C0};
 	WEAK symbol<scr_string_t(const char* str, unsigned int user)> SL_GetString{0x140314D90, 0x1403F1440};
 
+	WEAK symbol<void(int arg, char* buffer, int bufferLength)> SV_Cmd_ArgvBuffer{0x1402EEFD0, 0x1403B05C0};
 	WEAK symbol<void(const char* text_in)> SV_Cmd_TokenizeString{0, 0x1403B0640};
 	WEAK symbol<void()> SV_Cmd_EndTokenizedString{0, 0x1403B0600};
 
@@ -175,6 +179,7 @@ namespace game
 		0x1403F3A70, 0x14043E120
 	};
 	WEAK symbol<const char*(int clientNum)> SV_GetGuid{0, 0x14043E1E0};
+	WEAK symbol<int(int clientNum)> SV_GetClientPing{0, 0x14043E1C0};
 	WEAK symbol<playerState_s*(int num)> SV_GetPlayerstateForClientNum{0x1403F3AB0, 0x14043E260};
 	WEAK symbol<void(int clientNum, const char* reason)> SV_KickClientNum{0, 0x1404377A0};
 	WEAK symbol<bool()> SV_Loaded{0x1403F42C0, 0x14043FA50};

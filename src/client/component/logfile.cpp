@@ -134,31 +134,47 @@ namespace logfile
 			scr_player_damage_hook.invoke<void>(self, inflictor, attacker, damage, dflags, meansOfDeath, weapon, isAlternate, vPoint, vDir, hitLoc, timeOffset);
 		}
 
-		bool evaluate_say(char* text, game::mp::gentity_s* ent)
+		void client_command_stub(int clientNum)
 		{
-			auto hidden = false;
+			auto self = &game::mp::g_entities[clientNum];
+			char cmd[1024]{};
 
-			++text;
+			game::SV_Cmd_ArgvBuffer(0, cmd, 1024);
 
-			if (text[0] == '/')
+			if (cmd == "say"s || cmd == "say_team"s)
 			{
-				hidden = true;
-				++text;
+				auto hidden = false;
+				std::string message(game::ConcatArgs(1));
+
+				hidden = message[1] == '/';
+				message.erase(0, hidden ? 2 : 1);
+
+				scheduler::once([cmd, message, self]()
+				{
+					const scripting::entity level{*game::levelEntityId};
+					const auto player = scripting::call("getEntByNum", {self->s.entityNum}).as<scripting::entity>();
+
+					scripting::notify(level, cmd, {player, message});
+					scripting::notify(player, cmd, {message});
+				}, scheduler::pipeline::server);
+
+				if (hidden)
+				{
+					return;
+				}
 			}
 
-			const std::string message = text;
-			const auto client = ent->s.entityNum;
+			// ClientCommand
+			return reinterpret_cast<void(*)(int)>(0x1402E98F0)(clientNum);
+		}
 
-			scheduler::once([message, client]()
-			{
-				const scripting::entity level{*game::levelEntityId};
-				const auto player = scripting::call("getEntByNum", {client}).as<scripting::entity>();
-
-				scripting::notify(level, "say", {player, message});
-				scripting::notify(player, "say", {message});
-			}, scheduler::pipeline::server);
-
-			return hidden;
+		void g_shutdown_game_stub(int freeScripts)
+		{
+			const scripting::entity level{*game::levelEntityId};
+			scripting::notify(level, "shutdownGame_called", {1});
+			
+			// G_ShutdownGame
+			return reinterpret_cast<void(*)(int)>(0x1402F8C10)(freeScripts);
 		}
 	}
 
@@ -178,29 +194,6 @@ namespace logfile
 		player_killed_callbacks.clear();
 	}
 
-	const auto say_stub = utils::hook::assemble([](utils::hook::assembler& a)
-	{
-		const auto hidden = a.newLabel();
-
-		a.pushad64();
-		a.mov(rcx, rbx);
-		a.mov(rdx, rdi);
-
-		a.call_aligned(evaluate_say);
-
-		a.cmp(al, 0);
-		a.jne(hidden);
-
-		a.popad64();
-		a.lea(rcx, dword_ptr(rsp, 0x80));
-		a.mov(r8d, 0x96);
-		a.jmp(0x1402E99DA);
-
-		a.bind(hidden);
-		a.popad64();
-		a.jmp(0x1402E9A44);
-	});
-
 	class component final : public component_interface
 	{
 	public:
@@ -211,10 +204,13 @@ namespace logfile
 				return;
 			}
 
-			utils::hook::jump(0x1402E99CC, say_stub, true);
+			utils::hook::call(0x14043A9AD, client_command_stub);
 
 			scr_player_damage_hook.create(0x140332150, scr_player_damage_stub);
 			scr_player_killed_hook.create(0x1403323D0, scr_player_killed_stub);
+
+			utils::hook::call(0x14043E550, g_shutdown_game_stub);
+			utils::hook::call(0x14043EA11, g_shutdown_game_stub);
 		}
 	};
 }

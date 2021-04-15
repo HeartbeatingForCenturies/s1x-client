@@ -449,6 +449,7 @@ namespace party
 				info.set("protocol", utils::string::va("%i", PROTOCOL));
 				info.set("playmode", utils::string::va("%i", game::Com_GetCurrentCoDPlayMode()));
 				info.set("sv_running", utils::string::va("%i", get_dvar_bool("sv_running")));
+				info.set("dedicated", utils::string::va("%i", get_dvar_bool("dedicated")));
 
 				network::send(target, "infoResponse", info.build(), '\n');
 			});

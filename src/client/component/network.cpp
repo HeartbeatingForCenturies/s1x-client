@@ -260,7 +260,7 @@ namespace network
 				on("print", [](const game::netadr_s& addr, const std::string_view& data)
 				{
 					const std::string message{data};
-					console::info("%s\n", message.data());
+					console::info(message.data());
 				});
 			}
 		}
