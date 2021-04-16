@@ -52,6 +52,11 @@ namespace server_list
 			return count + (servers.size() % server_limit > 0);
 		}
 
+		size_t get_index()
+		{
+			return server_list_page * server_limit;
+		}
+
 		void refresh_server_list()
 		{
 			{
@@ -74,7 +79,7 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = static_cast<size_t>(index) + (server_list_page * server_limit);
+			const auto i = static_cast<size_t>(index) + get_index();
 			if (i < servers.size())
 			{
 				static auto last_index = ~0ull;
@@ -103,7 +108,9 @@ namespace server_list
 				return 0;
 			}
 			const auto count = static_cast<int>(servers.size());
-			return count > server_limit ? server_limit : count;
+			const auto index = get_index();
+			const auto diff = count - index;
+			return diff > server_limit ? server_limit : static_cast<int>(diff);
 		}
 
 		const char* ui_feeder_item_text(int /*localClientNum*/, void* /*a2*/, void* /*a3*/, const int index,
@@ -111,7 +118,7 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = (server_list_page * server_limit) + index;
+			const auto i = get_index() + index;
 
 			if (i >= servers.size())
 			{
