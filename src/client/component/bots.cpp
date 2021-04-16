@@ -5,7 +5,9 @@
 #include "game/game.hpp"
 #include "party.hpp"
 
+#include <utils/hook.hpp>
 #include <utils/string.hpp>
+#include <utils/cryptography.hpp>
 
 namespace bots
 {
@@ -56,7 +58,7 @@ namespace bots
 			}
 
 			// SV_BotGetRandomName
-			auto* bot_name = reinterpret_cast<const char* (*)()>(0x1404267E0)();
+			auto* const bot_name = game::SV_BotGetRandomName();
 			auto* bot_ent = game::SV_AddBot(bot_name);
 			if (bot_ent)
 			{
@@ -66,6 +68,29 @@ namespace bots
 			{
 				add_bot();
 			}
+		}
+
+		const std::vector<std::string>& get_bot_names()
+		{
+			static std::vector<std::string> names{};
+			// TODO: Fecth these from the server
+			return names;
+		}
+
+		utils::hook::detour get_bot_name_hook;
+
+		const char* get_random_bot_name()
+		{
+			const auto& names = get_bot_names();
+			if (names.empty())
+			{
+				return get_bot_name_hook.invoke<const char*>();
+			}
+
+			const auto index = utils::cryptography::random::get_integer() % names.size();
+			const auto& name = names.at(index);
+
+			return utils::string::va("%.*s", static_cast<int>(name.size()), name.data());
 		}
 	}
 
@@ -78,6 +103,8 @@ namespace bots
 			{
 				return;
 			}
+
+			get_bot_name_hook.create(game::SV_BotGetRandomName, get_random_bot_name);
 
 			command::add("spawnBot", [](const command::params& params)
 			{
