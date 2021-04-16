@@ -232,6 +232,11 @@ namespace exception
 	class component final : public component_interface
 	{
 	public:
+		component()
+		{
+			SetUnhandledExceptionFilter(exception_filter);
+		}
+
 		void post_load() override
 		{
 			SetUnhandledExceptionFilter(exception_filter);
