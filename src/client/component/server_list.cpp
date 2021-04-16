@@ -15,6 +15,8 @@ namespace server_list
 {
 	namespace
 	{
+		const int server_limit = 14;
+
 		struct server_info
 		{
 			// gotta add more to this
@@ -40,10 +42,15 @@ namespace server_list
 		std::mutex mutex;
 		std::vector<server_info> servers;
 
-		size_t server_list_index = 0;
-		int server_list_page = 0;
+		size_t server_list_page = 0;
 
 		volatile bool update_server_list = false;
+
+		size_t get_page_count()
+		{
+			const auto count = servers.size() / server_limit;
+			return count + (servers.size() % server_limit > 0);
+		}
 
 		void refresh_server_list()
 		{
@@ -51,7 +58,7 @@ namespace server_list
 				std::lock_guard<std::mutex> _(mutex);
 				servers.clear();
 				master_state.queued_servers.clear();
-				server_list_index = 0;
+				server_list_page = 0;
 			}
 
 			party::reset_connect_state();
@@ -67,7 +74,7 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = static_cast<size_t>(index) + server_list_index;
+			const auto i = static_cast<size_t>(index) + (server_list_page * server_limit);
 			if (i < servers.size())
 			{
 				static auto last_index = ~0ull;
@@ -96,7 +103,7 @@ namespace server_list
 				return 0;
 			}
 			const auto count = static_cast<int>(servers.size());
-			return count > 15 ? 15 : count;
+			return count > server_limit ? server_limit : count;
 		}
 
 		const char* ui_feeder_item_text(int /*localClientNum*/, void* /*a2*/, void* /*a3*/, const int index,
@@ -104,7 +111,7 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = server_list_index + index;
+			const auto i = (server_list_page * server_limit) + index;
 
 			if (i >= servers.size())
 			{
@@ -138,7 +145,8 @@ namespace server_list
 					spaces.append(" ");
 					num_spaces--;
 				}
-				return utils::string::va("%d/%d [%d]%s%d", servers[i].clients, servers[index].max_clients, servers[i].bots, spaces.data(), servers[i].ping);
+				return utils::string::va("%d/%d [%d]%s%d", servers[i].clients, servers[index].max_clients,
+				                         servers[i].bots, spaces.data(), servers[i].ping);
 			}
 
 			return "";
@@ -210,10 +218,9 @@ namespace server_list
 				return false;
 			}
 
-			if (server_list_index + 15 < servers.size())
+			if (server_list_page + 1 < get_page_count())
 			{
-				server_list_index += 15; // next page
-				server_list_page += 1;
+				++server_list_page;
 				trigger_refresh();
 			}
 
@@ -227,10 +234,9 @@ namespace server_list
 				return false;
 			}
 
-			if (server_list_index > 0)
+			if (server_list_page > 0)
 			{
-				server_list_index -= 15; // prev page
-				server_list_page -= 1;
+				--server_list_page;
 				trigger_refresh();
 			}
 
