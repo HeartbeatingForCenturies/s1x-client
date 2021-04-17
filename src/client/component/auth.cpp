@@ -6,7 +6,7 @@
 #include "network.hpp"
 
 #include <utils/hook.hpp>
-#include <utils/string.hpp>
+#include <utils/smbios.hpp>
 #include <utils/info_string.hpp>
 #include <utils/cryptography.hpp>
 
@@ -18,13 +18,14 @@ namespace auth
 	{
 		std::string get_key_entropy()
 		{
-			HW_PROFILE_INFO info;
-			if (!GetCurrentHwProfileA(&info))
+			auto uuid = utils::smbios::get_uuid();
+			if (uuid.empty())
 			{
-				utils::cryptography::random::get_challenge();
+				uuid.resize(16);
+				utils::cryptography::random::get_data(uuid.data(), uuid.size());
 			}
 
-			return info.szHwProfileGuid;
+			return uuid;
 		}
 
 		utils::cryptography::ecc::key& get_key()
