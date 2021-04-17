@@ -52,7 +52,7 @@ namespace server_list
 			return count + (servers.size() % server_limit > 0);
 		}
 
-		size_t get_index()
+		size_t get_page_base_index()
 		{
 			return server_list_page * server_limit;
 		}
@@ -79,7 +79,7 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = static_cast<size_t>(index) + get_index();
+			const auto i = static_cast<size_t>(index) + get_page_base_index();
 			if (i < servers.size())
 			{
 				static auto last_index = ~0ull;
@@ -89,6 +89,7 @@ namespace server_list
 				}
 				else
 				{
+					printf("Connecting to (%d - %zu): %s\n", index, i, servers[i].host_name.data());
 					party::connect(servers[i].address);
 				}
 			}
@@ -108,7 +109,7 @@ namespace server_list
 				return 0;
 			}
 			const auto count = static_cast<int>(servers.size());
-			const auto index = get_index();
+			const auto index = get_page_base_index();
 			const auto diff = count - index;
 			return diff > server_limit ? server_limit : static_cast<int>(diff);
 		}
@@ -118,7 +119,7 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = get_index() + index;
+			const auto i = get_page_base_index() + index;
 
 			if (i >= servers.size())
 			{
