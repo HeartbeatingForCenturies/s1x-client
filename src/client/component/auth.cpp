@@ -6,6 +6,7 @@
 #include "network.hpp"
 
 #include <utils/hook.hpp>
+#include <utils/string.hpp>
 #include <utils/smbios.hpp>
 #include <utils/info_string.hpp>
 #include <utils/cryptography.hpp>

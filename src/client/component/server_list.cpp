@@ -178,6 +178,7 @@ namespace server_list
 			std::lock_guard<std::mutex> _(mutex);
 			servers.emplace_back(std::move(server));
 			sort_serverlist();
+			trigger_refresh();
 		}
 
 		void do_frame_work()
@@ -354,7 +355,7 @@ namespace server_list
 		server.clients = atoi(info.get("clients").data());
 		server.max_clients = atoi(info.get("sv_maxclients").data());
 		server.bots = atoi(info.get("bots").data());
-		server.ping = (now - start_time) > 999 ? 999 : (now - start_time);
+		server.ping = std::min(now - start_time, 999);
 
 		server.in_game = 1;
 
