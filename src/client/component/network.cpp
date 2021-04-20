@@ -103,11 +103,11 @@ namespace network
 		get_callbacks()[utils::string::to_lower(command)] = callback;
 	}
 
-	void dw_send_to_stub(const unsigned int size, const char* src, game::netadr_s* a3)
+	int dw_send_to_stub(const unsigned int size, const char* src, game::netadr_s* a3)
 	{
 		sockaddr s = {};
 		game::NetadrToSockadr(a3, &s);
-		sendto(*game::query_socket, src, size - 2, 0, &s, 16);
+		return sendto(*game::query_socket, src, size - 2, 0, &s, 16) >= 0;
 	}
 
 	void send(const game::netadr_s& address, const std::string& command, const std::string& data, const char separator)
