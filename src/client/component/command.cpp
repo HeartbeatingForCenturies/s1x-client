@@ -1,6 +1,7 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 #include "command.hpp"
+#include "console.hpp"
 #include "game_console.hpp"
 
 #include "game/game.hpp"
@@ -275,65 +276,60 @@ namespace command
 					auto* dvar = game::Dvar_FindVar(match.c_str());
 					if (!dvar)
 					{
-						game_console::print(game_console::con_type_info, "[CMD]\t %s", match.c_str());
+						console::info("[CMD]\t %s\n", match.c_str());
 					}
 					else
 					{
-						game_console::print(game_console::con_type_info, "[DVAR]\t%s \"%s\"", match.c_str(), game::Dvar_ValueToString(dvar, dvar->current));
+						console::info("[DVAR]\t%s \"%s\"\n", match.c_str(), game::Dvar_ValueToString(dvar, dvar->current));
 					}
 				}
 				
-				game_console::print(game_console::con_type_info, "Total %i matches", matches.size());
+				console::info("Total %i matches\n", matches.size());
 			});
 
 			add("dvarDump", []()
 			{
-				game_console::print(game_console::con_type_info,
-				                    "================================ DVAR DUMP ========================================\n");
+				console::info("================================ DVAR DUMP ========================================\n");
 				for (auto i = 0; i < *game::dvarCount; i++)
 				{
 					const auto dvar = game::sortedDvars[i];
 					if (dvar)
 					{
-						game_console::print(game_console::con_type_info, "%s \"%s\"\n", dvar->name,
+						console::info("%s \"%s\"\n", dvar->name,
 						                    game::Dvar_ValueToString(dvar, dvar->current));
 					}
 				}
-				game_console::print(game_console::con_type_info, "\n%i dvar indexes\n", *game::dvarCount);
-				game_console::print(game_console::con_type_info,
-				                    "================================ END DVAR DUMP ====================================\n");
+				console::info("\n%i dvars\n", *game::dvarCount);
+				console::info("================================ END DVAR DUMP ====================================\n");
 			});
 
 			add("commandDump", []()
 			{
-				game_console::print(game_console::con_type_info,
-				                    "================================ COMMAND DUMP =====================================\n");
+				console::info("================================ COMMAND DUMP =====================================\n");
 				game::cmd_function_s* cmd = (*game::cmd_functions);
 				int i = 0;
 				while (cmd)
 				{
 					if (cmd->name)
 					{
-						game_console::print(game_console::con_type_info, "%s\n", cmd->name);
+						console::info("%s\n", cmd->name);
 						i++;
 					}
 					cmd = cmd->next;
 				}
-				game_console::print(game_console::con_type_info, "\n%i command indexes\n", i);
-				game_console::print(game_console::con_type_info,
-				                    "================================ END COMMAND DUMP =================================\n");
+				console::info("\n%i commands\n", i);
+				console::info("================================ END COMMAND DUMP =================================\n");
 			});
 
 			add("listassetpool", [](const params& params)
 			{
 				if (params.size() < 2)
 				{
-					game_console::print(game_console::con_type_info,
-									"listassetpool <poolnumber>: list all the assets in the specified pool\n");
+					console::info("listassetpool <poolnumber>: list all the assets in the specified pool\n");
 
 					for (auto i = 0; i < game::XAssetType::ASSET_TYPE_COUNT; i++)
 					{
-						game_console::print(game_console::con_type_info, "%d %s\n", i, game::g_assetNames[i]);
+						console::info("%d %s\n", i, game::g_assetNames[i]);
 					}
 				}
 				else
@@ -342,22 +338,19 @@ namespace command
 
 					if (type < 0 || type >= game::XAssetType::ASSET_TYPE_COUNT)
 					{
-						game_console::print(game_console::con_type_error,
-											"Invalid pool passed must be between [%d, %d]", 0,
-											game::XAssetType::ASSET_TYPE_COUNT - 1);
+						console::error("Invalid pool passed must be between [%d, %d]\n", 0, game::XAssetType::ASSET_TYPE_COUNT - 1);
 						return;
 					}
 
-					game_console::print(game_console::con_type_info, "Listing assets in pool %s",
-										game::g_assetNames[type]);
+					console::info("Listing assets in pool %s\n", game::g_assetNames[type]);
 
-					enum_assets(type, [type](game::XAssetHeader header)
+					enum_assets(type, [type](const game::XAssetHeader header)
 					{
 						const auto asset = game::XAsset{ type, header };
 						const auto* const asset_name = game::DB_GetXAssetName(&asset);
 						//const auto entry = game::DB_FindXAssetEntry(type, asset_name);
 						//TODO: display which zone the asset is from
-						game_console::print(game_console::con_type_info, "%s", asset_name);
+						console::info("%s\n", asset_name);
 					}, true);
 				}
 			});

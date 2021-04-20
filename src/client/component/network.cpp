@@ -3,7 +3,7 @@
 
 #include "command.hpp"
 #include "network.hpp"
-#include "game_console.hpp"
+#include "console.hpp"
 #include "dvars.hpp"
 
 #include <utils/hook.hpp>
@@ -117,10 +117,10 @@ namespace network
 		packet.push_back(separator);
 		packet.append(data);
 
-		send(address, packet);
+		send_data(address, packet);
 	}
 
-	void send(const game::netadr_s& address, const std::string& data)
+	void send_data(const game::netadr_s& address, const std::string& data)
 	{
 		if (address.type == game::NA_LOOPBACK)
 		{
@@ -235,6 +235,9 @@ namespace network
 				// increase cl_maxpackets
 				dvars::override::Dvar_RegisterInt("cl_maxpackets", 1000, 1, 1000, 0x1);
 
+				// increase snaps
+				dvars::override::Dvar_RegisterInt("sv_remote_client_snapshot_msec", 33, 33, 100, 0);
+
 				// ignore impure client
 				utils::hook::jump(0x14043AC0D, reinterpret_cast<void*>(0x14043ACA3));
 
@@ -257,15 +260,7 @@ namespace network
 				on("print", [](const game::netadr_s& addr, const std::string_view& data)
 				{
 					const std::string message{data};
-
-					if (game::environment::is_dedi())
-					{
-						printf("%s\n", message.data());
-					}
-					else
-					{
-						game_console::print(game_console::con_type_info, "%s\n", message.data());
-					}
+					console::info(message.data());
 				});
 			}
 		}

@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.0.0] - 2021-04-20
+
+### Added
+
+-   Uncheat protect safeArea & give SAVED flags [#75](https://github.com/XLabsProject/s1x-client/issues/75)
+-   Create unified logging interface [#78](https://github.com/XLabsProject/s1x-client/issues/78)
+
+### Fixed
+
+-   Input is lagging in fullscreen mode [#69](https://github.com/XLabsProject/s1x-client/issues/69)
+-   GUID changing upon game restart [#74](https://github.com/XLabsProject/s1x-client/issues/74)
+-   Duplicated GUIDs [#90](https://github.com/XLabsProject/s1x-client/issues/90)
+-   Serverlist connect issue [#92](https://github.com/XLabsProject/s1x-client/issues/92)
+
+### Pull Requests
+
+-   discord presence final commit [#66](https://github.com/XLabsProject/s1x-client/pull/66) ([@mjkzy](https://github.com/mjkzy))
+-   Feature/scripting [#70](https://github.com/XLabsProject/s1x-client/pull/70) ([@Joelrau](https://github.com/Joelrau))
+-   Feature/quaK [#81](https://github.com/XLabsProject/s1x-client/pull/81) ([@Joelrau](https://github.com/Joelrau))
+-   unlock safeArea [#82](https://github.com/XLabsProject/s1x-client/pull/82) ([@mjkzy](https://github.com/mjkzy))
+-   hot fix safe area [#83](https://github.com/XLabsProject/s1x-client/pull/83) ([@mjkzy](https://github.com/mjkzy))
+
 ## [v0.0.2] - 2021-04-07
 
 ### Added
@@ -41,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Discord RPC - party size + party size max [#59](https://github.com/XLabsProject/s1x-client/pull/59) ([@mjkzy](https://github.com/mjkzy))
 -   discord presence - host name address [#64](https://github.com/XLabsProject/s1x-client/pull/64) ([@mjkzy](https://github.com/mjkzy))
 
-[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.0...HEAD
+
+[v1.0.0]: https://github.com/XLabsProject/s1x-client/compare/v0.0.2...v1.0.0
 
 [v0.0.2]: https://github.com/XLabsProject/s1x-client/compare/75b6d04895a2da346ca9eba5352b300f4926b6c5...v0.0.2

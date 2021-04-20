@@ -1,7 +1,7 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 #include "command.hpp"
-#include "game_console.hpp"
+#include "console.hpp"
 #include "game/game.hpp"
 #include "game/dvars.hpp"
 #include "scheduler.hpp"
@@ -37,6 +37,18 @@ namespace patches
 			return sv_kick_client_num_hook.invoke<void>(client_num, reason);
 		}
 
+		std::string get_login_username()
+		{
+			char username[UNLEN + 1];
+			DWORD username_len = UNLEN + 1;
+			if (!GetUserNameA(username, &username_len))
+			{
+				return "Unknown Soldier";
+			}
+
+			return std::string{username, username_len - 1};
+		}
+
 		utils::hook::detour com_register_dvars_hook;
 
 		void com_register_dvars_stub()
@@ -44,7 +56,7 @@ namespace patches
 			if (game::environment::is_mp())
 			{
 				// Make name save
-				game::Dvar_RegisterString("name", "Unknown Soldier", game::DVAR_FLAG_SAVED, "Player name.");
+				game::Dvar_RegisterString("name", get_login_username().data(), game::DVAR_FLAG_SAVED, "Player name.");
 
 				// Disable data validation error popup
 				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, 0, "");
@@ -88,10 +100,8 @@ namespace patches
 				{
 					const auto* const current = game::Dvar_ValueToString(dvar, dvar->current);
 					const auto* const reset = game::Dvar_ValueToString(dvar, dvar->reset);
-					game_console::print(game_console::con_type_info, "\"%s\" is: \"%s^7\" default: \"%s^7\"",
-					                    dvar->name, current, reset);
-					game_console::print(game_console::con_type_info, "   %s\n",
-					                    dvars::dvar_get_domain(dvar->type, dvar->domain).data());
+					console::info("\"%s\" is: \"%s^7\" default: \"%s^7\"\n", dvar->name, current, reset);
+					console::info("   %s\n", dvars::dvar_get_domain(dvar->type, dvar->domain).data());
 				}
 				else
 				{
@@ -106,7 +116,7 @@ namespace patches
 			return 0;
 		}
 
-		const char* db_read_raw_file_stub(const char* filename, char* buf, int size)
+		const char* db_read_raw_file_stub(const char* filename, char* buf, const int size)
 		{
 			std::string file_name = filename;
 			if (file_name.find(".cfg") == std::string::npos)
@@ -137,7 +147,7 @@ namespace patches
 		void missing_content_error_stub(int /*mode*/, const char* /*message*/)
 		{
 			game::Com_Error(game::ERR_DROP,
-			                utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile()));
+			                utils::string::va("MISSING FILE\n%s.ff", fastfiles::get_current_fastfile().data()));
 		}
 
 		void bsp_sys_error_stub(const char* error, const char* arg1)
@@ -155,6 +165,17 @@ namespace patches
 		int is_item_unlocked()
 		{
 			return 0; // 0 == yes
+		}
+
+		void set_client_dvar_from_server_stub(void* a1, void* a2, const char* dvar, const char* value)
+		{
+			if (dvar == "cg_fov"s)
+			{
+				return;
+			}
+
+			// CG_SetClientDvarFromServer
+			reinterpret_cast<void(*)(void*, void*, const char*, const char*)>(0x1401BF0A0)(a1, a2, dvar, value);
 		}
 	}
 
@@ -256,6 +277,23 @@ namespace patches
 
 			// patch "Server is different version" to show the server client version
 			utils::hook::inject(0x1404398B2, VERSION);
+
+			// prevent servers overriding our fov
+			utils::hook::call(0x1401BB782, set_client_dvar_from_server_stub);
+			utils::hook::nop(0x1403D1195, 5);
+			utils::hook::nop(0x1400FAE36, 5);
+			utils::hook::set<uint8_t>(0x14019B9B9, 0xEB);
+
+			// some anti tamper thing that kills performance
+			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_NONE);
+			
+			// unlock safeArea_*
+			utils::hook::jump(0x140219F5E, 0x140219F67);
+			utils::hook::jump(0x140219F80, 0x140219F8E);
+			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::Dvar_RegisterFloat("safeArea_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::Dvar_RegisterFloat("safeArea_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
 		}
 
 		static void patch_sp()

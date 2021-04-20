@@ -15,6 +15,8 @@ namespace server_list
 {
 	namespace
 	{
+		const int server_limit = 14;
+
 		struct server_info
 		{
 			// gotta add more to this
@@ -40,10 +42,20 @@ namespace server_list
 		std::mutex mutex;
 		std::vector<server_info> servers;
 
-		size_t server_list_index = 0;
-		int server_list_page = 0;
+		size_t server_list_page = 0;
 
 		volatile bool update_server_list = false;
+
+		size_t get_page_count()
+		{
+			const auto count = servers.size() / server_limit;
+			return count + (servers.size() % server_limit > 0);
+		}
+
+		size_t get_page_base_index()
+		{
+			return server_list_page * server_limit;
+		}
 
 		void refresh_server_list()
 		{
@@ -51,7 +63,7 @@ namespace server_list
 				std::lock_guard<std::mutex> _(mutex);
 				servers.clear();
 				master_state.queued_servers.clear();
-				server_list_index = 0;
+				server_list_page = 0;
 			}
 
 			party::reset_connect_state();
@@ -67,17 +79,17 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = static_cast<size_t>(index) + server_list_index;
+			const auto i = static_cast<size_t>(index) + get_page_base_index();
 			if (i < servers.size())
 			{
-				// double click disabled for now
-				/*static size_t last_index = 0xFFFFFFFF;
+				static auto last_index = ~0ull;
 				if (last_index != i)
 				{
 					last_index = i;
 				}
-				else*/
+				else
 				{
+					printf("Connecting to (%d - %zu): %s\n", index, i, servers[i].host_name.data());
 					party::connect(servers[i].address);
 				}
 			}
@@ -97,7 +109,9 @@ namespace server_list
 				return 0;
 			}
 			const auto count = static_cast<int>(servers.size());
-			return count > 15 ? 15 : count;
+			const auto index = get_page_base_index();
+			const auto diff = count - index;
+			return diff > server_limit ? server_limit : static_cast<int>(diff);
 		}
 
 		const char* ui_feeder_item_text(int /*localClientNum*/, void* /*a2*/, void* /*a3*/, const int index,
@@ -105,7 +119,7 @@ namespace server_list
 		{
 			std::lock_guard<std::mutex> _(mutex);
 
-			const auto i = server_list_index + index;
+			const auto i = get_page_base_index() + index;
 
 			if (i >= servers.size())
 			{
@@ -139,7 +153,8 @@ namespace server_list
 					spaces.append(" ");
 					num_spaces--;
 				}
-				return utils::string::va("%d/%d [%d]%s%d", servers[i].clients, servers[index].max_clients, servers[i].bots, spaces.data(), servers[i].ping);
+				return utils::string::va("%d/%d [%d]%s%d", servers[i].clients, servers[index].max_clients,
+				                         servers[i].bots, spaces.data(), servers[i].ping);
 			}
 
 			return "";
@@ -163,6 +178,7 @@ namespace server_list
 			std::lock_guard<std::mutex> _(mutex);
 			servers.emplace_back(std::move(server));
 			sort_serverlist();
+			trigger_refresh();
 		}
 
 		void do_frame_work()
@@ -211,10 +227,9 @@ namespace server_list
 				return false;
 			}
 
-			if (server_list_index + 15 < servers.size())
+			if (server_list_page + 1 < get_page_count())
 			{
-				server_list_index += 15; // next page
-				server_list_page += 1;
+				++server_list_page;
 				trigger_refresh();
 			}
 
@@ -228,10 +243,9 @@ namespace server_list
 				return false;
 			}
 
-			if (server_list_index > 0)
+			if (server_list_page > 0)
 			{
-				server_list_index -= 15; // prev page
-				server_list_page -= 1;
+				--server_list_page;
 				trigger_refresh();
 			}
 
@@ -295,6 +309,13 @@ namespace server_list
 
 	void handle_info_response(const game::netadr_s& address, const utils::info_string& info)
 	{
+		// Don't show servers that aren't dedicated!
+		const auto dedicated = std::atoi(info.get("dedicated").data());
+		if (!dedicated)
+		{
+			return;
+		}
+
 		// Don't show servers that aren't running!
 		const auto sv_running = std::atoi(info.get("sv_running").data());
 		if (!sv_running)
@@ -334,7 +355,7 @@ namespace server_list
 		server.clients = atoi(info.get("clients").data());
 		server.max_clients = atoi(info.get("sv_maxclients").data());
 		server.bots = atoi(info.get("bots").data());
-		server.ping = (now - start_time) > 999 ? 999 : (now - start_time);
+		server.ping = std::min(now - start_time, 999);
 
 		server.in_game = 1;
 

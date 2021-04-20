@@ -130,21 +130,17 @@ namespace steam
 
 	unsigned long long user::RequestEncryptedAppTicket(void* pUserData, int cbUserData)
 	{
-#ifdef DEBUG
-		printf("[steam_api]: [user]: request encrypted app ticket\n");
-#endif
-		// Generate the authentication ticket
 		const auto id = this->GetSteamID();
 
 		auth_ticket = "S1";
 		auth_ticket.resize(32);
-		auth_ticket.append(reinterpret_cast<char*>(pUserData), 24); // key
+		auth_ticket.append(static_cast<char*>(pUserData), 24); // key
 		auth_ticket.append(reinterpret_cast<const char*>(&id.bits), sizeof(id.bits)); // user id
-		auth_ticket.append((char*)&reinterpret_cast<char*>(pUserData)[24], 64); // user name
+		auth_ticket.append(&static_cast<char*>(pUserData)[24], 64); // user name
 
 		// Create the call response
 		const auto result = callbacks::register_call();
-		auto retvals = static_cast<encrypted_app_ticket_response*>(calloc(1, sizeof(encrypted_app_ticket_response)));
+		const auto retvals = static_cast<encrypted_app_ticket_response*>(calloc(1, sizeof(encrypted_app_ticket_response)));
 		//::Utils::Memory::AllocateArray<EncryptedAppTicketResponse>();
 		retvals->m_e_result = 1;
 
@@ -157,9 +153,6 @@ namespace steam
 
 	bool user::GetEncryptedAppTicket(void* pTicket, int cbMaxTicket, unsigned int* pcbTicket)
 	{
-#ifdef DEBUG
-		printf("[steam_api]: [user]: sending encrypted app ticket\n");
-#endif
 		if (cbMaxTicket < 0 || auth_ticket.empty()) return false;
 
 		const auto size = std::min(size_t(cbMaxTicket), auth_ticket.size());

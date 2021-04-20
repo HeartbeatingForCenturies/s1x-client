@@ -1,11 +1,17 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+
 #include "command.hpp"
 #include "scheduler.hpp"
-#include "game/game.hpp"
 #include "party.hpp"
+#include "network.hpp"
+#include "server_list.hpp"
 
+#include "game/game.hpp"
+
+#include <utils/hook.hpp>
 #include <utils/string.hpp>
+#include <utils/cryptography.hpp>
 
 namespace bots
 {
@@ -56,7 +62,7 @@ namespace bots
 			}
 
 			// SV_BotGetRandomName
-			auto* bot_name = reinterpret_cast<const char* (*)()>(0x1404267E0)();
+			const auto* const bot_name = game::SV_BotGetRandomName();
 			auto* bot_ent = game::SV_AddBot(bot_name);
 			if (bot_ent)
 			{
@@ -65,6 +71,35 @@ namespace bots
 			else if (can_add()) // workaround since first bot won't ever spawn
 			{
 				add_bot();
+			}
+		}
+
+		utils::hook::detour get_bot_name_hook;
+		volatile bool bot_names_received = false;
+		std::vector<std::string> bot_names{};
+
+		const char* get_random_bot_name()
+		{
+			if (!bot_names_received || bot_names.empty())
+			{
+				return get_bot_name_hook.invoke<const char*>();
+			}
+
+			const auto index = utils::cryptography::random::get_integer() % bot_names.size();
+			const auto& name = bot_names.at(index);
+
+			return utils::string::va("%.*s", static_cast<int>(name.size()), name.data());
+		}
+
+		void update_bot_names()
+		{
+			bot_names_received = false;
+
+			game::netadr_s master{};
+			if (server_list::get_master_server(master))
+			{
+				printf("Getting bots...\n");
+				network::send(master, "getbots");
 			}
 		}
 	}
@@ -79,6 +114,8 @@ namespace bots
 				return;
 			}
 
+			get_bot_name_hook.create(game::SV_BotGetRandomName, get_random_bot_name);
+
 			command::add("spawnBot", [](const command::params& params)
 			{
 				if (!game::SV_Loaded() || game::VirtualLobby_Loaded()) return;
@@ -92,6 +129,22 @@ namespace bots
 				for (auto i = 0; i < (num_bots > *game::mp::svs_numclients ? *game::mp::svs_numclients : num_bots); i++)
 				{
 					scheduler::once(add_bot, scheduler::pipeline::server, 100ms * i);
+				}
+			});
+
+			scheduler::on_game_initialized([]()
+			{
+				update_bot_names();
+				scheduler::loop(update_bot_names, scheduler::main, 1h);
+			}, scheduler::main);
+
+			network::on("getbotsResponse", [](const game::netadr_s& target, const std::string_view& data)
+			{
+				game::netadr_s master{};
+				if (server_list::get_master_server(master) && !bot_names_received && target == master)
+				{
+					bot_names = utils::string::split(std::string(data), '\n');
+					bot_names_received = true;
 				}
 			});
 		}

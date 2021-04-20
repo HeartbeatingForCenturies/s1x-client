@@ -63,8 +63,9 @@ namespace discord
 				dvar = game::Dvar_FindVar("sv_maxclients");
 				if (dvar)
 				{
-					auto clients = party::get_client_count();
-					discord_presence.partySize = clients;
+					auto clients = reinterpret_cast<int*>(0x1414CC290);
+					int clientsNum = *clients;
+					discord_presence.partySize = clientsNum;
 					discord_presence.partyMax = dvar->current.integer;
 				}
 

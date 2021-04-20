@@ -29,6 +29,12 @@ namespace dedicated
 
 		void send_heartbeat()
 		{
+			auto* const dvar = game::Dvar_FindVar("sv_lanOnly");
+			if (dvar && dvar->current.enabled)
+			{
+				return;
+			}
+
 			game::netadr_s target{};
 			if (server_list::get_master_server(target))
 			{
@@ -150,6 +156,12 @@ namespace dedicated
 				return;
 			}
 
+			// Register dedicated dvar
+			game::Dvar_RegisterBool("dedicated", 1, game::DVAR_FLAG_READ, "Dedicated server");
+
+			// Add lanonly mode
+			game::Dvar_RegisterBool("sv_lanOnly", 0, game::DVAR_FLAG_NONE, "Don't send heartbeat");
+
 			// Disable VirtualLobby
 			dvars::override::Dvar_RegisterBool("virtualLobbyEnabled", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
 
@@ -242,6 +254,10 @@ namespace dedicated
 			utils::hook::nop(0x1404CC482, 5); // Disable sound pak file loading
 			utils::hook::nop(0x1404CC471, 2); // ^
 			utils::hook::set<uint8_t>(0x140279B80, 0xC3); // Disable image pak file loading
+
+			// Reduce min required memory
+			utils::hook::set<uint64_t>(0x1404D140D, 0x80000000);
+			utils::hook::set<uint64_t>(0x1404D14BF, 0x80000000);
 
 			// initialize the game after onlinedataflags is 32 (workaround)
 			scheduler::schedule([=]()

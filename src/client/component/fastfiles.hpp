@@ -4,5 +4,5 @@
 
 namespace fastfiles
 {
-	const char* get_current_fastfile();
+	std::string get_current_fastfile();
 }

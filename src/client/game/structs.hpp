@@ -9,10 +9,186 @@ namespace game
 	typedef vec_t vec3_t[3];
 	typedef vec_t vec4_t[4];
 
+	// * scripting
 	enum scr_string_t
 	{
 		scr_string_t_dummy = 0x0,
 	};
+
+	struct scr_entref_t
+	{
+		unsigned short entnum;
+		unsigned short classnum;
+	};
+
+	enum scriptType_e
+	{
+		SCRIPT_NONE = 0,
+		SCRIPT_OBJECT = 1,
+		SCRIPT_STRING = 2,
+		SCRIPT_ISTRING = 3,
+		SCRIPT_VECTOR = 4,
+		SCRIPT_FLOAT = 5,
+		SCRIPT_INTEGER = 6,
+		SCRIPT_END = 8,
+		SCRIPT_ARRAY = 22
+	};
+
+	struct VariableStackBuffer
+	{
+		const char* pos;
+		unsigned __int16 size;
+		unsigned __int16 bufLen;
+		unsigned __int16 localId;
+		char time;
+		char buf[1];
+	};
+
+	union VariableUnion
+	{
+		int intValue;
+		unsigned int uintValue;
+		float floatValue;
+		unsigned int stringValue;
+		const float* vectorValue;
+		const char* codePosValue;
+		unsigned int pointerValue;
+		VariableStackBuffer* stackValue;
+		unsigned int entityOffset;
+	};
+
+	struct VariableValue
+	{
+		VariableUnion u;
+		int type;
+	};
+
+	struct function_stack_t
+	{
+		const char* pos;
+		unsigned int localId;
+		unsigned int localVarCount;
+		VariableValue* top;
+		VariableValue* startTop;
+	};
+
+	struct function_frame_t
+	{
+		function_stack_t fs;
+		int topType;
+	};
+
+	struct scrVmPub_t
+	{
+		unsigned int* localVars;
+		VariableValue* maxstack;
+		int function_count;
+		function_frame_t* function_frame;
+		VariableValue* top;
+		unsigned int inparamcount;
+		unsigned int outparamcount;
+		function_frame_t function_frame_start[32];
+		VariableValue stack[2048];
+	};
+
+	struct scr_classStruct_t
+	{
+		unsigned __int16 id;
+		unsigned __int16 entArrayId;
+		char charId;
+		const char* name;
+	};
+
+	struct ObjectVariableChildren
+	{
+		unsigned __int16 firstChild;
+		unsigned __int16 lastChild;
+	};
+
+	struct ObjectVariableValue_u_f
+	{
+		unsigned __int16 prev;
+		unsigned __int16 next;
+	};
+
+	union ObjectVariableValue_u_o_u
+	{
+		unsigned __int16 size;
+		unsigned __int16 entnum;
+		unsigned __int16 nextEntId;
+		unsigned __int16 self;
+	};
+
+	struct	ObjectVariableValue_u_o
+	{
+		unsigned __int16 refCount;
+		ObjectVariableValue_u_o_u u;
+	};
+
+	union ObjectVariableValue_w
+	{
+		unsigned int type;
+		unsigned int classnum;
+		unsigned int notifyName;
+		unsigned int waitTime;
+		unsigned int parentLocalId;
+	};
+
+	struct ChildVariableValue_u_f
+	{
+		unsigned __int16 prev;
+		unsigned __int16 next;
+	};
+
+	union ChildVariableValue_u
+	{
+		ChildVariableValue_u_f f;
+		VariableUnion u;
+	};
+
+	struct ChildBucketMatchKeys_keys
+	{
+		unsigned __int16 name_hi;
+		unsigned __int16 parentId;
+	};
+
+	union ChildBucketMatchKeys
+	{
+		ChildBucketMatchKeys_keys keys;
+		unsigned int match;
+	};
+
+	struct	ChildVariableValue
+	{
+		ChildVariableValue_u u;
+		unsigned __int16 next;
+		char type;
+		char name_lo;
+		ChildBucketMatchKeys k;
+		unsigned __int16 nextSibling;
+		unsigned __int16 prevSibling;
+	};
+
+	union ObjectVariableValue_u
+	{
+		ObjectVariableValue_u_f f;
+		ObjectVariableValue_u_o o;
+	};
+
+	struct ObjectVariableValue
+	{
+		ObjectVariableValue_u u;
+		ObjectVariableValue_w w;
+	};
+
+	struct scrVarGlob_t
+	{
+		ObjectVariableValue objectVariableValue[40960];
+		ObjectVariableChildren objectVariableChildren[40960];
+		unsigned __int16 childVariableBucket[65536];
+		ChildVariableValue childVariableValue[384000];
+	};
+	// *
 
 	enum Sys_Folder
 	{
@@ -1094,8 +1270,8 @@ namespace game
 		struct gclient_s
 		{
 			char __pad0[20708];
-			char name[16]; // 20708
-			char __pad1[684];
+			char name[32]; // 20708
+			char __pad1[668];
 			int flags; // 21408
 		}; // size = ?
 
@@ -1121,15 +1297,17 @@ namespace game
 		struct clientHeader_t
 		{
 			int state;
+			char __pad0[36];
+			netadr_s remoteAddress;
 		}; // size = ?
 
 		struct client_t
 		{
 			clientHeader_t header;
-			char __pad0[268972];
+			char __pad0[268916];
 			gentity_s* gentity; // 268976
-			char name[16]; // 268984
-			char __pad1[24];
+			char name[32]; // 268984
+			char __pad1[8];
 			int nextSnapshotTime; // 269024
 			char __pad2[544];
 			LiveClientDropType liveDropRequest; //269572
