@@ -311,8 +311,8 @@ namespace dvars
 			dvar_register_int_hook.create(SELECT_VALUE(0x140371CF0, 0x1404C1080), &dvar_register_int);
 			dvar_register_string_hook.create(SELECT_VALUE(0x140372050, 0x1404C1450), &dvar_register_string);
 
-			dvar_set_int_hook.create(SELECT_VALUE(0x140372B70, 0x1404C1F30), &dvar_set_bool);
-			dvar_set_int_hook.create(SELECT_VALUE(0x140373420, 0x1404C2A10), &dvar_set_float);
+			dvar_set_bool_hook.create(SELECT_VALUE(0x140372B70, 0x1404C1F30), &dvar_set_bool);
+			dvar_set_float_hook.create(SELECT_VALUE(0x140373420, 0x1404C2A10), &dvar_set_float);
 			dvar_set_int_hook.create(SELECT_VALUE(0x1403738D0, 0x1404C2F40), &dvar_set_int);
 			dvar_set_string_hook.create(SELECT_VALUE(0x140373DE0, 0x1404C3610), &dvar_set_string);
 		}
