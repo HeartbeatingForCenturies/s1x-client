@@ -122,13 +122,20 @@ namespace network
 
 	void send_data(const game::netadr_s& address, const std::string& data)
 	{
+		auto size = static_cast<int>(data.size());
+		if (size > 1280)
+		{
+			console::error("Packet was too long. Truncated!\n");
+			size = 1280;
+		}
+
 		if (address.type == game::NA_LOOPBACK)
 		{
-			game::NET_SendLoopPacket(game::NS_CLIENT1, static_cast<int>(data.size()), data.data(), &address);
+			game::NET_SendLoopPacket(game::NS_CLIENT1, size, data.data(), &address);
 		}
 		else
 		{
-			game::Sys_SendPacket(static_cast<int>(data.size()), data.data(), &address);
+			game::Sys_SendPacket(size, data.data(), &address);
 		}
 	}
 
