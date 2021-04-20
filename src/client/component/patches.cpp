@@ -294,6 +294,9 @@ namespace patches
 			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
 			dvars::override::Dvar_RegisterFloat("safeArea_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
 			dvars::override::Dvar_RegisterFloat("safeArea_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
+
+			// move chat position on the screen above menu splashes
+			dvars::override::Dvar_RegisterVector2("cg_hudChatPosition", 5, 170, 0, 640, game::DVAR_FLAG_SAVED);
 		}
 
 		static void patch_sp()
