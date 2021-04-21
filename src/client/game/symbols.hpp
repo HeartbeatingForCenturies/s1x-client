@@ -94,7 +94,8 @@ namespace game
 	WEAK symbol<void(void* buffer)> FS_FreeFile{0x140362380, 0x1404AF370};
 
 	WEAK symbol<void()> GScr_LoadConsts{0x140283970, 0x1403479C0};
-	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{0x1403166D0, 0x1403F2DC0};
+	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{0x1403165D0, 0x1403F2DC0};
+	WEAK symbol<unsigned int(int entnum, unsigned int classnum)> FindEntityId{0x1403166D0, 0x1403F2CC0};
 	WEAK symbol<scr_string_t(unsigned int parentId, unsigned int id)> GetVariableName{0x1403170E0, 0x1403F37F0};
 	WEAK symbol<void(VariableValue* result, unsigned int classnum, int entnum, int offset)> GetEntityFieldValue{
 		0x14031AAD0, 0x1403F72A0

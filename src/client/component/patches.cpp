@@ -158,6 +158,10 @@ namespace patches
 			}
 			else
 			{
+				scheduler::once([]()
+				{
+					command::execute("reconnect");
+				}, scheduler::pipeline::main, 1s);
 				game::Com_Error(game::ERR_DROP, error, arg1);
 			}
 		}
@@ -286,7 +290,7 @@ namespace patches
 
 			// some anti tamper thing that kills performance
 			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_NONE);
-			
+
 			// unlock safeArea_*
 			utils::hook::jump(0x140219F5E, 0x140219F67);
 			utils::hook::jump(0x140219F80, 0x140219F8E);
