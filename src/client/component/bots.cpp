@@ -8,6 +8,7 @@
 #include "server_list.hpp"
 
 #include "game/game.hpp"
+#include "game/scripting/execution.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -26,23 +27,18 @@ namespace bots
 			return false;
 		}
 
-		void bot_team_join(unsigned int entity_num)
+		void bot_team_join(const unsigned int entity_num)
 		{
-			scheduler::once([entity_num]()
+			const game::scr_entref_t entref{static_cast<uint16_t>(entity_num), 0};
+			scheduler::once([entref]()
 			{
-				// auto-assign
-				game::SV_ExecuteClientCommand(&game::mp::svs_clients[entity_num],
-				                              utils::string::va("lui 125 2 %i",
-				                                                *game::mp::sv_serverId_value), false);
-
-				scheduler::once([entity_num]()
+				scripting::notify(entref, "luinotifyserver", {"team_select", 2});
+				scheduler::once([entref]()
 				{
-					// select class ( they don't select it? )
-					game::SV_ExecuteClientCommand(&game::mp::svs_clients[entity_num],
-					                              utils::string::va("lui 9 %i %i", (rand() % (104 - 100 + 1) + 100),
-					                                                *game::mp::sv_serverId_value), false);
-				}, scheduler::pipeline::server, 1s);
-			}, scheduler::pipeline::server, 1s);
+					auto* _class = utils::string::va("class%d", utils::cryptography::random::get_integer() % 5);
+					scripting::notify(entref, "luinotifyserver", {"class_select", _class});
+				}, scheduler::pipeline::server, 2s);
+			}, scheduler::pipeline::server, 2s);
 		}
 
 		void spawn_bot(const int entity_num)
@@ -50,7 +46,7 @@ namespace bots
 			game::SV_SpawnTestClient(&game::mp::g_entities[entity_num]);
 			if (game::Com_GetCurrentCoDPlayMode() == game::CODPLAYMODE_CORE)
 			{
-				//bot_team_join(entity_num); // super bugger rn
+				bot_team_join(entity_num);
 			}
 		}
 
