@@ -148,8 +148,8 @@ namespace map_rotation
 
 			scheduler::once([]()
 			{
-				game::Dvar_RegisterString("sv_mapRotation", "", 0, "");
-				game::Dvar_RegisterString("sv_mapRotationCurrent", "", 0, "");
+				game::Dvar_RegisterString("sv_mapRotation", "", game::DVAR_FLAG_NONE, "");
+				game::Dvar_RegisterString("sv_mapRotationCurrent", "", game::DVAR_FLAG_NONE, "");
 			}, scheduler::pipeline::main);
 
 			command::add("map_rotate", &perform_map_rotation);
