@@ -383,7 +383,14 @@ namespace game_console
 
 	void print(const int type, const std::string& data)
 	{
-		if (game::environment::is_dedi())
+		try
+		{
+			if (game::environment::is_dedi())
+			{
+				return;
+			}
+		}
+		catch (std::exception&)
 		{
 			return;
 		}
