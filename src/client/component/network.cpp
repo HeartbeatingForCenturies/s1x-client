@@ -103,11 +103,11 @@ namespace network
 		get_callbacks()[utils::string::to_lower(command)] = callback;
 	}
 
-	int dw_send_to_stub(const unsigned int size, const char* src, game::netadr_s* a3)
+	int dw_send_to_stub(const int size, const char* src, game::netadr_s* a3)
 	{
 		sockaddr s = {};
 		game::NetadrToSockadr(a3, &s);
-		return sendto(*game::query_socket, src, size - 2, 0, &s, 16) >= 0;
+		return sendto(*game::query_socket, src, size, 0, &s, 16) >= 0;
 	}
 
 	void send(const game::netadr_s& address, const std::string& command, const std::string& data, const char separator)
@@ -123,14 +123,15 @@ namespace network
 	void send_data(const game::netadr_s& address, const std::string& data)
 	{
 		auto size = static_cast<int>(data.size());
-		if (size > 1280)
-		{
-			console::error("Packet was too long. Truncated!\n");
-			size = 1280;
-		}
-
 		if (address.type == game::NA_LOOPBACK)
 		{
+			// TODO: Fix this for loopback
+			if (size > 1280)
+			{
+				console::error("Packet was too long. Truncated!\n");
+				size = 1280;
+			}
+
 			game::NET_SendLoopPacket(game::NS_CLIENT1, size, data.data(), &address);
 		}
 		else
@@ -194,6 +195,7 @@ namespace network
 				// redirect dw_sendto to raw socket
 				//utils::hook::jump(0x1404D850A, reinterpret_cast<void*>(0x1404D849A));
 				utils::hook::call(0x1404D851F, dw_send_to_stub);
+				utils::hook::jump(game::Sys_SendPacket, dw_send_to_stub);
 
 				// intercept command handling
 				utils::hook::jump(0x14020A175, utils::hook::assemble(handle_command_stub), true);
@@ -250,6 +252,7 @@ namespace network
 
 				// don't send checksum
 				utils::hook::set<uint8_t>(0x1404D84C0, 0);
+				utils::hook::set<uint8_t>(0x1404D8519, 0);
 
 				// don't read checksum
 				utils::hook::jump(0x1404D842B, 0x1404D8453);
@@ -261,6 +264,13 @@ namespace network
 				// allow server owner to modify net_port before the socket bind
 				utils::hook::call(0x1404D7A3D, register_netport_stub);
 				utils::hook::call(0x1404D7E28, register_netport_stub);
+
+				// increase allowed packet size
+				const auto max_packet_size = 0x20000;
+				utils::hook::set<int>(0x1403DADE6, max_packet_size);
+				utils::hook::set<int>(0x1403DAE20, max_packet_size);
+				utils::hook::set<int>(0x1403DAD14, max_packet_size);
+				utils::hook::set<int>(0x1403DAD35, max_packet_size);
 
 				// ignore built in "print" oob command and add in our own
 				utils::hook::set<uint8_t>(0x14020A723, 0xEB);
