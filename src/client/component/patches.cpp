@@ -59,7 +59,7 @@ namespace patches
 				game::Dvar_RegisterString("name", get_login_username().data(), game::DVAR_FLAG_SAVED, "Player name.");
 
 				// Disable data validation error popup
-				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, 0, "");
+				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, game::DVAR_FLAG_NONE, "");
 			}
 
 			return com_register_dvars_hook.invoke<void>();
