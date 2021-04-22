@@ -15,12 +15,12 @@ namespace lui
 	public:
 		void post_unpack() override
 		{
+			if (!game::environment::is_mp()) return;
+
 #ifdef _DEBUG
-			// Enable development menus
+			// Enable development menus (causes issues in sp)
 			utils::hook::set<uint32_t>(SELECT_VALUE(0x1400B4ABC, 0x140109FAC), 1);
 #endif
-
-			if (!game::environment::is_mp()) return;
 
 			command::add("lui_open", [](const command::params& params)
 			{
