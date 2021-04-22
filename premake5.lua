@@ -252,7 +252,7 @@ configuration "windows"
 defines {"_WINDOWS", "WIN32"}
 
 configuration "Release"
-optimize "Speed"
+optimize "Size"
 
 defines {"NDEBUG"}
 
