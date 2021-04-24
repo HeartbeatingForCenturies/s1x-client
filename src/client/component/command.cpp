@@ -9,6 +9,7 @@
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 #include <utils/memory.hpp>
+#include "utils/io.hpp"
 
 namespace command
 {
@@ -287,14 +288,33 @@ namespace command
 				console::info("Total %i matches\n", matches.size());
 			});
 
-			add("dvarDump", []()
+			add("dvarDump", [](const params& argument)
 			{
 				console::info("================================ DVAR DUMP ========================================\n");
+				std::string filename;
+				if (argument.size() == 2)
+				{
+					filename = "s1x/";
+					filename.append(argument[1]);
+					if (!filename.ends_with(".txt"))
+					{
+						filename.append(".txt");
+					}
+				}
 				for (auto i = 0; i < *game::dvarCount; i++)
 				{
 					const auto dvar = game::sortedDvars[i];
 					if (dvar)
 					{
+						if (argument.size() == 2)
+						{
+							//It's 10.2020 and still no std:format in vs :<
+							std::string line = dvar->name;
+							line.append("\"");
+							line.append(game::Dvar_ValueToString(dvar, dvar->current));
+							line.append("\"\r\n");
+							utils::io::write_file(filename, line, i == 0 ? false : true);
+						}
 						console::info("%s \"%s\"\n", dvar->name,
 						                    game::Dvar_ValueToString(dvar, dvar->current));
 					}
@@ -303,15 +323,32 @@ namespace command
 				console::info("================================ END DVAR DUMP ====================================\n");
 			});
 
-			add("commandDump", []()
+			add("commandDump", [](const params& argument)
 			{
 				console::info("================================ COMMAND DUMP =====================================\n");
 				game::cmd_function_s* cmd = (*game::cmd_functions);
+				std::string filename;
+				if (argument.size() == 2)
+				{ 
+					filename = "s1x/";
+					filename.append(argument[1]);
+					if (!filename.ends_with(".txt"))
+					{
+						filename.append(".txt");
+					}
+				}
 				int i = 0;
 				while (cmd)
 				{
 					if (cmd->name)
 					{
+						if (argument.size() == 2)
+						{
+							//It's 10.2020 and still no std:format in vs :<
+							std::string line = cmd->name;
+							line.append("\r\n");
+							utils::io::write_file(filename, line, i == 0 ? false : true);
+						}
 						console::info("%s\n", cmd->name);
 						i++;
 					}
