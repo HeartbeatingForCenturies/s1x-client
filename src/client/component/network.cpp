@@ -274,7 +274,7 @@ namespace network
 
 				// ignore built in "print" oob command and add in our own
 				utils::hook::set<uint8_t>(0x14020A723, 0xEB);
-				on("print", [](const game::netadr_s& addr, const std::string_view& data)
+				on("print", [](const game::netadr_s&, const std::string_view& data)
 				{
 					const std::string message{data};
 					console::info(message.data());
