@@ -2,9 +2,14 @@
 
 #include "../event.hpp"
 
+#pragma warning(push)
+#pragma warning(disable: 4702)
+
 #define SOL_ALL_SAFETIES_ON 1
 #define SOL_PRINT_ERRORS 0
 #include <sol/sol.hpp>
+
+#pragma warning(pop)
 
 #include "scheduler.hpp"
 #include "event_handler.hpp"
