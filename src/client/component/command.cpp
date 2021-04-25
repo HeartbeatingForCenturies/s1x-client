@@ -344,7 +344,7 @@ namespace command
 
 					console::info("Listing assets in pool %s\n", game::g_assetNames[type]);
 
-                    const std::string filter = params.get(2);
+					const std::string filter = params.get(2);
 					enum_assets(type, [type, filter](const game::XAssetHeader header)
 					{
 						const auto asset = game::XAsset{ type, header };
