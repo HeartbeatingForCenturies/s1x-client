@@ -325,7 +325,7 @@ namespace command
 			{
 				if (params.size() < 2)
 				{
-					console::info("listassetpool <poolnumber>: list all the assets in the specified pool\n");
+					console::info("listassetpool <poolnumber> [filter]: list all the assets in the specified pool\n");
 
 					for (auto i = 0; i < game::XAssetType::ASSET_TYPE_COUNT; i++)
 					{
@@ -344,13 +344,18 @@ namespace command
 
 					console::info("Listing assets in pool %s\n", game::g_assetNames[type]);
 
-					enum_assets(type, [type](const game::XAssetHeader header)
+					const std::string filter = params.get(2);
+					enum_assets(type, [type, filter](const game::XAssetHeader header)
 					{
 						const auto asset = game::XAsset{ type, header };
 						const auto* const asset_name = game::DB_GetXAssetName(&asset);
 						//const auto entry = game::DB_FindXAssetEntry(type, asset_name);
 						//TODO: display which zone the asset is from
-						console::info("%s\n", asset_name);
+
+						if (!filter.empty() && game_console::match_compare(filter, asset_name, false))
+						{
+							console::info("%s\n", asset_name);
+						}						
 					}, true);
 				}
 			});
