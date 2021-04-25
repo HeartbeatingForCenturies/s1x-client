@@ -22,11 +22,10 @@ namespace party
 		{
 			game::netadr_s host{};
 			std::string challenge{};
+			bool hostDefined;
 		} connect_state;
 
 		std::string sv_motd;
-		
-		int hostDefined;
 
 		void perform_game_initialization()
 		{
@@ -188,7 +187,7 @@ namespace party
 
 		connect_state.host = target;
 		connect_state.challenge = utils::cryptography::random::get_challenge();
-		hostDefined = 1;
+		connect_state.hostDefined = true;
 
 		network::send(target, "getInfo", connect_state.challenge);
 	}
@@ -277,7 +276,7 @@ namespace party
 				return;
 			}
 			
-			hostDefined = 0;
+			connect_state.hostDefined = false;
 
 			// hook disconnect command function
 			utils::hook::jump(0x14020A010, disconnect_stub);
@@ -314,14 +313,12 @@ namespace party
 
 			command::add("reconnect", [](const command::params& argument)
 			{
-				if (hostDefined == 0)
+				if (!connect_state.hostDefined)
 				{
-					console::info("Cannot reconnect to server.\n");
+					console::info("Cannot connect to server.\n");
+					return;
 				}
-				else
-				{
-					connect(connect_state.host);
-				}
+				connect(connect_state.host);
 			});
 
 			command::add("connect", [](const command::params& argument)
