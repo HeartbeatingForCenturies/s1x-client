@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 -   Campaign fails to launch in new debug builds [#116](https://github.com/XLabsProject/s1x-client/issues/116)
+-   VirtualLobby firing range FOV/FOV scale messed up [#135](https://github.com/XLabsProject/s1x-client/issues/135)
 
 ### Pull Requests
 
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Use custom fov/fovscale when virtual lobby is enabled. [#133](https://github.com/XLabsProject/s1x-client/pull/133) ([@Joelrau](https://github.com/Joelrau))
 -   filter. (tested on mp) [#134](https://github.com/XLabsProject/s1x-client/pull/134) ([@diamante0018](https://github.com/diamante0018))
 -   reverted to old if statement [#136](https://github.com/XLabsProject/s1x-client/pull/136) ([@diamante0018](https://github.com/diamante0018))
+-   Fix firing range fov [#137](https://github.com/XLabsProject/s1x-client/pull/137) ([@Joelrau](https://github.com/Joelrau))
 
 ## [v1.0.0] - 2021-04-20
 
