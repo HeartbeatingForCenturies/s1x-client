@@ -352,12 +352,10 @@ namespace command
 						//const auto entry = game::DB_FindXAssetEntry(type, asset_name);
 						//TODO: display which zone the asset is from
 
-						if (!filter.empty() && !game_console::match_compare(filter, asset_name, false))
+						if (!filter.empty() && game_console::match_compare(filter, asset_name, false))
 						{
-							return;
-						}
-
-						console::info("%s\n", asset_name);
+							console::info("%s\n", asset_name);
+						}						
 					}, true);
 				}
 			});
