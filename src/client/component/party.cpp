@@ -22,7 +22,7 @@ namespace party
 		{
 			game::netadr_s host{};
 			std::string challenge{};
-			bool hostDefined;
+			bool hostDefined{false};
 		} connect_state;
 
 		std::string sv_motd;
@@ -275,8 +275,6 @@ namespace party
 			{
 				return;
 			}
-			
-			connect_state.hostDefined = false;
 
 			// hook disconnect command function
 			utils::hook::jump(0x14020A010, disconnect_stub);
