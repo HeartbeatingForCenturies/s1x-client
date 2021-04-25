@@ -313,7 +313,7 @@ namespace command
 							line.append("\"");
 							line.append(game::Dvar_ValueToString(dvar, dvar->current));
 							line.append("\"\r\n");
-							utils::io::write_file(filename, line, i == 0 ? false : true);
+							utils::io::write_file(filename, line, i != 0);
 						}
 						console::info("%s \"%s\"\n", dvar->name,
 						                    game::Dvar_ValueToString(dvar, dvar->current));
@@ -347,7 +347,7 @@ namespace command
 							//It's 10.2020 and still no std:format in vs :<
 							std::string line = cmd->name;
 							line.append("\r\n");
-							utils::io::write_file(filename, line, i == 0 ? false : true);
+							utils::io::write_file(filename, line, i != 0);
 						}
 						console::info("%s\n", cmd->name);
 						i++;
