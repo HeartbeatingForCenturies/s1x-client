@@ -18,6 +18,9 @@ namespace virtuallobby
 			const auto original = a.newLabel();
 
 			a.pushad64();
+			a.mov(rax, qword_ptr(0x147B753C0)); // virtualLobbyInFiringRange
+			a.cmp(byte_ptr(rax, 0x10), 1);
+			a.je(original);
 			a.call_aligned(game::VirtualLobby_Loaded);
 			a.cmp(al, 0);
 			a.je(original);
@@ -45,6 +48,9 @@ namespace virtuallobby
 			const auto original = a.newLabel();
 
 			a.pushad64();
+			a.mov(rax, qword_ptr(0x147B753C0)); // virtualLobbyInFiringRange
+			a.cmp(byte_ptr(rax, 0x10), 1);
+			a.je(original);
 			a.call_aligned(game::VirtualLobby_Loaded);
 			a.cmp(al, 0);
 			a.je(original);
