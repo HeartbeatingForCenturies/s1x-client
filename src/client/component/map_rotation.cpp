@@ -82,6 +82,23 @@ namespace map_rotation
 			set_dvar("sv_mapRotationCurrent", value);
 		}
 
+		void change_process_priority()
+		{
+			auto* const dvar = game::Dvar_FindVar("sv_autoPriority");
+			if (dvar && dvar->current.enabled)
+			{
+				scheduler::on_game_initialized([]()
+					{
+						//printf("=======================setting OLD priority=======================\n");
+						SetPriorityClass(GetCurrentProcess(), previousPriority);
+					}, scheduler::pipeline::main, 1s);
+
+				previousPriority = GetPriorityClass(GetCurrentProcess());
+				//printf("=======================setting NEW priority=======================\n");
+				SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+			}
+		}
+
 		void perform_map_rotation()
 		{
 			if (game::Live_SyncOnlineDataFlags(0) != 0)
@@ -104,19 +121,7 @@ namespace map_rotation
 				else if (key == "map")
 				{
 					store_new_rotation(rotation, i + 2);
-					auto* const dvar = game::Dvar_FindVar("sv_autoPriority");
-					if (dvar && dvar->current.enabled)
-					{
-						scheduler::on_game_initialized([]()
-						{
-							//printf("=======================setting OLD priority=======================\n");
-							SetPriorityClass(GetCurrentProcess(), previousPriority);
-						}, scheduler::pipeline::main, 1s);
-
-						previousPriority = GetPriorityClass(GetCurrentProcess());
-						//printf("=======================setting NEW priority=======================\n");
-						SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
-					}
+					change_process_priority();
 					if (!game::SV_MapExists(value.data()))
 					{
 						printf("map_rotation: '%s' map doesn't exist!\n", value.data());
@@ -148,6 +153,7 @@ namespace map_rotation
 				return scheduler::cond_end;
 			}, scheduler::pipeline::main, 1s);
 		}
+
 	}
 
 	class component final : public component_interface
