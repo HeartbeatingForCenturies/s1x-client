@@ -306,7 +306,7 @@ namespace command
 					const auto dvar = game::sortedDvars[i];
 					if (dvar)
 					{
-						if (argument.size() == 2)
+						if (!filename.empty())
 						{
 							//It's 10.2020 and still no std:format in vs :<
 							std::string line = dvar->name;
@@ -342,7 +342,7 @@ namespace command
 				{
 					if (cmd->name)
 					{
-						if (argument.size() == 2)
+						if (!filename.empty())
 						{
 							//It's 10.2020 and still no std:format in vs :<
 							std::string line = cmd->name;
