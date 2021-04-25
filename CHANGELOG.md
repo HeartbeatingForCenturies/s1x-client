@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   Move the chat [#99](https://github.com/XLabsProject/s1x-client/issues/99)
+-   Reduce AntiVirus false positives [#127](https://github.com/XLabsProject/s1x-client/issues/127)
+
+### Fixed
+
+-   Campaign fails to launch in new debug builds [#116](https://github.com/XLabsProject/s1x-client/issues/116)
+
+### Pull Requests
+
+-   Update scripting [#95](https://github.com/XLabsProject/s1x-client/pull/95) ([@Joelrau](https://github.com/Joelrau))
+-   Fixed hooks in set dvars [#100](https://github.com/XLabsProject/s1x-client/pull/100) ([@diamante0018](https://github.com/diamante0018))
+-   hooked dvar register vector2, modified cg_hudChatPosition and matched... [#103](https://github.com/XLabsProject/s1x-client/pull/103) ([@diamante0018](https://github.com/diamante0018))
+-   I missed flags in vector 2 yesterday. [#110](https://github.com/XLabsProject/s1x-client/pull/110) ([@diamante0018](https://github.com/diamante0018))
+-   use dvar flags enum everywhere for extra clarity and cohesion. also s... [#115](https://github.com/XLabsProject/s1x-client/pull/115) ([@diamante0018](https://github.com/diamante0018))
+-   Update patches.cpp [#119](https://github.com/XLabsProject/s1x-client/pull/119) ([@diamante0018](https://github.com/diamante0018))
+-   /reconnect changes [#122](https://github.com/XLabsProject/s1x-client/pull/122) ([@mjkzy](https://github.com/mjkzy))
+-   Use custom fov/fovscale when virtual lobby is enabled. [#133](https://github.com/XLabsProject/s1x-client/pull/133) ([@Joelrau](https://github.com/Joelrau))
+-   filter. (tested on mp) [#134](https://github.com/XLabsProject/s1x-client/pull/134) ([@diamante0018](https://github.com/diamante0018))
+-   reverted to old if statement [#136](https://github.com/XLabsProject/s1x-client/pull/136) ([@diamante0018](https://github.com/diamante0018))
+
 ## [v1.0.0] - 2021-04-20
 
 ### Added
