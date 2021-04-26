@@ -8,9 +8,12 @@ namespace demonware
 		bdStorage();
 
 	private:
-		std::vector<std::pair<std::regex, std::string>> publisher_resources_;
+		using callback = std::function<std::string()>;
+		using resource_variant = std::variant<std::string, callback>;
+		std::vector<std::pair<std::regex, resource_variant>> publisher_resources_;
 
 		void map_publisher_resource(const std::string& expression, INT id);
+		void map_publisher_resource_variant(const std::string& expression, resource_variant resource);
 		bool load_publisher_resource(const std::string& name, std::string& buffer);
 
 		void list_publisher_files(service_server* server, byte_buffer* buffer);
