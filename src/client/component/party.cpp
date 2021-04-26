@@ -316,7 +316,16 @@ namespace party
 					console::info("Cannot connect to server.\n");
 					return;
 				}
-				connect(connect_state.host);
+
+				if (game::CL_IsCgameInitialized())
+				{
+					command::execute("disconnect");
+					command::execute("reconnect");
+				}
+				else
+				{
+					connect(connect_state.host);
+				}
 			});
 
 			command::add("connect", [](const command::params& argument)
