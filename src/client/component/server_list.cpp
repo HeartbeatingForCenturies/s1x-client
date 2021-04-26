@@ -254,6 +254,8 @@ namespace server_list
 
 		void resize_host_name(std::string& name)
 		{
+			name = utils::string::split(name, '\n').front();
+
 			game::Font_s* font;
 			if (game::Com_GetCurrentCoDPlayMode() == game::CODPLAYMODE_ZOMBIES)
 			{
