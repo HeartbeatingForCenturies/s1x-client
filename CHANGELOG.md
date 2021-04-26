@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Move the chat [#99](https://github.com/XLabsProject/s1x-client/issues/99)
 -   Reduce AntiVirus false positives [#127](https://github.com/XLabsProject/s1x-client/issues/127)
+-   Increase timeout time (when connecting?) [#139](https://github.com/XLabsProject/s1x-client/issues/139)
 
 ### Fixed
 
@@ -30,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   filter. (tested on mp) [#134](https://github.com/XLabsProject/s1x-client/pull/134) ([@diamante0018](https://github.com/diamante0018))
 -   reverted to old if statement [#136](https://github.com/XLabsProject/s1x-client/pull/136) ([@diamante0018](https://github.com/diamante0018))
 -   Fix firing range fov [#137](https://github.com/XLabsProject/s1x-client/pull/137) ([@Joelrau](https://github.com/Joelrau))
+-   Don't patch virtuallobby if game isn't multiplayer [#138](https://github.com/XLabsProject/s1x-client/pull/138) ([@Joelrau](https://github.com/Joelrau))
 
 ## [v1.0.0] - 2021-04-20
 
