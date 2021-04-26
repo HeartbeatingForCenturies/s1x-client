@@ -254,9 +254,6 @@ namespace server_list
 
 		void resize_host_name(std::string& name)
 		{
-			size_t resize_size = 32;
-			name.resize(resize_size);
-
 			game::Font_s* font;
 			if (game::Com_GetCurrentCoDPlayMode() == game::CODPLAYMODE_ZOMBIES)
 			{
@@ -271,8 +268,7 @@ namespace server_list
 			while (text_size > 450)
 			{
 				text_size = game::UI_TextWidth(name.data(), 32, font, 1.0f);
-				name.resize(resize_size);
-				resize_size--;
+				name.pop_back();
 			}
 		}
 
