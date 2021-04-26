@@ -157,10 +157,10 @@ namespace dedicated
 			}
 
 			// Register dedicated dvar
-			game::Dvar_RegisterBool("dedicated", 1, game::DVAR_FLAG_READ, "Dedicated server");
+			game::Dvar_RegisterBool("dedicated", true, game::DVAR_FLAG_READ, "Dedicated server");
 
 			// Add lanonly mode
-			game::Dvar_RegisterBool("sv_lanOnly", 0, game::DVAR_FLAG_NONE, "Don't send heartbeat");
+			game::Dvar_RegisterBool("sv_lanOnly", false, game::DVAR_FLAG_NONE, "Don't send heartbeat");
 
 			// Disable VirtualLobby
 			dvars::override::Dvar_RegisterBool("virtualLobbyEnabled", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);

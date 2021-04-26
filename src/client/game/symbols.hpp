@@ -81,6 +81,10 @@ namespace game
 	Dvar_RegisterInt{0x140371CF0, 0x1404C1080};
 	WEAK symbol<dvar_t*(const char* dvarName, const char* value, unsigned int flags, const char* description)>
 	Dvar_RegisterString{0x140372050, 0x1404C1450};
+	WEAK symbol<dvar_t* (const char* dvarName, float x, float y, float min, float max,
+		                 unsigned int flags, const char* description)> Dvar_RegisterVec2{0x140372120, 0x1404C1520};
+	WEAK symbol<dvar_t* (const char* dvarName, float x, float y, float z, float min, float max,
+		                 unsigned int flags, const char* description)> Dvar_RegisterVec3{0x140372230, 0x1404C1600};
 	WEAK symbol<dvar_t*(const char* dvarName, float x, float y, float z, float w, float min, float max,
 	                    unsigned int flags, const char* description)> Dvar_RegisterVec4{0x140372430, 0x1404C1800};
 
@@ -90,7 +94,8 @@ namespace game
 	WEAK symbol<void(void* buffer)> FS_FreeFile{0x140362380, 0x1404AF370};
 
 	WEAK symbol<void()> GScr_LoadConsts{0x140283970, 0x1403479C0};
-	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{0x1403166D0, 0x1403F2DC0};
+	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{0x1403165D0, 0x1403F2DC0};
+	WEAK symbol<unsigned int(int entnum, unsigned int classnum)> FindEntityId{0x1403166D0, 0x1403F2CC0};
 	WEAK symbol<scr_string_t(unsigned int parentId, unsigned int id)> GetVariableName{0x1403170E0, 0x1403F37F0};
 	WEAK symbol<void(VariableValue* result, unsigned int classnum, int entnum, int offset)> GetEntityFieldValue{
 		0x14031AAD0, 0x1403F72A0

@@ -24,6 +24,20 @@ namespace logger
 			console::error(buffer);
 		}
 
+		void print_com_error(int, const char* msg, ...)
+		{
+			char buffer[2048];
+
+			va_list ap;
+			va_start(ap, msg);
+
+			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+			va_end(ap);
+
+			console::error(buffer);
+		}
+
 		void print_warning(const char* msg, ...)
 		{
 			char buffer[2048];
@@ -129,6 +143,8 @@ namespace logger
 
 			nullsub_56();
 			sub_1400E7420();
+
+			utils::hook::call(0x1404D8543, print_com_error);
 		}
 	};
 }

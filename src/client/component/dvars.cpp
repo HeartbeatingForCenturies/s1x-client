@@ -26,6 +26,24 @@ namespace dvars
 		float max{};
 	};
 
+	struct dvar_vector2 : dvar_base
+	{
+		float x{};
+		float y{};
+		float min{};
+		float max{};
+	};
+
+	struct dvar_vector3 : dvar_base
+	{
+
+		float x{};
+		float y{};
+		float z{};
+		float min{};
+		float max{};
+	};
+
 	struct dvar_int : dvar_base
 	{
 		int value{};
@@ -92,6 +110,8 @@ namespace dvars
 		static std::unordered_map<std::string, dvar_float> register_float_overrides;
 		static std::unordered_map<std::string, dvar_int> register_int_overrides;
 		static std::unordered_map<std::string, dvar_string> register_string_overrides;
+		static std::unordered_map<std::string, dvar_vector2> register_vector2_overrides;
+		static std::unordered_map<std::string, dvar_vector3> register_vector3_overrides;
 
 		static std::unordered_map<std::string, bool> set_bool_overrides;
 		static std::unordered_map<std::string, float> set_float_overrides;
@@ -144,6 +164,33 @@ namespace dvars
 			register_string_overrides[name] = std::move(values);
 		}
 
+		void Dvar_RegisterVector2(const std::string& name, float x, float y, float min, float max,
+                                  const unsigned int flags, const std::string& description)
+		{
+			dvar_vector2 values;
+			values.x = x;
+			values.y = y;
+			values.min = min;
+			values.max = max;
+			values.flags = flags;
+			values.description = description;
+			register_vector2_overrides[name] = std::move(values);
+		}
+
+		void Dvar_RegisterVector3(const std::string& name, float x, float y, float z, float min,
+			                      float max, const unsigned int flags, const std::string& description)
+		{
+			dvar_vector3 values;
+			values.x = x;
+			values.y = y;
+			values.z = z;
+			values.min = min;
+			values.max = max;
+			values.flags = flags;
+			values.description = description;
+			register_vector3_overrides[name] = std::move(values);
+		}
+
 		void Dvar_SetBool(const std::string& name, const bool value)
 		{
 			set_bool_overrides[name] = value;
@@ -169,6 +216,8 @@ namespace dvars
 	utils::hook::detour dvar_register_float_hook;
 	utils::hook::detour dvar_register_int_hook;
 	utils::hook::detour dvar_register_string_hook;
+	utils::hook::detour dvar_register_vector2_hook;
+	utils::hook::detour dvar_register_vector3_hook;
 
 	utils::hook::detour dvar_set_bool_hook;
 	utils::hook::detour dvar_set_float_hook;
@@ -231,6 +280,41 @@ namespace dvars
 		}
 
 		return dvar_register_string_hook.invoke<game::dvar_t*>(name, value, flags, description);
+	}
+
+	game::dvar_t* dvar_register_vector2(const char* name, float x, float y, float min, float max,
+		                                unsigned int flags, const char* description)
+	{
+		auto* var = find_dvar(override::register_vector2_overrides, name);
+		if (var)
+		{
+			x = var->x;
+			y = var->y;
+			min = var->min;
+			max = var->max;
+			flags = var->flags;
+			description = var->description.data();
+		}
+
+		return dvar_register_vector2_hook.invoke<game::dvar_t*>(name, x, y, min, max, flags, description);
+	}
+
+	game::dvar_t* dvar_register_vector3(const char* name, float x, float y, float z, float min,
+		                                float max, unsigned int flags, const char* description)
+	{
+		auto* var = find_dvar(override::register_vector3_overrides, name);
+		if (var)
+		{
+			x = var->x;
+			y = var->y;
+			z = var->z;
+			min = var->min;
+			max = var->max;
+			flags = var->flags;
+			description = var->description.data();
+		}
+
+		return dvar_register_vector3_hook.invoke<game::dvar_t*>(name, x, y, z, min, max, flags, description);
 	}
 
 	void dvar_set_bool(game::dvar_t* dvar, bool boolean)
@@ -310,9 +394,11 @@ namespace dvars
 			dvar_register_float_hook.create(SELECT_VALUE(0x140371C20, 0x1404C0FB0), &dvar_register_float);
 			dvar_register_int_hook.create(SELECT_VALUE(0x140371CF0, 0x1404C1080), &dvar_register_int);
 			dvar_register_string_hook.create(SELECT_VALUE(0x140372050, 0x1404C1450), &dvar_register_string);
+			dvar_register_vector2_hook.create(SELECT_VALUE(0x140372120, 0x1404C1520), &dvar_register_vector2);
+			dvar_register_vector3_hook.create(SELECT_VALUE(0x140372230, 0x1404C1600), &dvar_register_vector3);
 
-			dvar_set_int_hook.create(SELECT_VALUE(0x140372B70, 0x1404C1F30), &dvar_set_bool);
-			dvar_set_int_hook.create(SELECT_VALUE(0x140373420, 0x1404C2A10), &dvar_set_float);
+			dvar_set_bool_hook.create(SELECT_VALUE(0x140372B70, 0x1404C1F30), &dvar_set_bool);
+			dvar_set_float_hook.create(SELECT_VALUE(0x140373420, 0x1404C2A10), &dvar_set_float);
 			dvar_set_int_hook.create(SELECT_VALUE(0x1403738D0, 0x1404C2F40), &dvar_set_int);
 			dvar_set_string_hook.create(SELECT_VALUE(0x140373DE0, 0x1404C3610), &dvar_set_string);
 		}

@@ -115,7 +115,7 @@ namespace scripting
 
 	script_value get_custom_field(const entity& entity, const std::string& field)
 	{
-		auto fields = custom_fields[entity.get_entity_id()];
+		auto& fields = custom_fields[entity.get_entity_id()];
 		const auto _field = fields.find(field);
 		if (_field != fields.end())
 		{

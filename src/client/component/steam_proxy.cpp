@@ -121,7 +121,19 @@ namespace steam_proxy
 			this->client_utils_ = this->client_engine_.invoke<void*>(14, this->steam_pipe_); // GetIClientUtils
 		}
 
-		void start_mod(const std::string& title, size_t app_id)
+		void start_mod(const std::string& title, const size_t app_id)
+		{
+			__try
+			{
+				this->start_mod_unsafe(title, app_id);
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER)
+			{
+				this->do_cleanup();
+			}
+		}
+
+		void start_mod_unsafe(const std::string& title, size_t app_id)
 		{
 			if (!this->client_utils_ || !this->client_user_) return;
 
@@ -149,6 +161,18 @@ namespace steam_proxy
 			                                &game_id.bits, title.data(), 0, 0, 0);
 		}
 
+		void do_cleanup()
+		{
+			this->client_engine_ = nullptr;
+			this->client_user_ = nullptr;
+			this->client_utils_ = nullptr;
+
+			this->steam_pipe_ = nullptr;
+			this->global_user_ = nullptr;
+
+			this->steam_client_module_ = utils::nt::library{nullptr};
+		}
+
 		void clean_up_on_error()
 		{
 			scheduler::schedule([this]()
@@ -164,15 +188,7 @@ namespace steam_proxy
 					return scheduler::cond_continue;
 				}
 
-				this->client_engine_ = nullptr;
-				this->client_user_ = nullptr;
-				this->client_utils_ = nullptr;
-
-				this->steam_pipe_ = nullptr;
-				this->global_user_ = nullptr;
-
-				this->steam_client_module_ = utils::nt::library{nullptr};
-
+				this->do_cleanup();
 				return scheduler::cond_end;
 			});
 		}

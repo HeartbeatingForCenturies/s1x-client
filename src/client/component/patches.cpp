@@ -59,7 +59,7 @@ namespace patches
 				game::Dvar_RegisterString("name", get_login_username().data(), game::DVAR_FLAG_SAVED, "Player name.");
 
 				// Disable data validation error popup
-				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, 0, "");
+				game::Dvar_RegisterInt("data_validation_allow_drop", 0, 0, 0, game::DVAR_FLAG_NONE, "");
 			}
 
 			return com_register_dvars_hook.invoke<void>();
@@ -158,6 +158,10 @@ namespace patches
 			}
 			else
 			{
+				scheduler::once([]()
+				{
+					command::execute("reconnect");
+				}, scheduler::pipeline::main, 1s);
 				game::Com_Error(game::ERR_DROP, error, arg1);
 			}
 		}
@@ -285,8 +289,8 @@ namespace patches
 			utils::hook::set<uint8_t>(0x14019B9B9, 0xEB);
 
 			// some anti tamper thing that kills performance
-			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_NONE);
-			
+			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_READ);
+
 			// unlock safeArea_*
 			utils::hook::jump(0x140219F5E, 0x140219F67);
 			utils::hook::jump(0x140219F80, 0x140219F8E);
@@ -294,6 +298,15 @@ namespace patches
 			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
 			dvars::override::Dvar_RegisterFloat("safeArea_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
 			dvars::override::Dvar_RegisterFloat("safeArea_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
+
+			// move chat position on the screen above menu splashes
+			dvars::override::Dvar_RegisterVector2("cg_hudChatPosition", 5, 170, 0, 640, game::DVAR_FLAG_SAVED);
+
+			// Massively increate timeouts
+			dvars::override::Dvar_RegisterInt("cl_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // Seems unused
+			dvars::override::Dvar_RegisterInt("sv_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // 30 - 0 - 1800
+			dvars::override::Dvar_RegisterInt("cl_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // Seems unused
+			dvars::override::Dvar_RegisterInt("sv_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // 60 - 0 - 1800
 		}
 
 		static void patch_sp()
