@@ -248,11 +248,14 @@ end
 
 flags {"NoIncrementalLink", "NoMinimalRebuild", "MultiProcessorCompile", "No64BitChecks"}
 
+
 configuration "windows"
 defines {"_WINDOWS", "WIN32"}
 
 configuration "Release"
-optimize "Speed"
+optimize "Size"
+buildoptions {"/GL"}
+linkoptions { "/IGNORE:4702", "/LTCG" }
 
 defines {"NDEBUG"}
 

@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.0.1] - 2021-04-26
+
+### Added
+
+-   Move the chat [#99](https://github.com/XLabsProject/s1x-client/issues/99)
+-   Reduce AntiVirus false positives [#127](https://github.com/XLabsProject/s1x-client/issues/127)
+-   Increase timeout time (when connecting?) [#139](https://github.com/XLabsProject/s1x-client/issues/139)
+
+### Fixed
+
+-   Campaign fails to launch in new debug builds [#116](https://github.com/XLabsProject/s1x-client/issues/116)
+-   VirtualLobby firing range FOV/FOV scale messed up [#135](https://github.com/XLabsProject/s1x-client/issues/135)
+
+### Pull Requests
+
+-   Update scripting [#95](https://github.com/XLabsProject/s1x-client/pull/95) ([@Joelrau](https://github.com/Joelrau))
+-   Fixed hooks in set dvars [#100](https://github.com/XLabsProject/s1x-client/pull/100) ([@diamante0018](https://github.com/diamante0018))
+-   hooked dvar register vector2, modified cg_hudChatPosition and matched... [#103](https://github.com/XLabsProject/s1x-client/pull/103) ([@diamante0018](https://github.com/diamante0018))
+-   I missed flags in vector 2 yesterday. [#110](https://github.com/XLabsProject/s1x-client/pull/110) ([@diamante0018](https://github.com/diamante0018))
+-   use dvar flags enum everywhere for extra clarity and cohesion. also s... [#115](https://github.com/XLabsProject/s1x-client/pull/115) ([@diamante0018](https://github.com/diamante0018))
+-   Update patches.cpp [#119](https://github.com/XLabsProject/s1x-client/pull/119) ([@diamante0018](https://github.com/diamante0018))
+-   /reconnect changes [#122](https://github.com/XLabsProject/s1x-client/pull/122) ([@mjkzy](https://github.com/mjkzy))
+-   Use custom fov/fovscale when virtual lobby is enabled. [#133](https://github.com/XLabsProject/s1x-client/pull/133) ([@Joelrau](https://github.com/Joelrau))
+-   filter. (tested on mp) [#134](https://github.com/XLabsProject/s1x-client/pull/134) ([@diamante0018](https://github.com/diamante0018))
+-   reverted to old if statement [#136](https://github.com/XLabsProject/s1x-client/pull/136) ([@diamante0018](https://github.com/diamante0018))
+-   Fix firing range fov [#137](https://github.com/XLabsProject/s1x-client/pull/137) ([@Joelrau](https://github.com/Joelrau))
+-   Don't patch virtuallobby if game isn't multiplayer [#138](https://github.com/XLabsProject/s1x-client/pull/138) ([@Joelrau](https://github.com/Joelrau))
+
 ## [v1.0.0] - 2021-04-20
 
 ### Added
@@ -63,7 +91,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Discord RPC - party size + party size max [#59](https://github.com/XLabsProject/s1x-client/pull/59) ([@mjkzy](https://github.com/mjkzy))
 -   discord presence - host name address [#64](https://github.com/XLabsProject/s1x-client/pull/64) ([@mjkzy](https://github.com/mjkzy))
 
-[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.1...HEAD
+
+[v1.0.1]: https://github.com/XLabsProject/s1x-client/compare/v1.0.0...v1.0.1
 
 [v1.0.0]: https://github.com/XLabsProject/s1x-client/compare/v0.0.2...v1.0.0
 

@@ -304,6 +304,12 @@ namespace patches
 
 			// allow servers to check for new packages more often
 			dvars::override::Dvar_RegisterInt("sv_network_fps", 1000, 20, 1000, game::DVAR_FLAG_SAVED);
+
+			// Massively increate timeouts
+			dvars::override::Dvar_RegisterInt("cl_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // Seems unused
+			dvars::override::Dvar_RegisterInt("sv_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // 30 - 0 - 1800
+			dvars::override::Dvar_RegisterInt("cl_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // Seems unused
+			dvars::override::Dvar_RegisterInt("sv_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // 60 - 0 - 1800
 		}
 
 		static void patch_sp()

@@ -6,6 +6,7 @@
 #include <utils/cryptography.hpp>
 
 #include "game/game.hpp"
+#include "component/motd.hpp"
 
 namespace demonware
 {
@@ -17,7 +18,7 @@ namespace demonware
 		this->register_task(12, &bdStorage::get_user_file);
 		this->register_task(13, &bdStorage::unk13);
 
-		this->map_publisher_resource("motd-.*\\.txt", DW_MOTD);
+		this->map_publisher_resource_variant("motd-.*\\.txt", motd::get_text);
 		this->map_publisher_resource("ffotd-.*\\.ff", DW_FASTFILE);
 		this->map_publisher_resource("playlists(_.+)?\\.aggr", DW_PLAYLISTS);
 		this->map_publisher_resource("social_[Tt][Uu][0-9]+\\.cfg", DW_SOCIAL_CONFIG);
@@ -30,7 +31,17 @@ namespace demonware
 	void bdStorage::map_publisher_resource(const std::string& expression, const INT id)
 	{
 		auto data = utils::nt::load_resource(id);
-		this->publisher_resources_.emplace_back(std::regex{expression}, data);
+		this->map_publisher_resource_variant(expression, std::move(data));
+	}
+
+	void bdStorage::map_publisher_resource_variant(const std::string& expression, resource_variant resource)
+	{
+		if (resource.valueless_by_exception())
+		{
+			throw std::runtime_error("Publisher resource variant is empty!");
+		}
+
+		this->publisher_resources_.emplace_back(std::regex{expression}, std::move(resource));
 	}
 
 	bool bdStorage::load_publisher_resource(const std::string& name, std::string& buffer)
@@ -39,7 +50,15 @@ namespace demonware
 		{
 			if (std::regex_match(name, resource.first))
 			{
-				buffer = resource.second;
+				if (std::holds_alternative<std::string>(resource.second))
+				{
+					buffer = std::get<std::string>(resource.second);
+				}
+				else
+				{
+					buffer = std::get<callback>(resource.second)();
+				}
+
 				return true;
 			}
 		}
