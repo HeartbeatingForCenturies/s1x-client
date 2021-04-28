@@ -121,6 +121,29 @@ namespace party
 			reinterpret_cast<void(*)(const char*, const char*)>(0x1404C39B0)(dvar_name, string);
 			party::sv_motd.clear();
 		}
+
+		void disconnect_stub()
+		{
+			if (!game::VirtualLobby_Loaded())
+			{
+				if (game::CL_IsCgameInitialized())
+				{
+					// CL_ForwardCommandToServer
+					reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
+					// CL_WritePacket
+					reinterpret_cast<void (*)(int)>(0x1402058F0)(0);
+				}
+				// CL_Disconnect
+				reinterpret_cast<void (*)(int)>(0x140209EC0)(0);
+			}
+		}
+
+		const auto drop_reason_stub = utils::hook::assemble([](utils::hook::assembler& a)
+		{
+			a.mov(rdx, rdi);
+			a.mov(ecx, 2);
+			a.jmp(0x140209DD9);
+		});
 	}
 
 	int get_client_num_by_name(const std::string& name)
@@ -250,22 +273,6 @@ namespace party
 		}
 	}
 
-	void disconnect_stub()
-	{
-		if (!game::VirtualLobby_Loaded())
-		{
-			if (game::CL_IsCgameInitialized())
-			{
-				// CL_ForwardCommandToServer
-				reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
-				// CL_WritePacket
-				reinterpret_cast<void (*)(int)>(0x1402058F0)(0);
-			}
-			// CL_Disconnect
-			reinterpret_cast<void (*)(int)>(0x140209EC0)(0);
-		}
-	}
-
 	class component final : public component_interface
 	{
 	public:
@@ -278,6 +285,15 @@ namespace party
 
 			// hook disconnect command function
 			utils::hook::jump(0x14020A010, disconnect_stub);
+
+			if (game::environment::is_mp())
+			{
+				// show custom drop reason
+				utils::hook::nop(0x140209D5C, 13);
+				utils::hook::jump(0x140209D5C, drop_reason_stub, true);
+			}
+			// enable custom kick reason in GScr_KickPlayer
+			utils::hook::set<uint8_t>(0x14032ED80, 0xEB);
 
 			command::add("map", [](const command::params& argument)
 			{
@@ -346,24 +362,58 @@ namespace party
 			{
 				if (params.size() < 2)
 				{
-					console::info("usage: kickClient <num>\n");
+					console::info("usage: kickClient <num>, <reason>(optional)\n");
 					return;
 				}
+
+				if (!game::SV_Loaded() || game::VirtualLobby_Loaded())
+				{
+					return;
+				}
+
+				std::string reason;
+				if (params.size() > 2)
+				{
+					reason = params.join(2);
+				}
+				if (reason.empty())
+				{
+					reason = "EXE_PLAYERKICKED";
+				}
+
 				const auto client_num = atoi(params.get(1));
 				if (client_num < 0 || client_num >= *game::mp::svs_numclients)
 				{
 					return;
 				}
 
-				game::SV_KickClientNum(client_num, "EXE_PLAYERKICKED");
+				scheduler::once([client_num, reason]()
+				{
+					game::SV_KickClientNum(client_num, reason.data());
+				}, scheduler::pipeline::server);
 			});
 
 			command::add("kick", [](const command::params& params)
 			{
 				if (params.size() < 2)
 				{
-					console::info("usage: kick <name>\n");
+					console::info("usage: kick <name>, <reason>(optional)\n");
 					return;
+				}
+
+				if (!game::SV_Loaded() || game::VirtualLobby_Loaded())
+				{
+					return;
+				}
+
+				std::string reason;
+				if (params.size() > 2)
+				{
+					reason = params.join(2);
+				}
+				if (reason.empty())
+				{
+					reason = "EXE_PLAYERKICKED";
 				}
 
 				const std::string name = params.get(1);
@@ -371,7 +421,10 @@ namespace party
 				{
 					for (auto i = 0; i < *game::mp::svs_numclients; ++i)
 					{
-						game::SV_KickClientNum(i, "EXE_PLAYERKICKED");
+						scheduler::once([i, reason]()
+						{
+							game::SV_KickClientNum(i, reason.data());
+						}, scheduler::pipeline::server);
 					}
 					return;
 				}
@@ -382,7 +435,10 @@ namespace party
 					return;
 				}
 
-				game::SV_KickClientNum(client_num, "EXE_PLAYERKICKED");
+				scheduler::once([client_num, reason]()
+				{
+					game::SV_KickClientNum(client_num, reason.data());
+				}, scheduler::pipeline::server);
 			});
 
 			scheduler::once([]()
