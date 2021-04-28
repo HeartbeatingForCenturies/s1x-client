@@ -8,6 +8,7 @@
 
 namespace map_rotation
 {
+	DWORD previousPriority;
 	namespace
 	{
 		void set_dvar(const std::string& dvar, const std::string& value)
@@ -81,6 +82,23 @@ namespace map_rotation
 			set_dvar("sv_mapRotationCurrent", value);
 		}
 
+		void change_process_priority()
+		{
+			auto* const dvar = game::Dvar_FindVar("sv_autoPriority");
+			if (dvar && dvar->current.enabled)
+			{
+				scheduler::on_game_initialized([]()
+					{
+						//printf("=======================setting OLD priority=======================\n");
+						SetPriorityClass(GetCurrentProcess(), previousPriority);
+					}, scheduler::pipeline::main, 1s);
+
+				previousPriority = GetPriorityClass(GetCurrentProcess());
+				//printf("=======================setting NEW priority=======================\n");
+				SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+			}
+		}
+
 		void perform_map_rotation()
 		{
 			if (game::Live_SyncOnlineDataFlags(0) != 0)
@@ -103,6 +121,7 @@ namespace map_rotation
 				else if (key == "map")
 				{
 					store_new_rotation(rotation, i + 2);
+					change_process_priority();
 					if (!game::SV_MapExists(value.data()))
 					{
 						printf("map_rotation: '%s' map doesn't exist!\n", value.data());
@@ -134,6 +153,7 @@ namespace map_rotation
 				return scheduler::cond_end;
 			}, scheduler::pipeline::main, 1s);
 		}
+
 	}
 
 	class component final : public component_interface
@@ -150,12 +170,15 @@ namespace map_rotation
 			{
 				game::Dvar_RegisterString("sv_mapRotation", "", game::DVAR_FLAG_NONE, "");
 				game::Dvar_RegisterString("sv_mapRotationCurrent", "", game::DVAR_FLAG_NONE, "");
+				game::Dvar_RegisterBool("sv_autoPriority", true, game::DVAR_FLAG_NONE, "Lowers the process priority during map changes to not cause lags on other servers.");
 			}, scheduler::pipeline::main);
 
 			command::add("map_rotate", &perform_map_rotation);
 
 			// Hook GScr_ExitLevel 
 			utils::hook::jump(0x14032E490, &trigger_map_rotation);
+
+			previousPriority = GetPriorityClass(GetCurrentProcess());
 		}
 	};
 }

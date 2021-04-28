@@ -302,6 +302,9 @@ namespace patches
 			// move chat position on the screen above menu splashes
 			dvars::override::Dvar_RegisterVector2("cg_hudChatPosition", 5, 170, 0, 640, game::DVAR_FLAG_SAVED);
 
+			// allow servers to check for new packages more often
+			dvars::override::Dvar_RegisterInt("sv_network_fps", 1000, 20, 1000, game::DVAR_FLAG_SAVED);
+
 			// Massively increate timeouts
 			dvars::override::Dvar_RegisterInt("cl_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // Seems unused
 			dvars::override::Dvar_RegisterInt("sv_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // 30 - 0 - 1800
