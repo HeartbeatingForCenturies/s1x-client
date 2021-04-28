@@ -387,11 +387,9 @@ namespace party
 					return;
 				}
 
-				char reason_[256]{};
-				strncpy_s(reason_, reason.data(), 256);
-				scheduler::once([client_num, reason_]()
+				scheduler::once([client_num, reason]()
 				{
-					game::SV_KickClientNum(client_num, reason_);
+					game::SV_KickClientNum(client_num, reason.data());
 				}, scheduler::pipeline::server);
 			});
 
@@ -423,11 +421,9 @@ namespace party
 				{
 					for (auto i = 0; i < *game::mp::svs_numclients; ++i)
 					{
-						char reason_[256]{};
-						strncpy_s(reason_, reason.data(), 256);
-						scheduler::once([i, reason_]()
+						scheduler::once([i, reason]()
 						{
-							game::SV_KickClientNum(i, reason_);
+							game::SV_KickClientNum(i, reason.data());
 						}, scheduler::pipeline::server);
 					}
 					return;
@@ -439,11 +435,9 @@ namespace party
 					return;
 				}
 
-				char reason_[256]{};
-				strncpy_s(reason_, reason.data(), 256);
-				scheduler::once([client_num, reason_]()
+				scheduler::once([client_num, reason]()
 				{
-					game::SV_KickClientNum(client_num, reason_);
+					game::SV_KickClientNum(client_num, reason.data());
 				}, scheduler::pipeline::server);
 			});
 
