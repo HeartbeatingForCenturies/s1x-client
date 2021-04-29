@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   Add kick reason [#114](https://github.com/XLabsProject/s1x-client/issues/114)
+-   Improve MOTD with social links and whatever [#131](https://github.com/XLabsProject/s1x-client/issues/131)
+-   Implement Listassetpool filter similar to IW6x [#123](https://github.com/XLabsProject/s1x-client/issues/123)
+
+### Fixed
+
+-   Unable to connect to servers [#106](https://github.com/XLabsProject/s1x-client/issues/106)
+
+### Pull Requests
+
+-   Use dvar flag for r_fullbright [#142](https://github.com/XLabsProject/s1x-client/pull/142) ([@diamante0018](https://github.com/diamante0018))
+-   List Asset Pool Filter [#134](https://github.com/XLabsProject/s1x-client/pull/134) ([@diamante0018](https://github.com/diamante0018))
+-   Fixed logic error in list Asset pool command [#136](https://github.com/XLabsProject/s1x-client/pull/136) ([@diamante0018](https://github.com/diamante0018))
+-   Show drop reason [#147](https://github.com/XLabsProject/s1x-client/pull/147) ([@Joelrau](https://github.com/Joelrau))
+-   Small QOL changes mostly for dedicated server owners. [#125](https://github.com/XLabsProject/s1x-client/pull/125) ([@xerxes-at](https://github.com/xerxes-at))
+
 ## [v1.0.1] - 2021-04-26
 
 ### Added
