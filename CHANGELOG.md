@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.0.2] - 2021-04-29
+
 ### Added
 
 -   Add kick reason [#114](https://github.com/XLabsProject/s1x-client/issues/114)
@@ -109,7 +111,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Discord RPC - party size + party size max [#59](https://github.com/XLabsProject/s1x-client/pull/59) ([@mjkzy](https://github.com/mjkzy))
 -   discord presence - host name address [#64](https://github.com/XLabsProject/s1x-client/pull/64) ([@mjkzy](https://github.com/mjkzy))
 
-[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.2...HEAD
+
+[v1.0.2]: https://github.com/XLabsProject/s1x-client/compare/v1.0.1...v1.0.2
 
 [v1.0.1]: https://github.com/XLabsProject/s1x-client/compare/v1.0.0...v1.0.1
 
