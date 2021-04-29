@@ -3,6 +3,7 @@
 
 #include <utils/io.hpp>
 #include <utils/nt.hpp>
+#include <utils/http.hpp>
 #include <utils/toast.hpp>
 #include <utils/binary_resource.hpp>
 
@@ -29,50 +30,16 @@ namespace updater
 	{
 		utils::binary_resource s1x_icon(ICON_IMAGE, "s1x-icon.png");
 
-		std::string download_file_sync(const std::string& url)
-		{
-			CComPtr<IStream> stream;
-
-			if (FAILED(URLOpenBlockingStreamA(nullptr, url.data(), &stream, 0, nullptr)))
-			{
-				return {};
-			}
-
-			char buffer[0x1000];
-			std::string result;
-
-			HRESULT status{};
-
-			do
-			{
-				DWORD bytes_read = 0;
-				status = stream->Read(buffer, sizeof(buffer), &bytes_read);
-
-				if (bytes_read > 0)
-				{
-					result.append(buffer, bytes_read);
-				}
-			}
-			while (SUCCEEDED(status) && status != S_FALSE);
-
-			if (FAILED(status))
-			{
-				return {};
-			}
-
-			return result;
-		}
-
 		bool is_update_available()
 		{
-			const auto version = download_file_sync(APPVEYOR_VERSION_TXT);
-			return !version.empty() && version != GIT_HASH;
+			const auto version = utils::http::get_data(APPVEYOR_VERSION_TXT);
+			return version && !version->empty() && version != GIT_HASH;
 		}
 
 		void perform_update(const std::string& target)
 		{
-			const auto binary = download_file_sync(APPVEYOR_S1X_EXE);
-			utils::io::write_file(target, binary);
+			const auto binary = utils::http::get_data(APPVEYOR_S1X_EXE);
+			utils::io::write_file(target, *binary);
 		}
 
 		void delete_old_file(const std::string& file)
