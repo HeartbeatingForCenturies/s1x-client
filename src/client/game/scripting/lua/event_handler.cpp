@@ -37,6 +37,7 @@ namespace scripting::lua
 				{
 					if(!has_built_arguments)
 					{
+						has_built_arguments = true;
 						arguments = this->build_arguments(event);
 					}
 					
