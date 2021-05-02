@@ -11,6 +11,8 @@
 
 #include <utils/string.hpp>
 
+namespace _game = game;
+
 namespace scripting::lua
 {
 	namespace
@@ -258,6 +260,19 @@ namespace scripting::lua
 			game_type["onplayerkilled"] = [](const game&, const sol::protected_function& callback)
 			{
 				logfile::add_player_killed_callback(callback);
+			};
+
+			game_type["getgamevar"] = [](const sol::this_state s)
+			{
+				const auto id = *reinterpret_cast<unsigned int*>(0x14815DEB4);
+
+				const auto value = _game::scr_VarGlob->childVariableValue[id];
+
+				_game::VariableValue variable{};
+				variable.type = value.type;
+				variable.u.uintValue = value.u.u.uintValue;
+
+				return convert(s, variable);
 			};
 		}
 	}
