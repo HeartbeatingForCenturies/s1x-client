@@ -11,8 +11,6 @@
 
 #include <utils/string.hpp>
 
-namespace _game = game;
-
 namespace scripting::lua
 {
 	namespace
@@ -266,9 +264,9 @@ namespace scripting::lua
 			{
 				const auto id = *reinterpret_cast<unsigned int*>(0x14815DEB4);
 
-				const auto value = _game::scr_VarGlob->childVariableValue[id];
+				const auto value = ::game::scr_VarGlob->childVariableValue[id];
 
-				_game::VariableValue variable{};
+				::game::VariableValue variable{};
 				variable.type = value.type;
 				variable.u.uintValue = value.u.u.uintValue;
 
