@@ -44,15 +44,14 @@ namespace logger
 		{
 			char buffer[2048];
 
-			va_list ap;
-			va_start(ap, msg);
-
-			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
-
-			va_end(ap);
-
-			if (error == game::ERR_DROP || error == game::ERR_SCRIPT_DROP || error == game::ERR_SCRIPT)
 			{
+				va_list ap;
+				va_start(ap, msg);
+
+				vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+				va_end(ap);
+
 				console::error(buffer);
 			}
 
