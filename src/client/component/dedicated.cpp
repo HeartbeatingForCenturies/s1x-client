@@ -132,6 +132,25 @@ namespace dedicated
 
 			com_quit_f_hook.invoke<void>();
 		}
+
+		void sys_error_stub(const char* msg, ...)
+		{
+			char buffer[2048];
+
+			va_list ap;
+			va_start(ap, msg);
+
+			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+			va_end(ap);
+
+			scheduler::once([]()
+			{
+				command::execute("map_rotate");
+			}, scheduler::main, 3s);
+
+			game::Com_Error(game::ERR_DROP, "%s", buffer);
+		}
 	}
 
 	void initialize()
@@ -170,6 +189,9 @@ namespace dedicated
 
 			// Don't allow sv_hostname to be changed by the game
 			dvars::disable::Dvar_SetString("sv_hostname");
+
+			// Stop crashing from sys_errors
+			utils::hook::jump(0x1404D6260, sys_error_stub);
 
 			// Hook R_SyncGpu
 			utils::hook::jump(0x1405A7630, sync_gpu_stub);

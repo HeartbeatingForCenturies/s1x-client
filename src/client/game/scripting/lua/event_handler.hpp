@@ -46,9 +46,9 @@ namespace scripting::lua
 		utils::concurrency::container<task_list> new_callbacks_;
 		utils::concurrency::container<task_list, std::recursive_mutex> callbacks_;
 
-		void dispatch_to_specific_listeners(const event& event, const event_arguments& arguments);
-
 		void remove(const event_listener_handle& handle);
 		void merge_callbacks();
+
+		event_arguments build_arguments(const event& event) const;
 	};
 }

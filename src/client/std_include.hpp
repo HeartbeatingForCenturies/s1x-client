@@ -44,6 +44,7 @@
 #include <urlmon.h>
 #include <atlbase.h>
 #include <iphlpapi.h>
+#include <wincrypt.h>
 
 // min and max is required by gdi, therefore NOMINMAX won't work
 #ifdef max
@@ -84,6 +85,7 @@
 #include <asmjit/core/jitruntime.h>
 #include <asmjit/x86/x86assembler.h>
 
+#include <google/protobuf/stubs/logging.h>
 #include <proto/auth.pb.h>
 
 #pragma warning(pop)
@@ -93,6 +95,7 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "urlmon.lib" )
 #pragma comment(lib, "iphlpapi.lib")
+#pragma comment(lib, "Crypt32.lib")
 
 #include "resource.hpp"
 

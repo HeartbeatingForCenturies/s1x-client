@@ -18,19 +18,9 @@ namespace scripting::lua
 
 	void event_handler::dispatch(const event& event)
 	{
-		std::vector<sol::lua_value> arguments;
+		bool has_built_arguments = false;
+		event_arguments arguments{};
 
-		for (const auto& argument : event.arguments)
-		{
-			arguments.emplace_back(convert(this->state_, argument));
-		}
-
-		this->dispatch_to_specific_listeners(event, arguments);
-	}
-
-	void event_handler::dispatch_to_specific_listeners(const event& event,
-	                                                   const event_arguments& arguments)
-	{
 		callbacks_.access([&](task_list& tasks)
 		{
 			this->merge_callbacks();
@@ -45,6 +35,12 @@ namespace scripting::lua
 
 				if (!i->is_deleted)
 				{
+					if(!has_built_arguments)
+					{
+						has_built_arguments = true;
+						arguments = this->build_arguments(event);
+					}
+					
 					handle_error(i->callback(sol::as_args(arguments)));
 				}
 
@@ -115,5 +111,17 @@ namespace scripting::lua
 				new_tasks = {};
 			});
 		});
+	}
+
+	event_arguments event_handler::build_arguments(const event& event) const
+	{
+		event_arguments arguments;
+
+		for (const auto& argument : event.arguments)
+		{
+			arguments.emplace_back(convert(this->state_, argument));
+		}
+
+		return arguments;
 	}
 }

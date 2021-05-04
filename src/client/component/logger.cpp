@@ -10,6 +10,8 @@ namespace logger
 {
 	namespace
 	{
+		utils::hook::detour com_error_hook;
+
 		void print_error(const char* msg, ...)
 		{
 			char buffer[2048];
@@ -36,6 +38,24 @@ namespace logger
 			va_end(ap);
 
 			console::error(buffer);
+		}
+
+		void com_error_stub(const int error, const char* msg, ...)
+		{
+			char buffer[2048];
+
+			{
+				va_list ap;
+				va_start(ap, msg);
+
+				vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+
+				va_end(ap);
+
+				console::error(buffer);
+			}
+
+			com_error_hook.invoke<void>(error, "%s", buffer);
 		}
 
 		void print_warning(const char* msg, ...)
@@ -145,6 +165,7 @@ namespace logger
 			sub_1400E7420();
 
 			utils::hook::call(0x1404D8543, print_com_error);
+			com_error_hook.create(0x1403CE480, com_error_stub);
 		}
 	};
 }

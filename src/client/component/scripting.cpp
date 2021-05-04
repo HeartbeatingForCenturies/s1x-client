@@ -59,10 +59,7 @@ namespace scripting
 
 		void g_shutdown_game_stub(const int free_scripts)
 		{
-			if (!game::VirtualLobby_Loaded())
-			{
-				lua::engine::stop();
-			}
+			lua::engine::stop();
 			return g_shutdown_game_hook.invoke<void>(free_scripts);
 		}
 	}

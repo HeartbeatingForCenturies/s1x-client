@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.0.3] - 2021-05-04
+
+### Added
+
+-   Use patrons for bot names [#128](https://github.com/XLabsProject/s1x-client/issues/128)
+-   Increase network packet limit [#102](https://github.com/XLabsProject/s1x-client/issues/102)
+
+### Fixed
+
+-   Possible duplicate GUID [#166](https://github.com/XLabsProject/s1x-client/issues/166)
+
+### Pull Requests
+
+-   Game variable support #161 [#164](https://github.com/XLabsProject/s1x-client/pull/164) ([@fedddddd](https://github.com/fedddddd))
+
 ## [v1.0.2] - 2021-04-29
 
 ### Added
@@ -111,7 +126,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Discord RPC - party size + party size max [#59](https://github.com/XLabsProject/s1x-client/pull/59) ([@mjkzy](https://github.com/mjkzy))
 -   discord presence - host name address [#64](https://github.com/XLabsProject/s1x-client/pull/64) ([@mjkzy](https://github.com/mjkzy))
 
-[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.3...HEAD
+
+[v1.0.3]: https://github.com/XLabsProject/s1x-client/compare/v1.0.2...v1.0.3
 
 [v1.0.2]: https://github.com/XLabsProject/s1x-client/compare/v1.0.1...v1.0.2
 

@@ -43,8 +43,8 @@ namespace server_list
 		std::vector<server_info> servers;
 
 		size_t server_list_page = 0;
-
 		volatile bool update_server_list = false;
+		std::chrono::high_resolution_clock::time_point last_scroll{};
 
 		size_t get_page_count()
 		{
@@ -220,6 +220,11 @@ namespace server_list
 			return game::Menu_IsMenuOpenAndVisible(0, "menu_systemlink_join");
 		}
 
+		bool is_scrolling_disabled()
+		{
+			return update_server_list || (std::chrono::high_resolution_clock::now() - last_scroll) < 500ms;
+		}
+
 		bool scroll_down()
 		{
 			if (!is_server_list_open())
@@ -227,8 +232,9 @@ namespace server_list
 				return false;
 			}
 
-			if (server_list_page + 1 < get_page_count())
+			if (!is_scrolling_disabled() && server_list_page + 1 < get_page_count())
 			{
+				last_scroll = std::chrono::high_resolution_clock::now();
 				++server_list_page;
 				trigger_refresh();
 			}
@@ -243,8 +249,9 @@ namespace server_list
 				return false;
 			}
 
-			if (server_list_page > 0)
+			if (!is_scrolling_disabled() && server_list_page > 0)
 			{
+				last_scroll = std::chrono::high_resolution_clock::now();
 				--server_list_page;
 				trigger_refresh();
 			}
