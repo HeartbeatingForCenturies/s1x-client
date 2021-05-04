@@ -1267,6 +1267,21 @@ namespace game
 
 	namespace mp
 	{
+		struct cachedSnapshot_t
+		{
+			int archivedFrame;
+			int time;
+			int num_entities;
+			int first_entity;
+			int num_clients;
+			int first_client;
+			int num_agents;
+			int first_agent;
+			unsigned int scriptableCount;
+			unsigned int scriptableFirstIndex;
+			int usesDelta;
+		};
+	
 		struct gclient_s
 		{
 			char __pad0[20708];
