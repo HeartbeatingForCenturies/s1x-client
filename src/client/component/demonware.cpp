@@ -430,6 +430,7 @@ namespace demonware
 			utils::hook::inject(0x140038A07, "http://prod.umbrella.demonware.net/v1.0/");
 
 			utils::hook::set<uint8_t>(0x140437CC0, 0xC3); // SV_SendMatchData
+			utils::hook::set<uint8_t>(0x140560D70, 0xC3); // Live_CheckForFullDisconnect
 		}
 
 		void pre_destroy() override
