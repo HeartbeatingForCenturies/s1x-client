@@ -52,7 +52,7 @@ namespace logger
 
 				va_end(ap);
 
-				console::error(buffer);
+				console::error("Error: %s\n", buffer);
 			}
 
 			com_error_hook.invoke<void>(error, "%s", buffer);
@@ -159,13 +159,18 @@ namespace logger
 	public:
 		void post_unpack() override
 		{
-			if (!game::environment::is_mp()) return;
+			if (game::environment::is_mp())
+			{
+				nullsub_56();
+				sub_1400E7420();
+			}
 
-			nullsub_56();
-			sub_1400E7420();
+			if (!game::environment::is_sp())
+			{
+				utils::hook::call(0x1404D8543, print_com_error);
+			}
 
-			utils::hook::call(0x1404D8543, print_com_error);
-			com_error_hook.create(0x1403CE480, com_error_stub);
+			com_error_hook.create(game::Com_Error, com_error_stub);
 		}
 	};
 }
