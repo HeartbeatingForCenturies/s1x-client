@@ -78,11 +78,16 @@ namespace scripting::lua
 					return;
 				}
 
-				const auto variable = convert({s, value}).get_raw();
 				const auto i = values.at(key).index;
+				const auto variable = &game::scr_VarGlob->childVariableValue[i];
 
-				game::scr_VarGlob->childVariableValue[i].type = (char)variable.type;
-				game::scr_VarGlob->childVariableValue[i].u.u = variable.u;
+				const auto new_variable = convert({s, value}).get_raw();
+
+				game::AddRefToValue(new_variable.type, new_variable.u);
+				game::RemoveRefToValue(variable->type, variable->u.u);
+
+				variable->type = (char)new_variable.type;
+				variable->u.u = new_variable.u;
 			};
 
 			metatable[sol::meta_function::index] = [values](const sol::table t, const sol::this_state s,
@@ -139,6 +144,9 @@ namespace scripting::lua
 			const auto variable = &game::scr_VarGlob->childVariableValue[variable_id + offset];
 
 			const auto new_variable = convert({s, value}).get_raw();
+
+			game::AddRefToValue(new_variable.type, new_variable.u);
+			game::RemoveRefToValue(variable->type, variable->u.u);
 
 			variable->type = (char)new_variable.type;
 			variable->u.u = new_variable.u;
