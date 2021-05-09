@@ -222,7 +222,7 @@ namespace scripting
 		const auto id = this->get_raw().u.uintValue;
 		const auto type = game::scr_VarGlob->objectVariableValue[id].w.type;
 
-		return type == game::SCRIPT_ARRAY;
+		return type == game::SCRIPT_STRUCT;
 	}
 
 	/***************************************************************
