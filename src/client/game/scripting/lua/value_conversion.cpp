@@ -130,7 +130,7 @@ namespace scripting::lua
 				? scripting::find_token_id(field.as<std::string>())
 				: field.as<int>();
 
-			if (id == -1)
+			if (!id)
 			{
 				return;
 			}
@@ -159,7 +159,7 @@ namespace scripting::lua
 				? scripting::find_token_id(field.as<std::string>())
 				: field.as<int>();
 
-			if (id == -1)
+			if (!id)
 			{
 				return sol::lua_value{s};
 			}

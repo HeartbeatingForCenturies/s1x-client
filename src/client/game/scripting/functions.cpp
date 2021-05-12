@@ -80,7 +80,7 @@ namespace scripting
 			return result->second;
 		}
 
-		return -1;
+		return 0;
 	}
 
 	script_function find_function(const std::string& name, const bool prefer_global)
