@@ -9,6 +9,6 @@ namespace scripting
 
 	using script_function = void(*)(game::scr_entref_t);
 
-	int find_token_id(const std::string& name);
+	unsigned int find_token_id(const std::string& name);
 	script_function find_function(const std::string& name, const bool prefer_global);
 }

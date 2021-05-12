@@ -201,7 +201,6 @@ namespace scripting::lua
 			entity_type["getstruct"] = [](const entity& entity, const sol::this_state s)
 			{
 				const auto id = entity.get_entity_id();
-
 				return scripting::lua::entity_to_struct(s, id);
 			};
 

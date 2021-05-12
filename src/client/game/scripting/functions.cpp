@@ -71,7 +71,7 @@ namespace scripting
 		}
 	}
 
-	int find_token_id(const std::string& name)
+	unsigned int find_token_id(const std::string& name)
 	{
 		const auto result = token_map.find(name);
 
