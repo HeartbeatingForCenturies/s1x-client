@@ -77,7 +77,7 @@ namespace rcon
 				const auto client = &game::mp::svs_clients[i];
 
 				char clean_name[32] = { 0 };
-				strncpy_s(clean_name, client->name, 32);
+				strncpy_s(clean_name, client->name, sizeof(clean_name));
 				game::I_CleanStr(clean_name);
 
 				if (client->header.state >= 1)
