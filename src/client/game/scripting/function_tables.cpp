@@ -1490,4 +1490,33 @@ namespace scripting
 		{"sub_140320b40", 34155},
 		{"sub_140333710", 34156},
 	};
+
+	std::unordered_map<std::string, unsigned> token_map =
+	{
+		{"CodeCallback_BulletHitEntity", 180},
+		{"CodeCallback_CodeEndGame", 181},
+		{"CodeCallback_EntityDamage", 182},
+		{"CodeCallback_EntityOutOfWorld", 183},
+		{"CodeCallback_HostMigration", 185},
+		{"CodeCallback_PartyMembers", 187},
+		{"CodeCallback_PlayerConnect", 188},
+		{"CodeCallback_PlayerDamage", 189},
+		{"CodeCallback_PlayerDisconnect", 190},
+		{"CodeCallback_PlayerGrenadeSuicide", 191},
+		{"CodeCallback_PlayerKilled", 192},
+		{"CodeCallback_PlayerLastStand", 193},
+		{"CodeCallback_PlayerMigrated", 194},
+		{"CodeCallback_StartGameType", 195},
+		{"CodeCallback_VehicleDamage", 196},
+		{"CreateStruct", 221},
+		{"InitStructs", 522},
+		{"main", 619},
+		{"AbortLevel", 1727},
+		{"callbackVoid", 6662},
+		{"CodeCallback_GiveKillstreak", 8192},
+		{"SetDefaultCallbacks", 32577},
+		{"SetupCallbacks", 33531},
+		{"SetupDamageFlags", 33542},
+		{"struct", 36698},
+	};
 }

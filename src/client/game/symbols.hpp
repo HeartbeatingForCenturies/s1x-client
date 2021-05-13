@@ -101,6 +101,7 @@ namespace game
 		0x14031AAD0, 0x1403F72A0
 	};
 	WEAK symbol<unsigned int(unsigned int)> GetObjectType{0x140316F70, 0x1403F3670};
+	WEAK symbol<unsigned int(unsigned int, unsigned int)> GetVariable{0x0, 0x1403F3730};
 
 	WEAK symbol<void()> G_Glass_Update{0x14021D540, 0x1402EDEE0};
 
