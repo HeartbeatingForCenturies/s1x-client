@@ -1,6 +1,5 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
-#include "filesystem.hpp"
 #include "game/game.hpp"
 
 #include <utils/hook.hpp>
@@ -101,7 +100,10 @@ namespace images
 				return false;
 			}
 
-			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), 1, 1, 0x1000003,
+			image->imageFormat |= 0x1000003;
+			image->imageFormat &= ~0x2030000;
+
+			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), image->depth, image->numElements, image->imageFormat,
 			                  DXGI_FORMAT_R8G8B8A8_UNORM, image->name, nullptr);
 
 			upload_texture(image->textures.map, *raw_image);
