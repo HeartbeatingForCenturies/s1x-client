@@ -17,7 +17,6 @@ namespace images
 	
 		void load_texture_stub(game::GfxImageLoadDef** load_def, game::GfxImage* image)
 		{
-			printf("Loading image: %s\n", image->name);
 			load_texture_hook.invoke(load_def, image);
 		}
 	}
