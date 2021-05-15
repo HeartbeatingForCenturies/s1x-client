@@ -125,6 +125,7 @@ namespace scripting
 
 		const auto local_id = game::AllocThread(id);
 		const auto result = game::VM_Execute(local_id, pos, (unsigned int)arguments.size());
+		game::RemoveRefToObject(result);
 
 		return get_return_value();
 	}

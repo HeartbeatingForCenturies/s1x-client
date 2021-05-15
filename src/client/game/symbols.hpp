@@ -12,6 +12,7 @@ namespace game
 	WEAK symbol<void(unsigned int id)> AddRefToObject{0, 0x1403F1F10};
 	WEAK symbol<unsigned int(unsigned int id)> AllocThread{0, 0x1403F2270};
 	WEAK symbol<void(int type, VariableUnion u)> RemoveRefToValue{0x140317340, 0x1403F3A50};
+	WEAK symbol<void(unsigned int id)> RemoveRefToObject{0, 0x1403F3940};
 
 	WEAK symbol<void(void*, void*)> AimAssist_AddToTargetList{0, 0x140001730};
 
