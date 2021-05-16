@@ -110,7 +110,7 @@ namespace images
 
 		void load_texture_stub(game::GfxImageLoadDef** load_def, game::GfxImage* image)
 		{
-#ifdef DEV_BUILD && defined(DEBUG)
+#if defined(DEV_BUILD) && defined(DEBUG)
 			printf("Loading: %s\n", image->name);
 #endif
 
