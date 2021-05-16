@@ -87,18 +87,6 @@ namespace images
 					context->Unmap(texture, 0);
 				}
 			}
-			else if (desc.Usage == D3D11_USAGE_DEFAULT)
-			{
-				D3D11_BOX box;
-				box.front = 0;
-				box.back = 1;
-				box.left = 0;
-				box.right = image.get_width();
-				box.top = 0;
-				box.bottom = image.get_height();
-
-				context->UpdateSubresource(texture, 0, &box, image.get_buffer(), image.get_width() * 4, image.get_width() * image.get_height() * 4);
-			}
 		}
 
 		bool load_custom_texture(game::GfxImage* image)
@@ -122,7 +110,9 @@ namespace images
 
 		void load_texture_stub(game::GfxImageLoadDef** load_def, game::GfxImage* image)
 		{
+#ifdef DEV_BUILD && defined(DEBUG)
 			printf("Loading: %s\n", image->name);
+#endif
 
 			try
 			{
