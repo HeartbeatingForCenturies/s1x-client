@@ -20,12 +20,7 @@ namespace utils
 			stbi_image_free(rgb_image);
 		});
 
-		if(channels != 4)
-		{
-			throw std::runtime_error("Invalid channel count");
-		}
-
-		const auto size = this->width * this->height * channels;
+		const auto size = this->width * this->height * 4;
 		this->data.resize(size);
 		
 		std::memmove(this->data.data(), rgb_image, size);
