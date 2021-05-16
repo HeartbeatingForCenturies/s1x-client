@@ -1,17 +1,20 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
+#include "images.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 #include <utils/image.hpp>
 #include <utils/io.hpp>
+#include <utils/concurrency.hpp>
 
 namespace images
 {
 	namespace
 	{
 		utils::hook::detour load_texture_hook;
+		utils::concurrency::container<std::unordered_map<std::string, std::string>> overriden_textures;
 	
 		static_assert(sizeof(game::GfxImage) == 104);
 		static_assert(offsetof(game::GfxImage, name) == (sizeof(game::GfxImage) - sizeof(void*)));
@@ -20,10 +23,16 @@ namespace images
 
 		std::optional<std::string> load_image(game::GfxImage* image)
 		{
-			printf("Loading: %s\n", image->name);
-
 			std::string data{};
-			if(!utils::io::read_file(utils::string::va("s1x/images/%s.png", image->name), &data))
+			overriden_textures.access([&](const std::unordered_map<std::string, std::string>& textures)
+			{
+				if (const auto i = textures.find(image->name); i != textures.end())
+				{
+					data = i->second;
+				}
+			});
+			
+			if (data.empty() && !utils::io::read_file(utils::string::va("s1x/images/%s.png", image->name), &data))
 			{
 				return {};
 			}
@@ -34,7 +43,7 @@ namespace images
 		std::optional<utils::image> load_raw_image_from_file(game::GfxImage* image)
 		{
 			const auto image_file = load_image(image);
-			if(!image_file)
+			if (!image_file)
 			{
 				return {};
 			}
@@ -51,7 +60,7 @@ namespace images
 			texture->GetDesc(&desc);
 			texture->GetDevice(&device);
 			
-			if(device)
+			if (device)
 			{
 				device->GetImmediateContext(&context);
 				device->Release();
@@ -59,7 +68,7 @@ namespace images
 
 			auto _ = gsl::finally([&]()
 			{
-				if(context)
+				if (context)
 				{
 					context->Release();
 				}
@@ -95,7 +104,7 @@ namespace images
 		bool load_custom_texture(game::GfxImage* image)
 		{
 			const auto raw_image = load_raw_image_from_file(image);
-			if(!raw_image)
+			if (!raw_image)
 			{
 				return false;
 			}
@@ -113,11 +122,29 @@ namespace images
 
 		void load_texture_stub(game::GfxImageLoadDef** load_def, game::GfxImage* image)
 		{
-			if(!load_custom_texture(image))
+			printf("Loading: %s\n", image->name);
+
+			try
 			{
-				load_texture_hook.invoke(load_def, image);
+				if (load_custom_texture(image))
+				{
+					return;
+				}
 			}
+			catch(std::exception&)
+			{
+			}
+
+			load_texture_hook.invoke(load_def, image);
 		}
+	}
+
+	void override_texture(std::string name, std::string data)
+	{
+		overriden_textures.access([&](std::unordered_map<std::string, std::string>& textures)
+		{
+			textures[std::move(name)] = std::move(data);
+		});
 	}
 
 	class component final : public component_interface
@@ -126,7 +153,7 @@ namespace images
 		void post_unpack() override
 		{
 			if (!game::environment::is_mp()) return;
-			
+
 			load_texture_hook.create(0x1405A21F0, load_texture_stub);
 		}
 	};

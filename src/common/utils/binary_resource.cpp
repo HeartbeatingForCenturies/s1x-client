@@ -66,4 +66,9 @@ namespace utils
 
 		return this->path_;
 	}
+
+	const std::string& binary_resource::get_data() const
+	{
+		return this->resource_;
+	}
 }
