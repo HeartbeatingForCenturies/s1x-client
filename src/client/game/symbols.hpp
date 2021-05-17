@@ -9,7 +9,10 @@ namespace game
 	 **************************************************************/
 
 	WEAK symbol<void(int type, VariableUnion u)> AddRefToValue{0x140315830, 0x1403F1F20};
+	WEAK symbol<void(unsigned int id)> AddRefToObject{0, 0x1403F1F10};
+	WEAK symbol<unsigned int(unsigned int id)> AllocThread{0, 0x1403F2270};
 	WEAK symbol<void(int type, VariableUnion u)> RemoveRefToValue{0x140317340, 0x1403F3A50};
+	WEAK symbol<void(unsigned int id)> RemoveRefToObject{0, 0x1403F3940};
 
 	WEAK symbol<void(void*, void*)> AimAssist_AddToTargetList{0, 0x140001730};
 
@@ -162,6 +165,8 @@ namespace game
 	WEAK symbol<void(unsigned int id, scr_string_t stringValue, unsigned int paramcount)> Scr_NotifyId{
 		0x14031CB80, 0x1403F92D0
 	};
+
+	WEAK symbol<unsigned int(unsigned int localId, const char* pos, unsigned int paramcount)> VM_Execute{0x0, 0x1403F9E40};
 
 	WEAK symbol<const char*(scr_string_t stringValue)> SL_ConvertToString{0x140314850, 0x1403F0F10};
 	WEAK symbol<scr_string_t(const char* str)> SL_FindString{0x140314AF0, 0x1403F11C0};

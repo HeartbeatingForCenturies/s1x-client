@@ -1,6 +1,7 @@
 #include <std_include.hpp>
 #include "value_conversion.hpp"
 #include "../functions.hpp"
+#include "../execution.hpp"
 
 namespace scripting::lua
 {
@@ -113,6 +114,21 @@ namespace scripting::lua
 			table[sol::metatable_key] = metatable;
 
 			return {state, table};
+		}
+
+		sol::lua_value convert_function(lua_State* state, const char* pos)
+		{
+			return [pos](const entity& entity, const sol::this_state s, sol::variadic_args va)
+			{
+				std::vector<script_value> arguments{};
+
+				for (auto arg : va)
+				{
+					arguments.push_back(convert({s, arg}));
+				}
+
+				return convert(s, scripting::exec_ent_thread(entity, pos, arguments));
+			};
 		}
 	}
 
@@ -254,6 +270,11 @@ namespace scripting::lua
 		if (value.is<std::vector<script_value>>())
 		{
 			return entity_to_array(state, value.get_raw().u.uintValue);
+		}
+
+		if (value.is<std::function<void()>>())
+		{
+			return convert_function(state, value.get_raw().u.codePosValue);
 		}
 
 		if (value.is<entity>())
