@@ -108,6 +108,8 @@ namespace images
 	public:
 		void post_unpack() override
 		{
+			if (game::environment::is_dedi()) return;
+
 			load_texture_hook.create(SELECT_VALUE(0x140484970, 0x1405A21F0), load_texture_stub);
 		}
 	};
