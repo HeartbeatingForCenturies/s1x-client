@@ -2,6 +2,7 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 #include "images.hpp"
+#include "scheduler.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -89,9 +90,17 @@ namespace images
 			}
 		}
 
+		void schedule_texture_upload(ID3D11Texture2D* texture, utils::image&& image)
+		{
+			scheduler::once([texture, img{std::move(image)}]
+			{
+				upload_texture(texture, img);
+			}, scheduler::renderer);
+		}
+
 		bool load_custom_texture(game::GfxImage* image)
 		{
-			const auto raw_image = load_raw_image_from_file(image);
+			auto raw_image = load_raw_image_from_file(image);
 			if (!raw_image)
 			{
 				return false;
@@ -103,7 +112,7 @@ namespace images
 			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), image->depth, image->numElements, image->imageFormat,
 			                  DXGI_FORMAT_R8G8B8A8_UNORM, image->name, nullptr);
 
-			upload_texture(image->textures.map, *raw_image);
+			schedule_texture_upload(image->textures.map, std::move(*raw_image));
 			
 			return true;
 		}
