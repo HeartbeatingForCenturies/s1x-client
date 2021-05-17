@@ -1238,16 +1238,19 @@ namespace game
 		char data[1];
 	};
 
-	union D3DTextures
+	union $3FA29451CE6F1FA138A5ABAB84BE9676
 	{
 		ID3D11Texture1D *linemap;
 		ID3D11Texture2D *map;
 		ID3D11Texture3D *volmap;
 		ID3D11Texture2D *cubemap;
+		GfxImageLoadDef *loadDef;
 	};
+
 
 	struct GfxTexture
 	{
+		$3FA29451CE6F1FA138A5ABAB84BE9676 ___u0;
 		ID3D11ShaderResourceView *shaderView;
 		ID3D11ShaderResourceView *shaderViewAlternate;
 	};
@@ -1264,8 +1267,8 @@ namespace game
 
 	struct GfxImage
 	{
-		D3DTextures textures;
-		char pad5[20];
+		GfxTexture textures;
+		char pad5[4];
 		int imageFormat;
 		int pad4;
 		char mapType;

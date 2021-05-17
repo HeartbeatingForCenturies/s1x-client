@@ -105,7 +105,7 @@ namespace images
 			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), image->depth, image->numElements, image->imageFormat,
 			                  DXGI_FORMAT_R8G8B8A8_UNORM, image->name, nullptr);
 
-			schedule_texture_upload(image->textures.map, std::move(*raw_image));
+			schedule_texture_upload(image->textures.___u0.map, std::move(*raw_image));
 			
 			return true;
 		}
