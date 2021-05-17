@@ -52,28 +52,18 @@ namespace images
 			return utils::image(*image_file);
 		}
 
-		void upload_texture(ID3D11Texture2D* texture, const utils::image& image)
+		bool upload_texture(CComPtr<ID3D11Texture2D> texture, const utils::image& image)
 		{
 			D3D11_TEXTURE2D_DESC desc;
-			ID3D11Device* device;
-			ID3D11DeviceContext* context;
+			CComPtr<ID3D11Device> device;
+			CComPtr<ID3D11DeviceContext> context;
 
 			texture->GetDesc(&desc);
 			texture->GetDevice(&device);
-			
-			if (device)
-			{
-				device->GetImmediateContext(&context);
-				device->Release();
-			}
+			if (!device) return false;
 
-			auto _ = gsl::finally([&]()
-			{
-				if (context)
-				{
-					context->Release();
-				}
-			});
+			device->GetImmediateContext(&context);
+			if (!context) return false;
 
 			if (desc.Usage == D3D11_USAGE_DYNAMIC && (desc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) == D3D11_CPU_ACCESS_WRITE)
 			{
@@ -86,8 +76,11 @@ namespace images
 					}
 
 					context->Unmap(texture, 0);
+					return true;
 				}
 			}
+
+			return false;
 		}
 
 		void schedule_texture_upload(ID3D11Texture2D* texture, utils::image&& image)
