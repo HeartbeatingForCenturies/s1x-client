@@ -119,7 +119,7 @@ namespace game
 
 	WEAK symbol<char*(char* string)> I_CleanStr{0x140379010, 0x1404C99A0};
 
-	WEAK symbol<char*(GfxImage *image, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipCount, uint32_t imageFlags, DXGI_FORMAT imageFormat, const char *name, const void *initData)> Image_Setup{0x1404858D0, 0x1405A3150};
+	WEAK symbol<char*(GfxImage *image, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipCount, uint32_t imageFlags, DXGI_FORMAT imageFormat, const char *name, const D3D11_SUBRESOURCE_DATA *initData)> Image_Setup{0x1404858D0, 0x1405A3150};
 
 	WEAK symbol<const char*(int, int, int)> Key_KeynumToString{0x14013F380, 0x140207C50};
 

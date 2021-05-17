@@ -52,45 +52,6 @@ namespace images
 			return utils::image(*image_file);
 		}
 
-		bool upload_texture(CComPtr<ID3D11Texture2D> texture, const utils::image& image)
-		{
-			D3D11_TEXTURE2D_DESC desc;
-			CComPtr<ID3D11Device> device;
-			CComPtr<ID3D11DeviceContext> context;
-
-			texture->GetDesc(&desc);
-			texture->GetDevice(&device);
-			if (!device) return false;
-
-			device->GetImmediateContext(&context);
-			if (!context) return false;
-
-			if (desc.Usage == D3D11_USAGE_DYNAMIC && (desc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) == D3D11_CPU_ACCESS_WRITE)
-			{
-				D3D11_MAPPED_SUBRESOURCE texmap;
-				if (SUCCEEDED(context->Map(texture, 0, D3D11_MAP_WRITE_DISCARD, 0, &texmap)))
-				{
-					for (int row = 0; row < image.get_height(); ++row)
-					{
-						std::memcpy(PBYTE(texmap.pData) + row * texmap.RowPitch, PBYTE(image.get_buffer()) + (4 * image.get_width()) * row, std::min(static_cast<int>(texmap.RowPitch), 4 * image.get_width()));
-					}
-
-					context->Unmap(texture, 0);
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		void schedule_texture_upload(ID3D11Texture2D* texture, utils::image&& image)
-		{
-			scheduler::once([texture, img{std::move(image)}]
-			{
-				upload_texture(texture, img);
-			}, scheduler::renderer);
-		}
-
 		bool load_custom_texture(game::GfxImage* image)
 		{
 			auto raw_image = load_raw_image_from_file(image);
@@ -102,11 +63,14 @@ namespace images
 			image->imageFormat |= 0x1000003;
 			image->imageFormat &= ~0x2030000;
 
-			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), image->depth, image->numElements, image->imageFormat,
-			                  DXGI_FORMAT_R8G8B8A8_UNORM, image->name, nullptr);
+			D3D11_SUBRESOURCE_DATA data{};
+			data.SysMemPitch = raw_image->get_width() * 4;
+			data.SysMemSlicePitch = data.SysMemPitch * raw_image->get_height();
+			data.pSysMem = raw_image->get_buffer();
 
-			schedule_texture_upload(image->textures.___u0.map, std::move(*raw_image));
-			
+			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), image->depth, image->numElements, image->imageFormat,
+			                  DXGI_FORMAT_R8G8B8A8_UNORM, image->name, &data);
+
 			return true;
 		}
 
