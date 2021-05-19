@@ -104,7 +104,6 @@ namespace images
 		{
 			if(image->resourceSize == -1)
 			{
-				image->resourceSize = 0;
 				return 0;
 			}
 
