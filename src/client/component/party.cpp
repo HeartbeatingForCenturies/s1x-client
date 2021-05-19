@@ -138,6 +138,7 @@ namespace party
 		}
 
 		utils::hook::detour cldisconnect_hook;
+
 		void cldisconnect_stub(int a1)
 		{
 			clear_sv_motd();
@@ -154,10 +155,7 @@ namespace party
 
 	void clear_sv_motd()
 	{
-		if (!party::sv_motd.empty())
-		{
-			party::sv_motd.clear();
-		}
+		party::sv_motd.clear();
 		return;
 	}
 
@@ -301,7 +299,7 @@ namespace party
 			// hook disconnect command function
 			utils::hook::jump(0x14020A010, disconnect_stub);
 
-			// detour CL_Disconnect to clear motd if it exists
+			// detour CL_Disconnect to clear motd
 			cldisconnect_hook.create(0x140209EC0, cldisconnect_stub);
 
 			if (game::environment::is_mp())
