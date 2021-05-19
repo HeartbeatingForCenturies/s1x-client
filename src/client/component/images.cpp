@@ -2,6 +2,7 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 #include "images.hpp"
+#include "console.hpp"
 #include "scheduler.hpp"
 
 #include <utils/hook.hpp>
@@ -15,12 +16,16 @@ namespace images
 	namespace
 	{
 		utils::hook::detour load_texture_hook;
+		utils::hook::detour setup_texture_hook;
 		utils::concurrency::container<std::unordered_map<std::string, std::string>> overriden_textures;
 	
 		static_assert(sizeof(game::GfxImage) == 104);
 		static_assert(offsetof(game::GfxImage, name) == (sizeof(game::GfxImage) - sizeof(void*)));
-		static_assert(offsetof(game::GfxImage, loadDef) == 56);
+		static_assert(offsetof(game::GfxImage, pixelData) == 56);
 		static_assert(offsetof(game::GfxImage, width) == 44);
+		static_assert(offsetof(game::GfxImage, height) == 46);
+		static_assert(offsetof(game::GfxImage, depth) == 48);
+		static_assert(offsetof(game::GfxImage, numElements) == 50);
 
 		std::optional<std::string> load_image(game::GfxImage* image)
 		{
@@ -60,8 +65,8 @@ namespace images
 				return false;
 			}
 
-			image->imageFormat |= 0x1000003;
-			image->imageFormat &= ~0x2030000;
+			image->imageFormat = 0x1000003;
+			image->resourceSize = -1;
 
 			D3D11_SUBRESOURCE_DATA data{};
 			data.SysMemPitch = raw_image->get_width() * 4;
@@ -87,11 +92,23 @@ namespace images
 					return;
 				}
 			}
-			catch(std::exception&)
+			catch(std::exception& e)
 			{
+				console::error("Failed to load image %s: %s\n", image->name, e.what());
 			}
 
 			load_texture_hook.invoke(load_def, image);
+		}
+
+		int setup_texture_stub(game::GfxImage* image, void* a2, void* a3)
+		{
+			if(image->resourceSize == -1)
+			{
+				image->resourceSize = 0;
+				return 0;
+			}
+
+			return setup_texture_hook.invoke<bool>(image, a2, a3);
 		}
 	}
 
@@ -110,6 +127,7 @@ namespace images
 		{
 			if (game::environment::is_dedi()) return;
 
+			setup_texture_hook.create(SELECT_VALUE(0x14002A560, 0x140054370), setup_texture_stub);
 			load_texture_hook.create(SELECT_VALUE(0x140484970, 0x1405A21F0), load_texture_stub);
 		}
 	};
