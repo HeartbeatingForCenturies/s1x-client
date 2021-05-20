@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.0.4] - 2021-05-20
+
 ### Added
 
 -   Add game matrix access [#161](https://github.com/XLabsProject/s1x-client/issues/161)
@@ -142,7 +144,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Discord RPC - party size + party size max [#59](https://github.com/XLabsProject/s1x-client/pull/59) ([@mjkzy](https://github.com/mjkzy))
 -   discord presence - host name address [#64](https://github.com/XLabsProject/s1x-client/pull/64) ([@mjkzy](https://github.com/mjkzy))
 
-[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/XLabsProject/s1x-client/compare/v1.0.4...HEAD
+
+[v1.0.4]: https://github.com/XLabsProject/s1x-client/compare/v1.0.3...v1.0.4
 
 [v1.0.3]: https://github.com/XLabsProject/s1x-client/compare/v1.0.2...v1.0.3
 
