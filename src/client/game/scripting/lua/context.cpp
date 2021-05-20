@@ -198,6 +198,12 @@ namespace scripting::lua
 				return convert(s, entity.get(field));
 			};
 
+			entity_type["getstruct"] = [](const entity& entity, const sol::this_state s)
+			{
+				const auto id = entity.get_entity_id();
+				return scripting::lua::entity_to_struct(s, id);
+			};
+
 			struct game
 			{
 			};
@@ -328,6 +334,7 @@ namespace scripting::lua
 
 	void context::notify(const event& e)
 	{
+		this->scheduler_.dispatch(e);
 		this->event_handler_.dispatch(e);
 	}
 

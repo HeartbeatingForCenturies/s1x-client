@@ -1,4 +1,5 @@
 #pragma once
+#include <d3d11.h>
 
 #define PROTOCOL 1
 
@@ -31,6 +32,8 @@ namespace game
 		SCRIPT_FLOAT = 5,
 		SCRIPT_INTEGER = 6,
 		SCRIPT_END = 8,
+		SCRIPT_FUNCTION = 9,
+		SCRIPT_STRUCT = 19,
 		SCRIPT_ARRAY = 22
 	};
 
@@ -1224,6 +1227,68 @@ namespace game
 		const char* buffer;
 	};
 
+	struct GfxImageLoadDef
+	{
+		char levelCount;
+		char numElements;
+		char pad[2];
+		int flags;
+		int format;
+		int resourceSize;
+		char data[1];
+	};
+
+	union $3FA29451CE6F1FA138A5ABAB84BE9676
+	{
+		ID3D11Texture1D *linemap;
+		ID3D11Texture2D *map;
+		ID3D11Texture3D *volmap;
+		ID3D11Texture2D *cubemap;
+		GfxImageLoadDef *loadDef;
+	};
+
+
+	struct GfxTexture
+	{
+		$3FA29451CE6F1FA138A5ABAB84BE9676 ___u0;
+		ID3D11ShaderResourceView *shaderView;
+		ID3D11ShaderResourceView *shaderViewAlternate;
+	};
+
+	struct Picmip
+	{
+		char platform[2];
+	};
+
+	struct CardMemory
+	{
+		int platform[2];
+	};
+
+	struct GfxImage
+	{
+		GfxTexture textures;
+		int flags;
+		int imageFormat;
+		int resourceSize;
+		char mapType;
+		char semantic;
+		char category;
+		char flags2;
+		Picmip picmip;
+		char track;
+		//CardMemory cardMemory;
+		unsigned short width;
+		unsigned short height;
+		unsigned short depth;
+		unsigned short numElements;
+		char pad3[4];
+		void* pixelData;
+		//GfxImageLoadDef *loadDef;
+		uint64_t streams[4];
+		const char *name;
+	};
+
 	union XAssetHeader
 	{
 		void* data;
@@ -1233,6 +1298,7 @@ namespace game
 		ScriptFile* scriptfile;
 		StringTable* stringTable;
 		LuaFile* luaFile;
+		GfxImage* image;
 	};
 
 	struct XAsset
@@ -1267,6 +1333,21 @@ namespace game
 
 	namespace mp
 	{
+		struct cachedSnapshot_t
+		{
+			int archivedFrame;
+			int time;
+			int num_entities;
+			int first_entity;
+			int num_clients;
+			int first_client;
+			int num_agents;
+			int first_agent;
+			unsigned int scriptableCount;
+			unsigned int scriptableFirstIndex;
+			int usesDelta;
+		};
+	
 		struct gclient_s
 		{
 			char __pad0[20708];

@@ -10,6 +10,7 @@ namespace utils
 		binary_resource(int id, std::string file);
 
 		std::string get_extracted_file();
+		const std::string& get_data() const;
 
 	private:
 		std::string resource_;

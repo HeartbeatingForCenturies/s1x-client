@@ -18,7 +18,7 @@ namespace videos
 			if (vid != video_replaces.end())
 			{
 				char path[256];
-				game::Sys_BuildAbsPath(path, 256, game::SF_VIDEO, vid->second.data(), ".bik");
+				game::Sys_BuildAbsPath(path, sizeof(path), game::SF_VIDEO, vid->second.data(), ".bik");
 
 				if (game::Sys_FileExists(path))
 				{

@@ -9,7 +9,10 @@ namespace game
 	 **************************************************************/
 
 	WEAK symbol<void(int type, VariableUnion u)> AddRefToValue{0x140315830, 0x1403F1F20};
+	WEAK symbol<void(unsigned int id)> AddRefToObject{0, 0x1403F1F10};
+	WEAK symbol<unsigned int(unsigned int id)> AllocThread{0, 0x1403F2270};
 	WEAK symbol<void(int type, VariableUnion u)> RemoveRefToValue{0x140317340, 0x1403F3A50};
+	WEAK symbol<void(unsigned int id)> RemoveRefToObject{0, 0x1403F3940};
 
 	WEAK symbol<void(void*, void*)> AimAssist_AddToTargetList{0, 0x140001730};
 
@@ -49,10 +52,12 @@ namespace game
 
 	WEAK symbol<void(XAssetType type, void (__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)>
 	DB_EnumXAssets_FastFile{0x14017D7C0, 0x14026EC10};
-	WEAK symbol<void(XAssetType type, void(__cdecl* func)(game::XAssetHeader, void*), const void* inData, bool includeOverride)>
+	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), const void* inData, bool includeOverride)>
 	DB_EnumXAssets_Internal{0x14017D830, 0x14026EC80};
-	WEAK symbol<game::XAssetEntry(game::XAssetType type, const char* name)>
+	WEAK symbol<XAssetEntry(XAssetType type, const char* name)>
 	DB_FindXAssetEntry{0x14017D830, 0x14026F020};
+	WEAK symbol<XAssetEntry(XAssetType type, const char *name, int allowCreateDefault)>
+	DB_FindXAssetHeader{0x14017DCA0, 0x14026F0F0};
 	WEAK symbol<const char* (const XAsset* asset)> DB_GetXAssetName{0x140151C00, 0x140240DD0};
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{0x140151C20, 0x140240DF0};
 	WEAK symbol<void(XZoneInfo* zoneInfo, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{
@@ -101,6 +106,7 @@ namespace game
 		0x14031AAD0, 0x1403F72A0
 	};
 	WEAK symbol<unsigned int(unsigned int)> GetObjectType{0x140316F70, 0x1403F3670};
+	WEAK symbol<unsigned int(unsigned int, unsigned int)> GetVariable{0x0, 0x1403F3730};
 
 	WEAK symbol<void()> G_Glass_Update{0x14021D540, 0x1402EDEE0};
 
@@ -114,6 +120,8 @@ namespace game
 	WEAK symbol<int(playerState_s* ps, unsigned int weapon)> G_TakePlayerWeapon{0x1402754E0, 0x1403411D0};
 
 	WEAK symbol<char*(char* string)> I_CleanStr{0x140379010, 0x1404C99A0};
+
+	WEAK symbol<char*(GfxImage *image, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipCount, uint32_t imageFlags, DXGI_FORMAT imageFormat, const char *name, const D3D11_SUBRESOURCE_DATA *initData)> Image_Setup{0x1404858D0, 0x1405A3150};
 
 	WEAK symbol<const char*(int, int, int)> Key_KeynumToString{0x14013F380, 0x140207C50};
 
@@ -159,6 +167,8 @@ namespace game
 	WEAK symbol<void(unsigned int id, scr_string_t stringValue, unsigned int paramcount)> Scr_NotifyId{
 		0x14031CB80, 0x1403F92D0
 	};
+
+	WEAK symbol<unsigned int(unsigned int localId, const char* pos, unsigned int paramcount)> VM_Execute{0x0, 0x1403F9E40};
 
 	WEAK symbol<const char*(scr_string_t stringValue)> SL_ConvertToString{0x140314850, 0x1403F0F10};
 	WEAK symbol<scr_string_t(const char* str)> SL_FindString{0x140314AF0, 0x1403F11C0};
