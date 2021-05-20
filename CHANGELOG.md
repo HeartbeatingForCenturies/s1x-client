@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   Add game matrix access [#161](https://github.com/XLabsProject/s1x-client/issues/161)
+-   Add custom camo support [#185](https://github.com/XLabsProject/s1x-client/issues/185)
+
+### Fixed
+
+-   Fatal error with test build [#193](https://github.com/XLabsProject/s1x-client/issues/193)
+
+### Pull Requests
+
+-   Fix service not available disconnect [#172](https://github.com/XLabsProject/s1x-client/pull/172) ([@Joelrau](https://github.com/Joelrau))
+-   Script struct support #132 [#177](https://github.com/XLabsProject/s1x-client/pull/177) ([@fedddddd](https://github.com/fedddddd))
+-   Use sizeof operator more often [#181](https://github.com/XLabsProject/s1x-client/pull/181) ([@diamante0018](https://github.com/diamante0018))
+-   Script function support [#183](https://github.com/XLabsProject/s1x-client/pull/183) ([@fedddddd](https://github.com/fedddddd))
+
 ## [v1.0.3] - 2021-05-04
 
 ### Added
