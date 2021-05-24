@@ -12,6 +12,7 @@
 #include <utils/cryptography.hpp>
 
 #include "game/game.hpp"
+#include "steam/steam.hpp"
 
 namespace auth
 {
@@ -218,6 +219,11 @@ namespace auth
 				utils::hook::jump(0x1404421F6, get_direct_connect_stub(), true);
 				utils::hook::call(0x140208C54, send_connect_data_stub);
 			}
+
+			command::add("guid", []()
+			{
+				printf("Your guid: %llX\n", steam::SteamUser()->GetSteamID().bits);
+			});
 		}
 	};
 }
