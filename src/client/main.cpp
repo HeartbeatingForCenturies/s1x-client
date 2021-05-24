@@ -122,15 +122,6 @@ void remove_crash_file()
 	utils::io::remove_file("__s1Exe");
 }
 
-void verify_aw_version()
-{
-	const auto value = *reinterpret_cast<DWORD*>(0x140001337);
-	if (value != 0x24AFEB05 && value != 0x1D860F04)
-	{
-		throw std::runtime_error("Unsupported Call of Duty: Advanced Warfare version");
-	}
-}
-
 void enable_dpi_awareness()
 {
 	const utils::nt::library user32{"user32.dll"};
@@ -210,8 +201,6 @@ int main()
 			{
 				throw std::runtime_error("Unable to load binary into memory");
 			}
-
-			verify_aw_version();
 
 			if (!component_loader::post_load()) return 0;
 
