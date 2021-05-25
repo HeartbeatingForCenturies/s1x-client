@@ -26,6 +26,7 @@ namespace party
 		} connect_state;
 
 		std::string sv_motd;
+		int sv_maxclients;
 
 		void perform_game_initialization()
 		{
@@ -271,6 +272,11 @@ namespace party
 			const auto* args = "StartServer";
 			game::UI_RunMenuScript(0, &args);
 		}
+	}
+
+	int server_client_count()
+	{
+		return party::sv_maxclients;
 	}
 
 	class component final : public component_interface
@@ -595,6 +601,7 @@ namespace party
 				}
 
 				party::sv_motd = info.get("sv_motd");
+				party::sv_maxclients = std::stoi(info.get("sv_maxclients"));
 
 				connect_to_party(target, mapname, gametype);
 			});
