@@ -17,6 +17,9 @@ namespace lui
 		{
 			if (!game::environment::is_mp()) return;
 
+			// Don't show create cod account popup
+			utils::hook::set<uint32_t>(0x1400EAD12, 0);
+
 #ifdef _DEBUG
 			// Enable development menus (causes issues in sp)
 			utils::hook::set<uint32_t>(SELECT_VALUE(0x1400B4ABC, 0x140109FAC), 1);
