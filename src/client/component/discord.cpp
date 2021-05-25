@@ -78,6 +78,9 @@ namespace discord
 					discord_presence.startTimestamp = std::chrono::duration_cast<std::chrono::seconds>(
 						std::chrono::system_clock::now().time_since_epoch()).count();
 				}
+
+				discord_presence.largeImageKey = game::Dvar_FindVar("ui_mapname")->current.string;
+				discord_presence.largeImageText = game::UI_GetMapDisplayName(game::Dvar_FindVar("ui_mapname")->current.string);
 			}
 
 			Discord_UpdatePresence(&discord_presence);
