@@ -143,7 +143,7 @@ namespace discord
 
 		static void errored(const int error_code, const char* message)
 		{
-			console::info("Discord: Error (%i): %s\n", error_code, message);
+			console::error("Discord: Error (%i): %s\n", error_code, message);
 		}
 	};
 }
