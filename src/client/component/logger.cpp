@@ -1,6 +1,7 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
 
+#include "party.hpp"
 #include "game/game.hpp"
 #include "console.hpp"
 
@@ -54,6 +55,8 @@ namespace logger
 
 				console::error("Error: %s\n", buffer);
 			}
+
+			party::clear_sv_motd(); // clear sv_motd on error if it exists
 
 			com_error_hook.invoke<void>(error, "%s", buffer);
 		}
