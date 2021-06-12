@@ -188,7 +188,7 @@ void loader::load_tls(const utils::nt::library& target, const utils::nt::library
 
 		const auto tls_size = source_tls->EndAddressOfRawData - source_tls->StartAddressOfRawData;
 		const auto tls_index = *reinterpret_cast<DWORD*>(target_tls->AddressOfIndex);
-		*reinterpret_cast<DWORD*>(source_tls->AddressOfIndex) = tls_index;
+		utils::hook::set<DWORD>(source_tls->AddressOfIndex, tls_index);
 
 		DWORD old_protect;
 		VirtualProtect(PVOID(target_tls->StartAddressOfRawData),
