@@ -82,26 +82,6 @@ namespace updater
 			info.hide();
 			return true;
 		}
-
-		// Wrong place for this function, but we need to make sure updating still work
-		void apply_environment()
-		{
-			char* buffer{};
-			size_t size{};
-			if (_dupenv_s(&buffer, &size, "XLABS_AW_INSTALL") != 0 || buffer == nullptr)
-			{
-				throw std::runtime_error("Please use the X Labs launcher to run the game!");
-			}
-
-			const auto _ = gsl::finally([&]
-			{
-				free(buffer);
-			});
-
-			std::string dir{buffer, size};
-			SetCurrentDirectoryA(dir.data());
-			SetDllDirectoryA(dir.data());
-		}
 	}
 
 	class component final : public component_interface
@@ -113,8 +93,6 @@ namespace updater
 			{
 				component_loader::trigger_premature_shutdown();
 			}
-
-			apply_environment();
 		}
 	};
 }
