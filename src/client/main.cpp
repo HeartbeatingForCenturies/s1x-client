@@ -203,7 +203,7 @@ int main()
 
 		try
 		{
-			//apply_environment();
+			apply_environment();
 
 			if (!component_loader::post_start()) return 0;
 
