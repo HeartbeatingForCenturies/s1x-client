@@ -122,15 +122,6 @@ void remove_crash_file()
 	utils::io::remove_file("__s1Exe");
 }
 
-void verify_aw_version()
-{
-	const auto value = *reinterpret_cast<DWORD*>(0x140001337);
-	if (value != 0x24AFEB05 && value != 0x1D860F04)
-	{
-		throw std::runtime_error("Unsupported Call of Duty: Advanced Warfare version");
-	}
-}
-
 void enable_dpi_awareness()
 {
 	const utils::nt::library user32{"user32.dll"};
@@ -169,6 +160,25 @@ void limit_parallel_dll_loading()
 	RegCloseKey(key);
 }
 
+void apply_environment()
+{
+	char* buffer{};
+	size_t size{};
+	if (_dupenv_s(&buffer, &size, "XLABS_AW_INSTALL") != 0 || buffer == nullptr)
+	{
+		throw std::runtime_error("Please use the X Labs launcher to run the game!");
+	}
+
+	const auto _ = gsl::finally([&]
+	{
+		free(buffer);
+	});
+
+	std::string dir{buffer, size};
+	SetCurrentDirectoryA(dir.data());
+	SetDllDirectoryA(dir.data());
+}
+
 int main()
 {
 	FARPROC entry_point;
@@ -193,6 +203,8 @@ int main()
 
 		try
 		{
+			apply_environment();
+
 			if (!component_loader::post_start()) return 0;
 
 			auto mode = detect_mode_from_arguments();
@@ -210,8 +222,6 @@ int main()
 			{
 				throw std::runtime_error("Unable to load binary into memory");
 			}
-
-			verify_aw_version();
 
 			if (!component_loader::post_load()) return 0;
 

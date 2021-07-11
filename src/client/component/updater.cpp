@@ -98,5 +98,5 @@ namespace updater
 }
 
 #if defined(CI) && !defined(DEBUG)
-REGISTER_COMPONENT(updater::component)
+//REGISTER_COMPONENT(updater::component)
 #endif

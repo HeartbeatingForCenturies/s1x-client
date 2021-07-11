@@ -3,7 +3,6 @@
 #include "game/game.hpp"
 #include "images.hpp"
 #include "console.hpp"
-#include "scheduler.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -18,7 +17,7 @@ namespace images
 		utils::hook::detour load_texture_hook;
 		utils::hook::detour setup_texture_hook;
 		utils::concurrency::container<std::unordered_map<std::string, std::string>> overriden_textures;
-	
+
 		static_assert(sizeof(game::GfxImage) == 104);
 		static_assert(offsetof(game::GfxImage, name) == (sizeof(game::GfxImage) - sizeof(void*)));
 		static_assert(offsetof(game::GfxImage, pixelData) == 56);
@@ -37,7 +36,7 @@ namespace images
 					data = i->second;
 				}
 			});
-			
+
 			if (data.empty() && !utils::io::read_file(utils::string::va("s1x/images/%s.png", image->name), &data))
 			{
 				return {};
@@ -45,7 +44,7 @@ namespace images
 
 			return {std::move(data)};
 		}
-	
+
 		std::optional<utils::image> load_raw_image_from_file(game::GfxImage* image)
 		{
 			const auto image_file = load_image(image);
@@ -73,8 +72,8 @@ namespace images
 			data.SysMemSlicePitch = data.SysMemPitch * raw_image->get_height();
 			data.pSysMem = raw_image->get_buffer();
 
-			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), image->depth, image->numElements, image->imageFormat,
-			                  DXGI_FORMAT_R8G8B8A8_UNORM, image->name, &data);
+			game::Image_Setup(image, raw_image->get_width(), raw_image->get_height(), image->depth, image->numElements,
+			                  image->imageFormat, DXGI_FORMAT_R8G8B8A8_UNORM, image->name, &data);
 
 			return true;
 		}
@@ -92,7 +91,7 @@ namespace images
 					return;
 				}
 			}
-			catch(std::exception& e)
+			catch (std::exception& e)
 			{
 				console::error("Failed to load image %s: %s\n", image->name, e.what());
 			}
@@ -102,7 +101,7 @@ namespace images
 
 		int setup_texture_stub(game::GfxImage* image, void* a2, void* a3)
 		{
-			if(image->resourceSize == -1)
+			if (image->resourceSize == -1)
 			{
 				return 0;
 			}

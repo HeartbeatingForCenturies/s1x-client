@@ -71,10 +71,10 @@ namespace exception
 
 		bool is_recoverable()
 		{
-			return is_game_thread()
+			return is_initialized()
+				&& is_game_thread()
 				&& !is_exception_interval_too_short()
-				&& !too_many_exceptions_occured()
-				&& is_initialized();
+				&& !too_many_exceptions_occured();
 		}
 
 		void show_mouse_cursor()
