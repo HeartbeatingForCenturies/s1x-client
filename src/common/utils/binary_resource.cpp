@@ -19,10 +19,11 @@ namespace utils
 			return path;
 		}
 
-		std::string write_exitisting_temp_file(const std::string& file, const std::string& data)
+		std::string write_exitisting_temp_file(const std::string& file, const std::string& data,
+		                                       const bool fatal_if_overwrite_fails)
 		{
 			const auto temp = get_temp_folder();
-			const auto file_path = temp + file;
+			auto file_path = temp + file;
 
 			std::string current_data;
 			if (!io::read_file(file_path, &current_data))
@@ -35,7 +36,7 @@ namespace utils
 				return file_path;
 			}
 
-			if (current_data == data || io::write_file(file_path, data))
+			if (current_data == data || io::write_file(file_path, data) || !fatal_if_overwrite_fails)
 			{
 				return file_path;
 			}
@@ -57,11 +58,11 @@ namespace utils
 		}
 	}
 
-	std::string binary_resource::get_extracted_file()
+	std::string binary_resource::get_extracted_file(const bool fatal_if_overwrite_fails)
 	{
 		if (this->path_.empty())
 		{
-			this->path_ = write_exitisting_temp_file(this->filename_, this->resource_);
+			this->path_ = write_exitisting_temp_file(this->filename_, this->resource_, fatal_if_overwrite_fails);
 		}
 
 		return this->path_;

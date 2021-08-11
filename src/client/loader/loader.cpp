@@ -36,7 +36,13 @@ FARPROC loader::load_library(const std::string& filename) const
 	const auto target = utils::nt::library::load(filename);
 	if (!target)
 	{
-		throw std::runtime_error("Failed to map binary!");
+		throw std::runtime_error{"Failed to map binary!"};
+	}
+
+	const auto base = size_t(target.get_ptr());
+	if(base != 0x140000000)
+	{
+		throw std::runtime_error{utils::string::va("Binary was mapped at 0x%llX (instead of 0x%llX). Something is severely broken :(", base, 0x140000000)};
 	}
 
 	this->load_imports(target, target);
@@ -188,7 +194,7 @@ void loader::load_tls(const utils::nt::library& target, const utils::nt::library
 
 		const auto tls_size = source_tls->EndAddressOfRawData - source_tls->StartAddressOfRawData;
 		const auto tls_index = *reinterpret_cast<DWORD*>(target_tls->AddressOfIndex);
-		*reinterpret_cast<DWORD*>(source_tls->AddressOfIndex) = tls_index;
+		utils::hook::set<DWORD>(source_tls->AddressOfIndex, tls_index);
 
 		DWORD old_protect;
 		VirtualProtect(PVOID(target_tls->StartAddressOfRawData),

@@ -1268,13 +1268,13 @@ namespace game
 	struct GfxImage
 	{
 		GfxTexture textures;
-		char pad5[4];
+		int flags;
 		int imageFormat;
-		int pad4;
+		int resourceSize;
 		char mapType;
 		char semantic;
 		char category;
-		char flags;
+		char flags2;
 		Picmip picmip;
 		char track;
 		//CardMemory cardMemory;
@@ -1282,8 +1282,10 @@ namespace game
 		unsigned short height;
 		unsigned short depth;
 		unsigned short numElements;
-		GfxImageLoadDef *loadDef;
-		char pad2[32];
+		char pad3[4];
+		void* pixelData;
+		//GfxImageLoadDef *loadDef;
+		uint64_t streams[4];
 		const char *name;
 	};
 
