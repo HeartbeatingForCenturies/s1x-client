@@ -157,7 +157,6 @@ namespace party
 	void clear_sv_motd()
 	{
 		party::sv_motd.clear();
-		return;
 	}
 
 	int get_client_num_by_name(const std::string& name)
