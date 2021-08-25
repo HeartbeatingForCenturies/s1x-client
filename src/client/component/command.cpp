@@ -540,23 +540,6 @@ namespace command
 					                                                 : "^1off"));
 			});
 
-			add_sv("notarget", [](const int client_num, const params_sv&)
-			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-						"f \"Cheats are not enabled on this server\"");
-					return;
-				}
-
-				game::mp::g_entities[client_num].flags ^= 4;
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE, 
-					                           utils::string::va("f \"notarget %s\"", 
-												                 game::mp::g_entities[client_num].flags & 4 
-												                     ? "^2on" 
-												                     : "^1off"));
-			});
-
 			add_sv("demigod", [](const int client_num, const params_sv&)
 			{
 				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
@@ -572,6 +555,23 @@ namespace command
 				                                                 game::mp::g_entities[client_num].flags & 2
 					                                                 ? "^2on"
 					                                                 : "^1off"));
+			});
+
+			add_sv("notarget", [](const int client_num, const params_sv&)
+			{
+				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
+				{
+					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
+						                           "f \"Cheats are not enabled on this server\"");
+					return;
+				}
+
+				game::mp::g_entities[client_num].flags ^= 4;
+				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
+						                       utils::string::va("f \"notarget %s\"",
+																 game::mp::g_entities[client_num].flags & 4
+							                                         ? "^2on"
+							                                         : "^1off"));
 			});
 
 			add_sv("noclip", [](const int client_num, const params_sv&)
