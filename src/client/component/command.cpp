@@ -439,7 +439,7 @@ namespace command
 
 				game::sp::g_entities[0].flags ^= 4;
 				game::CG_GameMessage(0, utils::string::va("notarget %s",
-					                                      game::sp::g_entities[0].flags & 4
+				                                          game::sp::g_entities[0].flags & 4
 					                                          ? "^2on"
 					                                          : "^1off"));
 			});
@@ -467,7 +467,7 @@ namespace command
 
 				game::sp::g_entities[0].client->flags ^= 2;
 				game::CG_GameMessage(0, utils::string::va("ufo %s", 
-					                                      game::sp::g_entities[0].client->flags & 2 
+				                                          game::sp::g_entities[0].client->flags & 2 
 					                                          ? "^2on" 
 					                                          : "^1off"));
 			});
@@ -562,16 +562,16 @@ namespace command
 				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
 				{
 					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-						                           "f \"Cheats are not enabled on this server\"");
+					                               "f \"Cheats are not enabled on this server\"");
 					return;
 				}
 
 				game::mp::g_entities[client_num].flags ^= 4;
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-						                       utils::string::va("f \"notarget %s\"",
-																 game::mp::g_entities[client_num].flags & 4
-							                                         ? "^2on"
-							                                         : "^1off"));
+				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE, 
+				                               utils::string::va("f \"notarget %s\"", 
+				                                                 game::mp::g_entities[client_num].flags & 4 
+					                                                 ? "^2on" 
+					                                                 : "^1off"));
 			});
 
 			add_sv("noclip", [](const int client_num, const params_sv&)
