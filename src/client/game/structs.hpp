@@ -1385,16 +1385,19 @@ namespace game
 		struct client_t
 		{
 			clientHeader_t header;
-			char __pad0[268916];
+			char __pad0[3044];
+			int reliableSequence;
+			int reliableAcknowledge;
+			char __pad1[265864];
 			gentity_s* gentity; // 268976
 			char name[32]; // 268984
-			char __pad1[8];
+			char __pad2[8];
 			int nextSnapshotTime; // 269024
-			char __pad2[544];
+			char __pad3[544];
 			LiveClientDropType liveDropRequest; //269572
-			char __pad3[24];
+			char __pad4[24];
 			TestClientType testClient; // 269600
-			char __pad4[391700];
+			char __pad5[391700];
 		}; // size = 661304
 	}
 
