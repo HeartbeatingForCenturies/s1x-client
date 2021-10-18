@@ -97,6 +97,9 @@ namespace game
 
 	WEAK symbol<long long(const char* qpath, char** buffer)> FS_ReadFile{0x140362390, 0x1404AF380};
 	WEAK symbol<void(void* buffer)> FS_FreeFile{0x140362380, 0x1404AF370};
+	WEAK symbol<void (const char *gameName)> FS_Startup{0x140361940, 0x1404AE930};
+	WEAK symbol<void (const char *path, const char *dir, int bLanguageDirectory, int iLanguage)> FS_AddGameDirectory{0x14035F3F0, 0x1404ACF80};
+	WEAK symbol<void (const char *path, const char *dir)> FS_AddLocalizedGameDirectory{0x14035F5C0, 0x1404AD170};
 
 	WEAK symbol<void()> GScr_LoadConsts{0x140283970, 0x1403479C0};
 	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{0x1403165D0, 0x1403F2DC0};
