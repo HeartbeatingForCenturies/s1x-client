@@ -40,7 +40,7 @@ namespace ui_scripting::lua::engine
 	{
 		clear_converted_functions();
 		get_scripts().clear();
-		load_scripts(game_module::get_host_module().get_folder() + "/data/scripts/");
+		load_scripts(game_module::get_host_module().get_folder() + "/data/ui_scripts/");
 		load_scripts("s1x/ui_scripts/");
 		load_scripts("data/ui_scripts/");
 	}
