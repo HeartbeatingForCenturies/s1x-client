@@ -189,7 +189,6 @@ int main()
 	limit_parallel_dll_loading();
 
 	srand(uint32_t(time(nullptr)));
-	remove_crash_file();
 
 	{
 		auto premature_shutdown = true;
@@ -204,6 +203,7 @@ int main()
 		try
 		{
 			apply_environment();
+			remove_crash_file();
 
 			if (!component_loader::post_start()) return 0;
 

@@ -97,6 +97,9 @@ namespace game
 
 	WEAK symbol<long long(const char* qpath, char** buffer)> FS_ReadFile{0x140362390, 0x1404AF380};
 	WEAK symbol<void(void* buffer)> FS_FreeFile{0x140362380, 0x1404AF370};
+	WEAK symbol<void (const char *gameName)> FS_Startup{0x140361940, 0x1404AE930};
+	WEAK symbol<void (const char *path, const char *dir, int bLanguageDirectory, int iLanguage)> FS_AddGameDirectory{0x14035F3F0, 0x1404ACF80};
+	WEAK symbol<void (const char *path, const char *dir)> FS_AddLocalizedGameDirectory{0x14035F5C0, 0x1404AD170};
 
 	WEAK symbol<void()> GScr_LoadConsts{0x140283970, 0x1403479C0};
 	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{0x1403165D0, 0x1403F2DC0};
@@ -279,5 +282,20 @@ namespace game
 	namespace sp
 	{
 		WEAK symbol<gentity_s> g_entities{0x143C26DC0, 0};
+	}
+
+	namespace hks
+	{
+		WEAK symbol<lua_State*> lua_state{0, 0x1412E2B50};
+		WEAK symbol<void(lua_State* s, const char* str, unsigned int l)> hksi_lua_pushlstring{0, 0x1400290B0};
+		WEAK symbol<HksObject*(HksObject* result, lua_State* s, const HksObject* table, const HksObject* key)> hks_obj_getfield{0, 0x14009D3C0};
+		WEAK symbol<void(lua_State* s, const HksObject* tbl, const HksObject* key, const HksObject* val)> hks_obj_settable{0, 0x14009E480};
+		WEAK symbol<HksObject* (HksObject* result, lua_State* s, const HksObject* table, const HksObject* key)> hks_obj_gettable{0, 0x14009D800};
+		WEAK symbol<void(lua_State* s, int nargs, int nresults, const unsigned int* pc)> vm_call_internal{0, 0x1400C9EC0};
+		WEAK symbol<HashTable*(lua_State* s, unsigned int arraySize, unsigned int hashSize)> Hashtable_Create{0, 0x14008AAE0};
+		WEAK symbol<cclosure*(lua_State* s, lua_function function, int num_upvalues, 
+			int internal_, int profilerTreatClosureAsFunc)> cclosure_Create{0, 0x14008AD00};
+		WEAK symbol<int(lua_State* s, int t)> hksi_luaL_ref{0, 0x1400A7D60};
+		WEAK symbol<void(lua_State* s, int t, int ref)> hksi_luaL_unref{0, 0x1400A0660};
 	}
 }

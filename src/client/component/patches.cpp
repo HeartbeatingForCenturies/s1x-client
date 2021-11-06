@@ -2,6 +2,7 @@
 #include "loader/component_loader.hpp"
 #include "command.hpp"
 #include "console.hpp"
+#include "network.hpp"
 #include "game/game.hpp"
 #include "game/dvars.hpp"
 #include "scheduler.hpp"
@@ -181,6 +182,36 @@ namespace patches
 			// CG_SetClientDvarFromServer
 			reinterpret_cast<void(*)(void*, void*, const char*, const char*)>(0x1401BF0A0)(a1, a2, dvar, value);
 		}
+
+		utils::hook::detour cmd_lui_notify_server_hook;
+		void cmd_lui_notify_server_stub(game::mp::gentity_s* ent)
+		{
+			command::params_sv params{};
+			const auto menu_id = atoi(params.get(1));
+			const auto client = &game::mp::svs_clients[ent->s.entityNum];
+
+			// 22 => "end_game"
+			if (menu_id == 22 && client->header.remoteAddress.type != game::NA_LOOPBACK)
+			{
+				return;
+			}
+
+			cmd_lui_notify_server_hook.invoke<void>(ent);
+		}
+
+		void sv_execute_client_message_stub(game::mp::client_t* client, game::msg_t* msg)
+		{
+			if (client->reliableAcknowledge < 0)
+			{
+				client->reliableAcknowledge = client->reliableSequence;
+				console::info("Negative reliableAcknowledge from %s - cl->reliableSequence is %i, reliableAcknowledge is %i\n",
+					client->name, client->reliableSequence, client->reliableAcknowledge);
+				network::send(client->header.remoteAddress, "error", "EXE_LOSTRELIABLECOMMANDS", '\n');
+				return;
+			}
+
+			reinterpret_cast<void(*)(game::mp::client_t*, game::msg_t*)>(0x14043AA90)(client, msg);
+		}
 	}
 
 	class component final : public component_interface
@@ -310,6 +341,14 @@ namespace patches
 			dvars::override::Dvar_RegisterInt("sv_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // 30 - 0 - 1800
 			dvars::override::Dvar_RegisterInt("cl_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // Seems unused
 			dvars::override::Dvar_RegisterInt("sv_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // 60 - 0 - 1800
+      
+			game::Dvar_RegisterInt("scr_game_spectatetype", 1, 0, 99, game::DVAR_FLAG_REPLICATED, "");
+      
+			// Prevent clients from ending the game as non host by sending 'end_game' lui notification
+			cmd_lui_notify_server_hook.create(0x1402E9390, cmd_lui_notify_server_stub);
+
+			// Prevent clients from sending invalid reliableAcknowledge
+			utils::hook::call(0x140443051, sv_execute_client_message_stub);
 		}
 
 		static void patch_sp()

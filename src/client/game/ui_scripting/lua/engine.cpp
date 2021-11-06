@@ -2,13 +2,12 @@
 #include "engine.hpp"
 #include "context.hpp"
 
-#include "../execution.hpp"
-#include "../../../component/logfile.hpp"
+#include "../../../component/ui_scripting.hpp"
 #include "../../../component/game_module.hpp"
 
 #include <utils/io.hpp>
 
-namespace scripting::lua::engine
+namespace ui_scripting::lua::engine
 {
 	namespace
 	{
@@ -37,32 +36,19 @@ namespace scripting::lua::engine
 		}
 	}
 
-	void stop()
-	{
-		logfile::clear_callbacks();
-		get_scripts().clear();
-	}
-
 	void start()
 	{
-		// No SP until there is a concept
-		if (game::environment::is_sp())
-		{
-			return;
-		}
-
-		stop();
-		load_scripts(game_module::get_host_module().get_folder() + "/data/scripts/");
-		load_scripts("s1x/scripts/");
-		load_scripts("data/scripts/");
+		clear_converted_functions();
+		get_scripts().clear();
+		load_scripts(game_module::get_host_module().get_folder() + "/data/ui_scripts/");
+		load_scripts("s1x/ui_scripts/");
+		load_scripts("data/ui_scripts/");
 	}
 
-	void notify(const event& e)
+	void stop()
 	{
-		for (auto& script : get_scripts())
-		{
-			script->notify(e);
-		}
+		clear_converted_functions();
+		get_scripts().clear();
 	}
 
 	void run_frame()
