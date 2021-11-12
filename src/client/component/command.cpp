@@ -309,7 +309,7 @@ namespace command
 						if (!filename.empty())
 						{
 							const auto line = std::format("{} \"{}\"\r\n", dvar->name,
-											game::Dvar_ValueToString(dvar, dvar->current));
+										game::Dvar_ValueToString(dvar, dvar->current));
 							utils::io::write_file(filename, line, i != 0);
 						}
 						console::info("%s \"%s\"\n", dvar->name,
