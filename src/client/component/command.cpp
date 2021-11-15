@@ -308,11 +308,8 @@ namespace command
 					{
 						if (!filename.empty())
 						{
-							//It's 10.2020 and still no std:format in vs :<
-							std::string line = dvar->name;
-							line.append("\"");
-							line.append(game::Dvar_ValueToString(dvar, dvar->current));
-							line.append("\"\r\n");
+							const auto line = std::format("{} \"{}\"\r\n", dvar->name,
+										game::Dvar_ValueToString(dvar, dvar->current));
 							utils::io::write_file(filename, line, i != 0);
 						}
 						console::info("%s \"%s\"\n", dvar->name,
@@ -344,9 +341,7 @@ namespace command
 					{
 						if (!filename.empty())
 						{
-							//It's 10.2020 and still no std:format in vs :<
-							std::string line = cmd->name;
-							line.append("\r\n");
+							const auto line = std::format("{}\r\n", cmd->name);
 							utils::io::write_file(filename, line, i != 0);
 						}
 						console::info("%s\n", cmd->name);
