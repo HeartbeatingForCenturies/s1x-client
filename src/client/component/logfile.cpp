@@ -13,6 +13,8 @@
 
 namespace logfile
 {
+	std::unordered_map<const char*, sol::protected_function> vm_execute_hooks;
+
 	namespace
 	{
 		utils::hook::detour scr_player_killed_hook;
@@ -20,6 +22,10 @@ namespace logfile
 
 		std::vector<sol::protected_function> player_killed_callbacks;
 		std::vector<sol::protected_function> player_damage_callbacks;
+
+		utils::hook::detour vm_execute_hook;
+		char empty_function[2] = {0x32, 0x34}; // CHECK_CLEAR_PARAMS, END
+		bool hook_enabled = true;
 
 		sol::lua_value convert_entity(lua_State* state, const game::mp::gentity_s* ent)
 		{
@@ -182,6 +188,78 @@ namespace logfile
 			// G_ShutdownGame
 			return reinterpret_cast<void(*)(int)>(0x1402F8C10)(freeScripts);
 		}
+
+		unsigned int local_id_to_entity(unsigned int local_id)
+		{
+			const auto variable = game::scr_VarGlob->objectVariableValue[local_id];
+			return variable.u.f.next;
+		}
+
+		bool execute_vm_hook(const char* pos)
+		{
+			if (vm_execute_hooks.find(pos) == vm_execute_hooks.end())
+			{
+				hook_enabled = true;
+				return false;
+			}
+
+			if (!hook_enabled && pos > reinterpret_cast<char*>(vm_execute_hooks.size()))
+			{
+				hook_enabled = true;
+				return false;
+			}
+
+			const auto hook = vm_execute_hooks[pos];
+			const auto state = hook.lua_state();
+
+			const scripting::entity self = local_id_to_entity(game::scr_VmPub->function_frame->fs.localId);
+
+			std::vector<sol::lua_value> args;
+
+			const auto top = game::scr_function_stack->top;
+
+			for (auto* value = top; value->type != game::SCRIPT_END; --value)
+			{
+				args.push_back(scripting::lua::convert(state, *value));
+			}
+
+			const auto result = hook(self, sol::as_args(args));
+			scripting::lua::handle_error(result);
+
+			return true;
+		}
+
+		void vm_execute_stub(utils::hook::assembler& a)
+		{
+			const auto replace = a.newLabel();
+			const auto end = a.newLabel();
+
+			a.pushad64();
+
+			a.mov(rcx, r14);
+			a.call_aligned(execute_vm_hook);
+
+			a.cmp(al, 0);
+			a.jne(replace);
+
+			a.popad64();
+			a.jmp(end);
+
+			a.bind(end);
+
+			a.movzx(r15d, byte_ptr(r14));
+			a.inc(r14);
+			a.lea(eax, dword_ptr(r15, -0x17));
+			a.mov(dword_ptr(rbp, 0x68), r15d);
+
+			a.jmp(0x1403FA143);
+
+			a.bind(replace);
+
+			a.popad64();
+			a.mov(r14, reinterpret_cast<char*>(empty_function));
+			a.jmp(end);
+		}
 	}
 
 	void add_player_damage_callback(const sol::protected_function& callback)
@@ -198,6 +276,17 @@ namespace logfile
 	{
 		player_damage_callbacks.clear();
 		player_killed_callbacks.clear();
+		vm_execute_hooks.clear();
+	}
+
+	void enable_vm_execute_hook()
+	{
+		hook_enabled = true;
+	}
+
+	void disable_vm_execute_hook()
+	{
+		hook_enabled = false;
 	}
 
 	class component final : public component_interface
@@ -217,6 +306,8 @@ namespace logfile
 
 			utils::hook::call(0x14043E550, g_shutdown_game_stub);
 			utils::hook::call(0x14043EA11, g_shutdown_game_stub);
+
+			utils::hook::jump(0x1403FA134, utils::hook::assemble(vm_execute_stub), true);
 		}
 	};
 }
