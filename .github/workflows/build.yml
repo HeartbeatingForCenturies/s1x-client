@@ -54,6 +54,13 @@ jobs:
           path: |
             build/bin/x64/${{matrix.configuration}}/s1x.exe
             build/bin/x64/${{matrix.configuration}}/s1x.pdb
+            
+      - name: Upload ${{matrix.configuration}} data artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{matrix.configuration}} data artifacts
+          path: |
+            data/*
 
   deploy:
     name: Deploy artifacts
