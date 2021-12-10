@@ -2,6 +2,7 @@
 #include "value_conversion.hpp"
 #include "../functions.hpp"
 #include "../execution.hpp"
+#include ".../../component/logfile.hpp"
 
 namespace scripting::lua
 {
@@ -100,7 +101,7 @@ namespace scripting::lua
 
 				if (values.find(key) == values.end())
 				{
-					return sol::lua_value{};
+					return sol::lua_value{s, sol::lua_nil};
 				}
 
 				return convert(s, values.at(key).value);
@@ -116,19 +117,46 @@ namespace scripting::lua
 			return {state, table};
 		}
 
+		game::VariableValue convert_function(sol::lua_value value)
+		{
+			const auto function = value.as<sol::protected_function>();
+			const auto index = reinterpret_cast<char*>(logfile::vm_execute_hooks.size());
+
+			logfile::vm_execute_hooks[index] = function;
+
+			game::VariableValue func;
+			func.type = game::SCRIPT_FUNCTION;
+			func.u.codePosValue = index;
+
+			return func;
+		}
+
 		sol::lua_value convert_function(lua_State* state, const char* pos)
 		{
-			return [pos](const entity& entity, const sol::this_state s, sol::variadic_args va)
-			{
-				std::vector<script_value> arguments{};
-
-				for (auto arg : va)
+			return sol::overload(
+				[pos](const entity& entity, const sol::this_state s, sol::variadic_args va)
 				{
-					arguments.push_back(convert({s, arg}));
-				}
+					std::vector<script_value> arguments{};
 
-				return convert(s, scripting::exec_ent_thread(entity, pos, arguments));
-			};
+					for (auto arg : va)
+					{
+						arguments.push_back(convert({s, arg}));
+					}
+
+					return convert(s, exec_ent_thread(entity, pos, arguments));
+				},
+				[pos](const sol::this_state s, sol::variadic_args va)
+				{
+					std::vector<script_value> arguments{};
+
+					for (auto arg : va)
+					{
+						arguments.push_back(convert({s, arg}));
+					}
+
+					return convert(s, exec_ent_thread(*game::levelEntityId, pos, arguments));
+				}
+			);
 		}
 	}
 
@@ -152,13 +180,7 @@ namespace scripting::lua
 			}
 
 			const auto variable_id = game::GetVariable(parent_id, id);
-			if (!variable_id)
-			{
-				return;
-			}
-
 			const auto variable = &game::scr_VarGlob->childVariableValue[variable_id + offset];
-
 			const auto new_variable = convert({s, value}).get_raw();
 
 			game::AddRefToValue(new_variable.type, new_variable.u);
@@ -177,13 +199,13 @@ namespace scripting::lua
 
 			if (!id)
 			{
-				return sol::lua_value{s};
+				return sol::lua_value{s, sol::lua_nil};
 			}
 
-			const auto variable_id = game::GetVariable(parent_id, id);
+			const auto variable_id = game::FindVariable(parent_id, id);
 			if (!variable_id)
 			{
-				return sol::lua_value{s};
+				return sol::lua_value{s, sol::lua_nil};
 			}
 
 			const auto variable = game::scr_VarGlob->childVariableValue[variable_id + offset];
@@ -242,6 +264,11 @@ namespace scripting::lua
 			return {value.as<vector>()};
 		}
 
+		if (value.is<sol::protected_function>())
+		{
+			return convert_function(value);
+		}
+
 		return {};
 	}
 
@@ -287,6 +314,6 @@ namespace scripting::lua
 			return {state, value.as<vector>()};
 		}
 
-		return {};
+		return {state, sol::lua_nil};
 	}
 }
