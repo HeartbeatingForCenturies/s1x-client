@@ -54,6 +54,13 @@ jobs:
           path: |
             build/bin/x64/${{matrix.configuration}}/s1x.exe
             build/bin/x64/${{matrix.configuration}}/s1x.pdb
+            
+      - name: Upload ${{matrix.configuration}} data artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{matrix.configuration}} data artifacts
+          path: |
+            data/*
 
   deploy:
     name: Deploy artifacts
@@ -73,6 +80,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: Release binaries
+          
+      - name: Download Release data artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Release data artifacts
+          path: data
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -90,8 +103,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Remove old data files
+        run: ssh ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }} rm -rf ${{ env.XLABS_MASTER_PATH }}/s1x/data/*
+
       - name: Upload s1x binary
         run: rsync -avz s1x.exe ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }}:${{ env.XLABS_MASTER_PATH }}/s1x/
+
+      - name: Upload data files
+        run: rsync -avz ./data/ ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }}:${{ env.XLABS_MASTER_PATH }}/s1x/data/
 
       - name: Publish changes
         run: ssh ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }} ${{ secrets.XLABS_MASTER_SSH_CHANGE_PUBLISH_COMMAND }}
