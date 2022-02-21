@@ -1,8 +1,8 @@
 ![license](https://img.shields.io/github/license/XLabsProject/s1x-client.svg)
 [![open bugs](https://img.shields.io/github/issues/XLabsProject/s1x-client/bug?label=bugs)](https://github.com/XLabsProject/s1x-client/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 [![Build](https://github.com/XLabsProject/s1x-client/workflows/Build/badge.svg)](https://github.com/XLabsProject/s1x-client/actions)
-[![discord](https://img.shields.io/endpoint?url=https://momo5502.com/iw4x/members-badge.php)](https://discord.gg/sKeVmR3)
 [![patreon](https://img.shields.io/badge/patreon-support-blue.svg?logo=patreon)](https://www.patreon.com/xlabsproject)
+[![discord](https://img.shields.io/endpoint?url=https://momo5502.com/iw4x/members-badge.php)](https://discord.gg/sKeVmR3)
 
 
 # S1x: Client
@@ -16,7 +16,7 @@
 ## Compile from source
 
 - Clone the Git repo. Do NOT download it as ZIP, that won't work.
-- Update the submodules and run `premake5 vs2019` or simply use the delivered `generate.bat`.
+- Update the submodules and run `premake5 vs2022` or simply use the delivered `generate.bat`.
 - Build via solution file in `build\s1x.sln`.
 
 ### Premake arguments

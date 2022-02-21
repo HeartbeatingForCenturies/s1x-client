@@ -220,6 +220,7 @@ namespace game
 	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{0x14038E720, 0x1404D8460};
 	WEAK symbol<void(Sys_Folder, const char* path)> Sys_SetFolder{0x14037BDD0, 0x1404CCA10};
 	WEAK symbol<void()> Sys_ShowConsole{0x14038FA90, 0x1404D98B0};
+	WEAK symbol<bool()> Sys_IsMainThread{0x1402FF9C0, 0x1403E1880};
 
 	WEAK symbol<const char*(const char*)> UI_GetMapDisplayName{0, 0x1403B1CD0};
 	WEAK symbol<const char*(const char*)> UI_GetGameTypeDisplayName{0, 0x1403B1670};
@@ -250,6 +251,7 @@ namespace game
 
 	WEAK symbol<scrVarGlob_t> scr_VarGlob{0x149B1D680, 0x148185F80};
 	WEAK symbol<scrVmPub_t> scr_VmPub{0x14A1938C0, 0x1487FC1C0};
+	WEAK symbol<function_stack_t> scr_function_stack{0x14A19DE40, 0x148806740};
 
 	WEAK symbol<const char*> command_whitelist{0x140808EF0, 0x1409B8DC0};
 

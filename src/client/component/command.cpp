@@ -308,11 +308,8 @@ namespace command
 					{
 						if (!filename.empty())
 						{
-							//It's 10.2020 and still no std:format in vs :<
-							std::string line = dvar->name;
-							line.append("\"");
-							line.append(game::Dvar_ValueToString(dvar, dvar->current));
-							line.append("\"\r\n");
+							const auto line = std::format("{} \"{}\"\r\n", dvar->name,
+										game::Dvar_ValueToString(dvar, dvar->current));
 							utils::io::write_file(filename, line, i != 0);
 						}
 						console::info("%s \"%s\"\n", dvar->name,
@@ -344,9 +341,7 @@ namespace command
 					{
 						if (!filename.empty())
 						{
-							//It's 10.2020 and still no std:format in vs :<
-							std::string line = cmd->name;
-							line.append("\r\n");
+							const auto line = std::format("{}\r\n", cmd->name);
 							utils::io::write_file(filename, line, i != 0);
 						}
 						console::info("%s\n", cmd->name);
@@ -397,6 +392,33 @@ namespace command
 						console::info("%s\n", asset_name);					
 					}, true);
 				}
+			});
+
+			add("vstr", [](const params& params)
+			{
+				if (params.size() < 2)
+				{
+					console::info("vstr <variablename> : execute a variable command\n");
+					return;
+				}
+
+				const auto* dvarName = params.get(1);
+				const auto* dvar = game::Dvar_FindVar(dvarName);
+
+				if (dvar == nullptr)
+				{
+					console::info("%s doesn't exist\n", dvarName);
+					return;
+				}
+
+				if (dvar->type != game::dvar_type::string
+					&& dvar->type != game::dvar_type::enumeration)
+				{
+					console::info("%s is not a string-based dvar\n", dvar->name);
+					return;
+				}
+
+				execute(dvar->current.string);
 			});
 		}
 

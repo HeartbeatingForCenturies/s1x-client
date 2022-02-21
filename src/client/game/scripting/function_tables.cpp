@@ -1518,5 +1518,18 @@ namespace scripting
 		{"SetupCallbacks", 33531},
 		{"SetupDamageFlags", 33542},
 		{"struct", 36698},
+		{"codescripts/delete", 0x053D},
+		{"codescripts/struct", 0x053E},
+		{"maps/mp/gametypes/_callbacksetup", 0x0540},
+		{"codescripts/character", 0xA4E5},
+		{"common_scripts/_artcommon", 42214},
+		{"common_scripts/_bcs_location_trigs", 42215},
+		{"common_scripts/_createfx", 42216},
+		{"common_scripts/_createfxmenu", 42217},
+		{"common_scripts/_destructible", 42218},
+		{"common_scripts/_dynamic_world", 42219},
+		{"maps/createart/mp_vlobby_room_art", 42735},
+		{"maps/createart/mp_vlobby_room_fog", 42736},
+		{"maps/createart/mp_vlobby_room_fog_hdr", 42737}
 	};
 }
