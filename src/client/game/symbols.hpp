@@ -220,6 +220,7 @@ namespace game
 	WEAK symbol<bool(int, void const*, const netadr_s*)> Sys_SendPacket{0x14038E720, 0x1404D8460};
 	WEAK symbol<void(Sys_Folder, const char* path)> Sys_SetFolder{0x14037BDD0, 0x1404CCA10};
 	WEAK symbol<void()> Sys_ShowConsole{0x14038FA90, 0x1404D98B0};
+	WEAK symbol<bool()> Sys_IsMainThread{0x1402FF9C0, 0x1403E1880};
 
 	WEAK symbol<const char*(const char*)> UI_GetMapDisplayName{0, 0x1403B1CD0};
 	WEAK symbol<const char*(const char*)> UI_GetGameTypeDisplayName{0, 0x1403B1670};
