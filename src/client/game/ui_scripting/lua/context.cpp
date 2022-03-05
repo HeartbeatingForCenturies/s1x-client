@@ -7,6 +7,8 @@
 
 #include "../../../component/ui_scripting.hpp"
 #include "../../../component/command.hpp"
+#include "../../../component/fps.hpp"
+#include "../../../component/localized_strings.hpp"
 
 #include "component/game_console.hpp"
 #include "component/scheduler.hpp"
@@ -37,6 +39,32 @@ namespace ui_scripting::lua
 			                                       const long long milliseconds)
 			{
 				return scheduler.add(callback, milliseconds, false);
+			};
+
+			game_type["getfps"] = [](const game&)
+			{
+				return fps::get_fps();
+			};
+
+			game_type["getping"] = [](const game&)
+			{
+				return *::game::mp::ping;
+			};
+
+			game_type["issingleplayer"] = [](const game&)
+			{
+				return ::game::environment::is_sp();
+			};
+
+			game_type["ismultiplayer"] = [](const game&)
+			{
+				return ::game::environment::is_mp();
+			};
+
+			game_type["addlocalizedstring"] = [](const game&, const std::string& string,
+				const std::string& value)
+			{
+				localized_strings::override(string, value);
 			};
 
 			auto userdata_type = state.new_usertype<userdata>("userdata_");

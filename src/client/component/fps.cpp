@@ -1,6 +1,9 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+
 #include "scheduler.hpp"
+#include "fps.hpp"
+#include "localized_strings.hpp"
 
 #include "game/game.hpp"
 #include "game/dvars.hpp"
@@ -91,11 +94,10 @@ namespace fps
 		void cg_draw_fps()
 		{
 			const auto* draw_fps = game::Dvar_FindVar("cg_drawFPS");
-			if (draw_fps && draw_fps->current.integer > 0 /*&& game::CL_IsCgameInitialized()*/)
+
+			if (draw_fps && draw_fps->current.integer > 0)
 			{
-				const auto fps = static_cast<std::int32_t>(static_cast<float>(1000.0f / static_cast<float>(cg_perf.
-						average))
-					+ 9.313225746154785e-10);
+				const auto fps = fps::get_fps();
 
 				auto* font = game::R_RegisterFont("fonts/consolefont");
 				if (!font) return;
@@ -119,12 +121,10 @@ namespace fps
 			const auto* draw_ping = game::Dvar_FindVar("cg_drawPing");
 			if (draw_ping && draw_ping->current.integer > 0 && game::CL_IsCgameInitialized())
 			{
-				const auto ping = *reinterpret_cast<int*>(0x1417E6A84);
-
 				auto* font = game::R_RegisterFont("fonts/consolefont");
 				if (!font) return;
 
-				auto* const ping_string = utils::string::va("Ping: %i", ping);
+				auto* const ping_string = utils::string::va("Ping: %i", *game::mp::ping);
 
 				const auto scale = 1.0f;
 
@@ -142,6 +142,13 @@ namespace fps
 		{
 			game::Dvar_RegisterEnum(name, _enum, value, game::DVAR_FLAG_SAVED, desc);
 		}
+	}
+
+	int get_fps()
+	{
+		return static_cast<std::int32_t>(static_cast<float>(1000.0f / static_cast<float>(cg_perf.
+			average))
+			+ 9.313225746154785e-10);
 	}
 
 	class component final : public component_interface
@@ -170,6 +177,9 @@ namespace fps
 				game::Dvar_RegisterInt("cg_drawPing", 0, 0, 1, game::DVAR_FLAG_SAVED, "Choose to draw ping");
 				scheduler::loop(cg_draw_ping, scheduler::pipeline::renderer);
 			}
+
+			game::Dvar_RegisterBool("cg_infobar_ping", false, game::DVAR_FLAG_SAVED, "Show server latency");
+			game::Dvar_RegisterBool("cg_infobar_fps", false, game::DVAR_FLAG_SAVED, "Show FPS counter");
 		}
 	};
 }
