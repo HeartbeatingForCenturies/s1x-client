@@ -2,8 +2,6 @@ if (game:issingleplayer() or not Engine.InFrontend()) then
     return
 end
 
-local Options = LUI.common_menus.Options
-
 game:addlocalizedstring("LUA_MENU_STATS", "Stats")
 game:addlocalizedstring("LUA_MENU_STATS_DESC", "Edit player stats settings.")
 
@@ -33,9 +31,9 @@ function IsEnabled(dvar)
     local enabled = Engine.GetDvarBool(dvar)
     if enabled then
         return Engine.Localize("@LUA_MENU_ENABLED")
-    else
-        return Engine.Localize("@LUA_MENU_DISABLED")
     end
+
+    return Engine.Localize("@LUA_MENU_DISABLED")
 end
 
 function ToggleEnable(dvar)
@@ -47,34 +45,32 @@ function ToggleEnable(dvar)
     end
 end
 
-function GoDirection(dvar, type, direction, callback)
+function GoDirection(dvar, direction, callback)
     local value = Engine.GetDvarString(dvar)
     value = tonumber(value)
 
-    -- get rank data so we can sanity check their inputs and make sure they aren't going < 0 or > max
+    -- get rank data
     local max = nil
-    if (type == "rank") then
+    if (dvar == "ui_rank_level_") then
         max = luiglobals.Rank.GetMaxRank(CoD.PlayMode.Core)
-    elseif (type == "prestige") then
+    elseif (dvar == "ui_prestige_level") then
         max = luiglobals.Lobby.GetMaxPrestigeLevel()
     end
 
     local new_value = nil
     if (direction == "down") then
         new_value = value - 1
-        if (new_value < 0) then
-            new_value = max
-        elseif (new_value > max) then
-            new_value = 0
-        end
     elseif (direction == "up") then
         new_value = value + 1
-        if (new_value < 0) then
-            new_value = max
-        elseif (new_value > max) then
-            new_value = 0
-        end
     end
+
+    -- checking to make sure its < 0 or > max
+    if (new_value < 0) then
+        new_value = max
+    elseif (new_value > max) then
+        new_value = 0
+    end
+
     callback(new_value)
 
     Engine.SetDvarFromString(dvar, new_value .. "")
@@ -129,82 +125,55 @@ LUI.MenuBuilder.registerType("menu_stats", function(a1, a2)
     -- back callback
     local back = function()
         save_changes()
-        Options.HideOptionsBackground()
+        LUI.common_menus.Options.HideOptionsBackground()
         LUI.FlowManager.RequestLeaveMenu(menu)
     end
 
     -- create buttons and create callbacks
-    prestigeeditbutton(menu, function(value)
+    CreateEditButton(menu, "ui_prestige_level", "@LUA_MENU_PRESTIGE", "@LUA_MENU_PRESTIGE_DESC", function(value)
         prestigevalue = value
     end)
-    rankeditbutton(menu, function(value)
+    CreateEditButton(menu, "ui_rank_level_", "@LUA_MENU_RANK", "@LUA_MENU_RANK_DESC", function(value)
         rankvalue = value
     end)
 
     menu:AddBottomDescription(menu:InitScrolling())
     menu:AddBackButton(back)
 
-    Options.ShowOptionsBackground()
+    LUI.common_menus.Options.ShowOptionsBackground()
 
     return menu
 end)
 
-function prestigeeditbutton(menu, callback)
-    local options = {}
-    local max = luiglobals.Lobby.GetMaxPrestigeLevel()
-    local prestige = Engine.GetPlayerDataEx(0, CoD.StatsGroup.Ranked, "prestige") or 0
-
-    for i = 0, max do
-        game:addlocalizedstring("LUA_MENU_" .. i, i .. "")
-
-        table.insert(options, {
-            text = "@" .. i,
-            value = i .. ""
-        })
-    end
-
-    Engine.SetDvarFromString("ui_prestige_level", prestige .. "")
-
-    menu:AddButtonVariant(luiglobals.GenericButtonSettings.Variants.Select, "@LUA_MENU_PRESTIGE",
-        "@LUA_MENU_PRESTIGE_DESC", function()
-            return Engine.GetDvarString("ui_prestige_level")
-        end, function()
-            GoDirection("ui_prestige_level", "prestige", "down", callback)
-        end, function()
-            GoDirection("ui_prestige_level", "prestige", "up", callback)
-        end)
-end
-
-function rankeditbutton(menu, callback)
-    local options = {}
+function CreateEditButton(menu, dvar, name, desc, callback)
     local prestige = Engine.GetPlayerDataEx(0, CoD.StatsGroup.Ranked, "prestige") or 0
     local experience = Engine.GetPlayerDataEx(0, CoD.StatsGroup.Ranked, "experience") or 0
 
-    local rank = luiglobals.AAR.GetRankForXP(experience, prestige)
-    local max = luiglobals.Rank.GetMaxRank(CoD.PlayMode.Core)
-
-    for i = 0, max do
-        game:addlocalizedstring("LUA_MENU_" .. i, i .. "")
-
-        table.insert(options, {
-            text = "@" .. (i + 1),
-            value = i .. ""
-        })
+    local dvarValue = nil
+    local max = nil
+    if (dvar == "ui_rank_level_") then
+        dvarValue = luiglobals.AAR.GetRankForXP(experience, prestige)
+        max = luiglobals.Rank.GetMaxRank(CoD.PlayMode.Core)
+    elseif (dvar == "ui_prestige_level") then
+        dvarValue = prestige
+        max = luiglobals.Lobby.GetMaxPrestigeLevel()
     end
 
-    Engine.SetDvarFromString("ui_rank_level_", rank .. "")
+    Engine.SetDvarFromString(dvar, dvarValue .. "")
 
-    menu:AddButtonVariant(luiglobals.GenericButtonSettings.Variants.Select, "@LUA_MENU_RANK", "@LUA_MENU_RANK_DESC",
-        function()
-            -- show 1 more level than it actually is (ex: rank "0" is really rank 1)
-            local rank = Engine.GetDvarString("ui_rank_level_")
-            rank = tonumber(rank) + 1
-            return tostring(rank)
-        end, function()
-            GoDirection("ui_rank_level_", "rank", "down", callback)
-        end, function()
-            GoDirection("ui_rank_level_", "rank", "up", callback)
-        end)
+    menu:AddButtonVariant(luiglobals.GenericButtonSettings.Variants.Select, name, desc, function()
+        local dvarString = Engine.GetDvarString(dvar)
+
+        if (dvar == "ui_rank_level_") then
+            dvarString = tonumber(dvarString) + 1
+        end
+
+        return tostring(dvarString)
+    end, function()
+        GoDirection(dvar, "down", callback)
+    end, function()
+        GoDirection(dvar, "up", callback)
+    end)
 end
 
 local isclasslocked = luiglobals.Cac.IsCustomClassLocked
