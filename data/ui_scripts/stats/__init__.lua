@@ -184,3 +184,12 @@ luiglobals.Cac.IsCustomClassLocked = function(...)
 
     return isclasslocked(table.unpack({...}))
 end
+
+local isdlcclasslocked = luiglobals.Cac.IsCustomClassDlcLocked
+luiglobals.Cac.IsCustomClassDlcLocked = function(...)
+    if (Engine.GetDvarBool("cg_unlockall_classes")) then
+        return false
+    end
+
+    return isdlcclasslocked(table.unpack({...}))
+end
