@@ -78,12 +78,6 @@ function menu_xboxlive(a1, a2)
         Engine.ExecNow("eliteclan_refresh", Engine.GetFirstActiveController())
     end
 
-    if Engine.IsZombiesMode() then
-        MenuData.MenuWaitForContent(menu, true, false, function()
-            MPLobbyOnline.ZombiesOnContentLoaded(menu)
-        end)
-    end
-
     return menu
 end
 
