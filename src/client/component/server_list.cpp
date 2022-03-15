@@ -143,18 +143,13 @@ namespace server_list
 
 			if (column == 3)
 			{
-				auto num_spaces = 20;
-				if (servers[i].clients >= 10) num_spaces -= 2;
-				if (servers[i].max_clients >= 10) num_spaces -= 2;
-				if (servers[i].bots >= 10) num_spaces -= 2;
-				std::string spaces;
-				while (num_spaces > 0)
-				{
-					spaces.append(" ");
-					num_spaces--;
-				}
-				return utils::string::va("%d/%d [%d]%s%d", servers[i].clients, servers[index].max_clients,
-				                         servers[i].bots, spaces.data(), servers[i].ping);
+				return utils::string::va("%d/%d [%d]", servers[i].clients, servers[i].max_clients,
+					servers[i].bots);
+			}
+
+			if (column == 4)
+			{
+				return servers[i].ping ? utils::string::va("%d", servers[i].ping) : "";
 			}
 
 			return "";
@@ -375,17 +370,6 @@ namespace server_list
 		void post_unpack() override
 		{
 			if (!game::environment::is_mp()) return;
-
-			localized_strings::override("PLATFORM_SYSTEM_LINK_TITLE", "SERVER LIST");
-			localized_strings::override("LUA_MENU_STORE", "Server List");
-			localized_strings::override("LUA_MENU_STORE_DESC", "Browse available servers.");
-
-			// shitty ping workaround
-			localized_strings::override("MENU_NUMPLAYERS", "Type");
-			localized_strings::override("MENU_TYPE1", "Players"s + "                  " + "Ping");
-
-			// hook LUI_OpenMenu to show server list instead of store popup
-			utils::hook::call(0x1404D5550, &lui_open_menu_stub);
 
 			// replace UI_RunMenuScript call in LUI_CoD_LuaCall_RefreshServerList to our refresh_servers
 			utils::hook::call(0x1400F5AA1, &refresh_server_list);

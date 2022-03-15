@@ -167,11 +167,6 @@ namespace patches
 			}
 		}
 
-		int is_item_unlocked()
-		{
-			return 0; // 0 == yes
-		}
-
 		void set_client_dvar_from_server_stub(void* a1, void* a2, const char* dvar, const char* value)
 		{
 			if (dvar == "cg_fov"s)
@@ -287,11 +282,6 @@ namespace patches
 			                                                   game::DvarFlags::DVAR_FLAG_SAVED,
 			                                                   "Enables aim assist for controllers");
 			utils::hook::call(0x140003609, aim_assist_add_to_target_list);
-
-			// unlock all items
-			utils::hook::jump(0x1403BD790, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable_LocalClient
-			utils::hook::jump(0x1403BD290, is_item_unlocked); // LiveStorage_IsItemUnlockedFromTable
-			utils::hook::jump(0x1403BAF60, is_item_unlocked); // idk ( unlocks loot etc )
 
 			// isProfanity
 			utils::hook::set(0x14023BDC0, 0xC3C033);

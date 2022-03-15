@@ -7,6 +7,8 @@
 
 #include "../../../component/ui_scripting.hpp"
 #include "../../../component/command.hpp"
+#include "../../../component/fps.hpp"
+#include "../../../component/localized_strings.hpp"
 
 #include "component/game_console.hpp"
 #include "component/scheduler.hpp"
@@ -39,6 +41,32 @@ namespace ui_scripting::lua
 				return scheduler.add(callback, milliseconds, false);
 			};
 
+			game_type["getfps"] = [](const game&)
+			{
+				return fps::get_fps();
+			};
+
+			game_type["getping"] = [](const game&)
+			{
+				return *::game::mp::ping;
+			};
+
+			game_type["issingleplayer"] = [](const game&)
+			{
+				return ::game::environment::is_sp();
+			};
+
+			game_type["ismultiplayer"] = [](const game&)
+			{
+				return ::game::environment::is_mp();
+			};
+
+			game_type["addlocalizedstring"] = [](const game&, const std::string& string,
+				const std::string& value)
+			{
+				localized_strings::override(string, value);
+			};
+
 			auto userdata_type = state.new_usertype<userdata>("userdata_");
 
 			userdata_type["new"] = sol::property(
@@ -51,7 +79,6 @@ namespace ui_scripting::lua
 					userdata.set("new", convert({s, value}));
 				}
 			);
-
 			
 			userdata_type["get"] = [](const userdata& userdata, const sol::this_state s,
 				const sol::lua_value& key)
@@ -74,7 +101,7 @@ namespace ui_scripting::lua
 			userdata_type[sol::meta_function::new_index] = [](const userdata& userdata, const sol::this_state s, 
 				const sol::lua_value& key, const sol::lua_value& value)
 			{
-				userdata.set(convert({s, key }), convert({s, value}));
+				userdata.set(convert({s, key}), convert({s, value}));
 			};
 
 			auto table_type = state.new_usertype<table>("table_");
