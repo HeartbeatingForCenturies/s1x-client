@@ -1,6 +1,5 @@
 #pragma once
 
-#include "game.hpp"
 #include "structs.hpp"
 
 namespace dvars
@@ -21,6 +20,8 @@ namespace dvars
 	extern game::dvar_t* g_playerEjection;
 
 	extern game::dvar_t* pm_bouncing;
+
+	extern game::dvar_t* player_sustainAmmo;
 
 	extern game::dvar_t* r_fullbright;
 
