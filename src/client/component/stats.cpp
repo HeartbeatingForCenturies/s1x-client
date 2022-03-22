@@ -18,7 +18,7 @@ namespace stats
 		utils::hook::detour is_item_unlocked_hook2;
 		utils::hook::detour is_item_unlocked_hook3;
 
-		int is_item_unlocked_stub(int a1, void* a2, int a3)
+		int is_item_unlocked_stub(void* a1, void* a2, void* a3)
 		{
 			if (cg_unlock_all_items->current.enabled)
 			{
@@ -28,7 +28,7 @@ namespace stats
 			return is_item_unlocked_hook.invoke<int>(a1, a2, a3);
 		}
 
-		int is_item_unlocked_stub2(int a1, void* a2, void* a3, void* a4, int a5)
+		int is_item_unlocked_stub2(void* a1, void* a2, void* a3, void* a4, void* a5)
 		{
 			if (cg_unlock_all_items->current.enabled)
 			{
@@ -38,7 +38,7 @@ namespace stats
 			return is_item_unlocked_hook2.invoke<int>(a1, a2, a3, a4, a5);
 		}
 
-		int is_item_unlocked_stub3(int a1)
+		int is_item_unlocked_stub3(void* a1)
 		{
 			if (cg_unlock_all_items->current.enabled)
 			{
