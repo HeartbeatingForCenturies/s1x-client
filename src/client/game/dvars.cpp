@@ -22,7 +22,7 @@ namespace dvars
 
 	game::dvar_t* pm_bouncing = nullptr;
 
-	extern game::dvar_t* player_sustainAmmo = nullptr;
+	game::dvar_t* player_sustainAmmo = nullptr;
 
 	game::dvar_t* r_fullbright = nullptr;
 
