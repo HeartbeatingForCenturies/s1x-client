@@ -9,6 +9,8 @@ namespace gameplay
 {
 	namespace
 	{
+		utils::hook::detour pm_weapon_use_ammo_hook;
+
 		void stuck_in_client_stub(void* entity)
 		{
 			if (dvars::g_playerEjection->current.enabled)
@@ -17,14 +19,13 @@ namespace gameplay
 			}
 		}
 
-		void cm_transformed_capsule_trace_stub(struct trace_t* results, const float* start, const float* end,
-		                                       struct Bounds* bounds, struct Bounds* capsule, int contents,
-		                                       const float* origin, const float* angles)
+		void cm_transformed_capsule_trace_stub(game::trace_t* results, const float* start, const float* end,
+			game::Bounds* bounds, game::Bounds* capsule, int contents, const float* origin, const float* angles)
 		{
 			if (dvars::g_playerCollision->current.enabled)
 			{
 				reinterpret_cast<void(*)
-					(struct trace_t*, const float*, const float*, struct Bounds*, struct Bounds*, unsigned int,
+					(game::trace_t*, const float*, const float*, game::Bounds*, game::Bounds*, unsigned int,
 					 const float*, const float*)>
 					(0x1403AB1C0)
 					(results, start, end, bounds, capsule, contents, origin, angles); // CM_TransformedCapsuleTrace
@@ -54,6 +55,15 @@ namespace gameplay
 			a.bind(loc_14014DF48);
 			a.jmp(0x14014DF48);
 		});
+
+		void pm_weapon_use_ammo_stub(game::playerState_s* ps, game::Weapon weapon,
+			bool is_alternate, int amount, game::PlayerHandIndex hand)
+		{
+			if (!dvars::player_sustainAmmo->current.enabled)
+			{
+				pm_weapon_use_ammo_hook.invoke<void>(ps, weapon, is_alternate, amount, hand);
+			}
+		}
 	}
 
 	class component final : public component_interface
@@ -61,6 +71,10 @@ namespace gameplay
 	public:
 		void post_unpack() override
 		{
+			dvars::player_sustainAmmo = game::Dvar_RegisterBool("player_sustainAmmo", false,
+				game::DVAR_FLAG_REPLICATED, "Firing weapon will not decrease clip ammo");
+			pm_weapon_use_ammo_hook.create(SELECT_VALUE(0x1403DD050, 0x140162B20), &pm_weapon_use_ammo_stub);
+
 			if (game::environment::is_sp()) return;
 
 			// Implement player ejection dvar
