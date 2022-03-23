@@ -48,9 +48,9 @@ namespace dedicated_info
 					}
 				}
 
-				std::string cleaned_hostname(sv_hostname->current.string);
+				std::string cleaned_hostname = sv_hostname->current.string;
 
-				utils::string::strip(cleaned_hostname.data(), cleaned_hostname.data(),
+				utils::string::strip(sv_hostname->current.string, cleaned_hostname.data(),
 					cleaned_hostname.size() + 1);
 
 				console::set_title(utils::string::va("%s on %s [%d/%d] (%d)", cleaned_hostname.data(),
