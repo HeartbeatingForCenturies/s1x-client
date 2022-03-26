@@ -346,8 +346,6 @@ links {"common"}
 
 resincludedirs {"$(ProjectDir)src"}
 
-links {"common"}
-
 dependencies.imports()
 
 group "Dependencies"
