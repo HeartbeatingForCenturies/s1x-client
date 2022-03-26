@@ -87,7 +87,7 @@ namespace colors
 
 		char* i_clean_str_stub(char* string)
 		{
-			utils::string::strip(string, string, static_cast<int>(strlen(string)) + 1);
+			utils::string::strip(string, string, std::strlen(string) + 1);
 
 			return string;
 		}
@@ -99,7 +99,7 @@ namespace colors
 			const auto result = reinterpret_cast<size_t(*)(int, int, char*, int, size_t, size_t)>(0x140213E60)(
 				local_client_num, index, buf, size, unk, unk2);
 
-			utils::string::strip(buf, buf, size);
+			utils::string::strip(buf, buf, static_cast<size_t>(size));
 
 			return result;
 		}
