@@ -1331,6 +1331,29 @@ namespace game
 		SV_LIVE_DROP_DISCONNECT = 0x1,
 	};
 
+	struct trace_t
+	{
+	};
+
+	struct Bounds
+	{
+		float midPoint[3];
+		float halfSize[3];
+	};
+
+	enum PlayerHandIndex
+	{
+		WEAPON_HAND_DEFAULT = 0x0,
+		WEAPON_HAND_RIGHT = 0x0,
+		WEAPON_HAND_LEFT = 0x1,
+		NUM_WEAPON_HANDS = 0x2,
+	};
+
+	union Weapon
+	{
+		unsigned int data;
+	};
+
 	namespace mp
 	{
 		struct cachedSnapshot_t

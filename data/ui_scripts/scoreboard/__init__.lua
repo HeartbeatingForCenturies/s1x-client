@@ -1,7 +1,30 @@
-if (LUI.mp_hud.Scoreboard) then
-    function luiglobals.GetPartyMaxPlayers()
-        return Engine.GetDvarInt("sv_maxclients")
-    end
+if (game:issingleplayer() or Engine.InFrontend()) then
+	return
+end
 
-    LUI.mp_hud.Scoreboard.maxPlayersOnTeam = luiglobals.GetTeamLimitForMaxPlayers(luiglobals.GetPartyMaxPlayers())
+function luiglobals.GetPartyMaxPlayers()
+	return Engine.GetDvarInt("sv_maxclients")
+end
+
+local scoreboard = LUI.mp_hud.Scoreboard
+
+scoreboard.maxPlayersOnTeam = luiglobals.GetTeamLimitForMaxPlayers(luiglobals.GetPartyMaxPlayers())
+
+scoreboard.scoreColumns.ping = {
+	width = Engine.IsZombiesMode() and 90 or 60,
+	title = "LUA_MENU_PING",
+	getter = function (scoreinfo)
+		return scoreinfo.ping == 0 and "BOT" or tostring(scoreinfo.ping)
+	end
+}
+
+local getcolumns = scoreboard.getColumnsForCurrentGameMode
+scoreboard.getColumnsForCurrentGameMode = function(a1)
+	local columns = getcolumns(a1)
+
+	if (Engine.IsZombiesMode()) then
+		luiglobals.table.insert(columns, scoreboard.scoreColumns.ping)
+	end
+
+	return columns
 end
