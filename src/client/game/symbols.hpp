@@ -56,7 +56,7 @@ namespace game
 	DB_EnumXAssets_Internal{0x14017D830, 0x14026EC80};
 	WEAK symbol<XAssetEntry(XAssetType type, const char* name)>
 	DB_FindXAssetEntry{0x14017D830, 0x14026F020};
-	WEAK symbol<XAssetEntry(XAssetType type, const char *name, int allowCreateDefault)>
+	WEAK symbol<XAssetHeader(XAssetType type, const char *name, int allowCreateDefault)>
 	DB_FindXAssetHeader{0x14017DCA0, 0x14026F0F0};
 	WEAK symbol<const char* (const XAsset* asset)> DB_GetXAssetName{0x140151C00, 0x140240DD0};
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{0x140151C20, 0x140240DF0};
@@ -131,6 +131,8 @@ namespace game
 	WEAK symbol<unsigned int(int)> Live_SyncOnlineDataFlags{0x1404459A0, 0x140562830};
 
 	WEAK symbol<void(int clientNum, const char* menu, int a3, int a4, unsigned int a5)> LUI_OpenMenu{0, 0x14048E450};
+	WEAK symbol<void()> LUI_EnterCriticalSection{0, 0x1400D2B10};
+	WEAK symbol<void()> LUI_LeaveCriticalSection{0, 0x1400D7620};
 
 	WEAK symbol<bool(int clientNum, const char* menu)> Menu_IsMenuOpenAndVisible{0, 0x140488570};
 
@@ -301,5 +303,11 @@ namespace game
 			int internal_, int profilerTreatClosureAsFunc)> cclosure_Create{0, 0x14008AD00};
 		WEAK symbol<int(lua_State* s, int t)> hksi_luaL_ref{0, 0x1400A7D60};
 		WEAK symbol<void(lua_State* s, int t, int ref)> hksi_luaL_unref{0, 0x1400A0660};
+		WEAK symbol<int(lua_State* s, const HksCompilerSettings* options, const char* buff, 
+			unsigned __int64 sz, const char* name)> hksi_hksL_loadbuffer{0, 0x14009ECA0};
+		WEAK symbol<int(lua_State* s, const char* what, lua_Debug* ar)> hksi_lua_getinfo{0, 0x1400A0C00};
+		WEAK symbol<int(lua_State* s, int level, lua_Debug* ar)> hksi_lua_getstack{0, 0x1400A0EC0};
+		WEAK symbol<void(lua_State* s, const char* fmt, ...)> hksi_luaL_error{0, 0x1400A03D0};
+		WEAK symbol<const char*> typenames{0, 0x1409AB270};
 	}
 }

@@ -6,8 +6,12 @@
 namespace ui_scripting
 {
 	void push_value(const script_value& value);
+	void push_value(const game::hks::HksObject& value);
+
 	script_value get_return_value(int offset);
-	arguments get_return_values(int count);
+	arguments get_return_values();
+
+	bool notify(const std::string& name, const event_arguments& arguments);
 
 	arguments call_script_function(const function& function, const arguments& arguments);
 

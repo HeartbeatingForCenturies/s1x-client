@@ -1,4 +1,4 @@
-local pcoptions = luiglobals.require("LUI.PCOptions")
+local pcoptions = require("LUI.PCOptions")
 
 game:addlocalizedstring("LUA_MENU_FPS", "FPS Counter")
 game:addlocalizedstring("LUA_MENU_FPS_DESC", "Show FPS Counter")
@@ -33,9 +33,9 @@ pcoptions.VideoOptionsFeeder = function()
 			"profileMenuOption_blacklevel",
 			"@MENU_BRIGHTNESS",
 			"@MENU_BRIGHTNESS_DESC1",
-			luiglobals.SliderBounds.PCBrightness.Min,
-			luiglobals.SliderBounds.PCBrightness.Max,
-			luiglobals.SliderBounds.PCBrightness.Step,
+			SliderBounds.PCBrightness.Min,
+			SliderBounds.PCBrightness.Max,
+			SliderBounds.PCBrightness.Step,
 			function(element)
 				element:processEvent({
 					name = "brightness_over",
@@ -143,7 +143,7 @@ pcoptions.VideoOptionsFeeder = function()
 		type = "UIGenericButton",
 		id = "option_advanced_video",
 		properties = {
-			style = luiglobals.GenericButtonSettings.Styles.GlassButton,
+			style = GenericButtonSettings.Styles.GlassButton,
 			button_text = Engine.Localize("@LUA_MENU_ADVANCED_VIDEO"),
 			desc_text = "",
 			button_action_func = pcoptions.ButtonMenuAction,

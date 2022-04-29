@@ -1,6 +1,6 @@
-if (not LUI.mp_menus) then
+if (game:issingleplayer() or not Engine.InFrontend()) then
     return
 end
 
-include("lobby")
-include("serverlist")
+require("lobby")
+require("serverlist")
