@@ -143,7 +143,7 @@ namespace ui_scripting
 	{
 	}
 
-	script_value::script_value(const char* value, unsigned int len)
+	script_value::script_value(const char* value, const size_t len)
 	{
 		game::hks::HksObject obj{};
 
@@ -154,7 +154,7 @@ namespace ui_scripting
 		}
 
 		const auto top = state->m_apistack.top;
-		game::hks::hksi_lua_pushlstring(state, value, len);
+		game::hks::hksi_lua_pushlstring(state, value, static_cast<unsigned int>(len));
 		obj = state->m_apistack.top[-1];
 		state->m_apistack.top = top;
 
@@ -162,12 +162,12 @@ namespace ui_scripting
 	}
 
 	script_value::script_value(const char* value)
-		: script_value(value, static_cast<unsigned int>(strlen(value)))
+		: script_value(value, strlen(value))
 	{
 	}
 
 	script_value::script_value(const std::string& value)
-		: script_value(value.data(), static_cast<unsigned int>(value.size()))
+		: script_value(value.data(), value.size())
 	{
 	}
 
