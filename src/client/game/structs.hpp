@@ -1331,8 +1331,20 @@ namespace game
 		SV_LIVE_DROP_DISCONNECT = 0x1,
 	};
 
+	enum TraceHitType
+	{
+		TRACE_HITTYPE_NONE,
+		TRACE_HITTYPE_ENTITY,
+		TRACE_HITTYPE_DYNENT_MODEL,
+		TRACE_HITTYPE_DYNENT_BRUSH,
+		TRACE_HITTYPE_GLASS
+	};
+
 	struct trace_t
 	{
+		char pad[0x29];
+		bool allsolid;
+		bool startsolid;
 	};
 
 	struct Bounds

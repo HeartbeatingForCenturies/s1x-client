@@ -80,6 +80,28 @@ namespace gameplay
 
 			a.jmp(0x1402D5A6A);
 		});
+
+		void pm_player_trace_stub(void* pm, game::trace_t* results, const float* start,
+			const float* end, const game::Bounds* bounds, int pass_entity_num, int content_mask)
+		{
+			utils::hook::invoke<void>(0x14014A420, pm, results, start, end, bounds, pass_entity_num, content_mask);
+
+			if (dvars::g_elevators->current.enabled)
+			{
+				results->startsolid = false;
+			}
+		}
+
+		void pm_trace_stub(const void* pm, game::trace_t* results, const float* start,
+			const float* end, const game::Bounds* bounds, int pass_entity_num, int content_mask)
+		{
+			utils::hook::invoke<void>(0x14014A610, pm, results, start, end, bounds, pass_entity_num, content_mask);
+
+			if (dvars::g_elevators->current.enabled)
+			{
+				results->allsolid = false;
+			}
+		}
 	}
 
 	class component final : public component_interface
@@ -117,6 +139,16 @@ namespace gameplay
 				std::numeric_limits<short>::max(), game::DVAR_FLAG_REPLICATED, "Gravity in inches per second per second");
 			utils::hook::jump(0x1402D5A5D, client_end_frame_stub, true);
 			utils::hook::nop(0x1402D5A69, 1); // Nop skipped opcode
+
+			dvars::g_elevators = game::Dvar_RegisterBool("g_elevators", false,
+				game::DVAR_FLAG_REPLICATED, "Enable elevators");
+			utils::hook::call(0x140146134, pm_player_trace_stub);
+			utils::hook::call(0x14014619B, pm_player_trace_stub);
+
+			// Allow player to stand from prone/ducked
+			utils::hook::call(0x140142AF6, pm_trace_stub);
+			utils::hook::call(0x140142A1B, pm_trace_stub);
+			utils::hook::call(0x14014298D, pm_trace_stub);
 		}
 	};
 }
