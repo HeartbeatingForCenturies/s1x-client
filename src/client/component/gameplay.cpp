@@ -81,6 +81,23 @@ namespace gameplay
 			a.jmp(0x1402D5A6A);
 		});
 
+		const auto client_think_real_stub = utils::hook::assemble([](utils::hook::assembler& a)
+		{
+			a.push(rax);
+
+			a.mov(rax, qword_ptr(reinterpret_cast<int64_t>(&dvars::g_speed)));
+			a.mov(eax, dword_ptr(rax, 0x10));
+			a.mov(word_ptr(rbx, 0x38), ax);
+
+			a.pop(rax);
+
+			// Game code hook skipped
+			a.movzx(eax, word_ptr(rbx, 0x3C));
+			a.add(eax, dword_ptr(rbx, 0x48));
+
+			a.jmp(0x1402D6A9C);
+		});
+
 		void pm_player_trace_stub(void* pm, game::trace_t* results, const float* start,
 			const float* end, const game::Bounds* bounds, int pass_entity_num, int content_mask)
 		{
@@ -139,6 +156,12 @@ namespace gameplay
 				std::numeric_limits<short>::max(), game::DVAR_FLAG_REPLICATED, "Gravity in inches per second per second");
 			utils::hook::jump(0x1402D5A5D, client_end_frame_stub, true);
 			utils::hook::nop(0x1402D5A69, 1); // Nop skipped opcode
+
+			// Choosing the following min/max because the game would truncate larger values
+			dvars::g_speed = game::Dvar_RegisterInt("g_speed", 190,
+				std::numeric_limits<short>::min(), std::numeric_limits<short>::max(), game::DVAR_FLAG_REPLICATED, "Player speed");
+			utils::hook::jump(0x1402D6A8C, client_think_real_stub, true);
+			utils::hook::nop(0x1402D6A98, 4); // Nop skipped opcode
 
 			dvars::g_elevators = game::Dvar_RegisterBool("g_elevators", false,
 				game::DVAR_FLAG_REPLICATED, "Enable elevators");
