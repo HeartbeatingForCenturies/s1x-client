@@ -2,6 +2,7 @@
 #include "loader/component_loader.hpp"
 
 #include "game/game.hpp"
+#include "game/dvars.hpp"
 
 #include "console.hpp"
 #include "scheduler.hpp"
@@ -21,7 +22,7 @@ namespace dvar_cheats
 				value->enabled = dvar->current.enabled;
 			}
 
-				// if sv_cheats was enabled and it changes to disabled, we need to reset all cheat dvars
+			// if sv_cheats was enabled and it changes to disabled, we need to reset all cheat dvars
 			else if (dvar->current.enabled && !value->enabled)
 			{
 				for (auto i = 0; i < *game::dvarCount; ++i)
@@ -63,8 +64,7 @@ namespace dvar_cheats
 				return false;
 			}
 
-			const auto sv_cheats = game::Dvar_FindVar("sv_cheats");
-			if ((dvar->flags & game::DvarFlags::DVAR_FLAG_CHEAT) && (sv_cheats && !sv_cheats->current.enabled))
+			if ((dvar->flags & game::DvarFlags::DVAR_FLAG_CHEAT) && (!dvars::sv_cheats->current.enabled))
 			{
 				console::error("%s is cheat protected\n", dvar->name);
 				return false;
@@ -179,8 +179,14 @@ namespace dvar_cheats
 
 			scheduler::once([]()
 			{
-				game::Dvar_RegisterBool("sv_cheats", false, game::DvarFlags::DVAR_FLAG_REPLICATED,
-				                        "Allow cheat commands and dvars on this server");
+#ifdef _DEBUG
+				constexpr auto value = true;
+#else
+				constexpr auto value = false;
+#endif
+
+				dvars::sv_cheats = game::Dvar_RegisterBool("sv_cheats", value, game::DvarFlags::DVAR_FLAG_REPLICATED,
+					"Allow cheat commands and dvars on this server");
 			}, scheduler::pipeline::main);
 		}
 	};

@@ -1,15 +1,16 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+#include "game/dvars.hpp"
+
 #include "command.hpp"
 #include "console.hpp"
 #include "game_console.hpp"
 
-#include "game/game.hpp"
-
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
 #include <utils/memory.hpp>
-#include "utils/io.hpp"
+#include <utils/io.hpp>
 
 namespace command
 {
@@ -18,7 +19,7 @@ namespace command
 		utils::hook::detour client_command_hook;
 
 		std::unordered_map<std::string, std::function<void(params&)>> handlers;
-		std::unordered_map<std::string, std::function<void(int, params_sv&)>> handlers_sv;
+		std::unordered_map<std::string, std::function<void(game::mp::gentity_s*, params_sv&)>> handlers_sv;
 
 		void main_handler()
 		{
@@ -31,17 +32,23 @@ namespace command
 			}
 		}
 
-		void client_command(const int client_num, void* a2)
+		void client_command(const int client_num)
 		{
+			if (game::mp::g_entities[client_num].client == nullptr)
+			{
+				// Client is not fully connected
+				return;
+			}
+
 			params_sv params = {};
 
 			const auto command = utils::string::to_lower(params[0]);
-			if (handlers_sv.find(command) != handlers_sv.end())
+			if (const auto got = handlers_sv.find(command); got != handlers_sv.end())
 			{
-				handlers_sv[command](client_num, params);
+				got->second(&game::mp::g_entities[client_num], params);
 			}
 
-			client_command_hook.invoke<void>(client_num, a2);
+			client_command_hook.invoke<void>(client_num);
 		}
 
 		// Shamelessly stolen from Quake3
@@ -203,7 +210,7 @@ namespace command
 		});
 	}
 
-	void add_sv(const char* name, std::function<void(int, const params_sv&)> callback)
+	void add_sv(const char* name, std::function<void(game::mp::gentity_s*, const params_sv&)> callback)
 	{
 		// doing this so the sv command would show up in the console
 		add_raw(name, nullptr);
@@ -212,6 +219,25 @@ namespace command
 
 		if (handlers_sv.find(command) == handlers_sv.end())
 			handlers_sv[command] = std::move(callback);
+	}
+
+	bool cheats_ok(const game::mp::gentity_s* ent)
+	{
+		if (!dvars::sv_cheats->current.enabled)
+		{
+			game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+				"f \"Cheats are not enabled on this server\"");
+			return false;
+		}
+
+		if (ent->health < 1)
+		{
+			game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+				"f \"You must be alive to use this command\"");
+			return false;
+		}
+
+		return true;
 	}
 
 	void execute(std::string command, const bool sync)
@@ -231,10 +257,10 @@ namespace command
 	void enum_assets(const game::XAssetType type, const std::function<void(game::XAssetHeader)>& callback, const bool includeOverride)
 	{
 		game::DB_EnumXAssets_Internal(type, static_cast<void(*)(game::XAssetHeader, void*)>([](game::XAssetHeader header, void* data)
-			{
-				const auto& cb = *static_cast<const std::function<void(game::XAssetHeader)>*>(data);
-				cb(header);
-			}), &callback, includeOverride);
+		{
+			const auto& cb = *static_cast<const std::function<void(game::XAssetHeader)>*>(data);
+			cb(header);
+		}), &callback, includeOverride);
 	}
 
 	class component final : public component_interface
@@ -249,9 +275,9 @@ namespace command
 			else
 			{
 				utils::hook::call(0x1403CDF1C, &parse_commandline_stub);
-
 				add_commands_mp();
 			}
+
 			add_commands_generic();
 		}
 
@@ -260,9 +286,9 @@ namespace command
 		{
 			add("quit", game::Com_Quit_f);
 			add("quit_hard", utils::nt::raise_hard_exception);
-			add("crash", []()
+			add("crash", []
 			{
-				*reinterpret_cast<int*>(1) = 0;
+				*reinterpret_cast<int*>(1) = 0x12345678;
 			});
 
 			add("consoleList", [](const params& params)
@@ -545,136 +571,98 @@ namespace command
 		{
 			client_command_hook.create(0x1402E98F0, &client_command);
 
-			add_sv("god", [](const int client_num, const params_sv&)
+			add_sv("god", [](game::mp::gentity_s* ent, const params_sv&)
 			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"Cheats are not enabled on this server\"");
+				if (!cheats_ok(ent))
 					return;
-				}
 
-				game::mp::g_entities[client_num].flags ^= 1;
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-				                               utils::string::va("f \"godmode %s\"",
-				                                                 game::mp::g_entities[client_num].flags & 1
-					                                                 ? "^2on"
-					                                                 : "^1off"));
+				ent->flags ^= 1;
+
+				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+					utils::string::va("f \"godmode %s\"", ent->flags & 1 ? "^2on" : "^1off"));
 			});
 
-			add_sv("demigod", [](const int client_num, const params_sv&)
+			add_sv("demigod", [](game::mp::gentity_s* ent, const params_sv&)
 			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"Cheats are not enabled on this server\"");
+				if (!cheats_ok(ent))
 					return;
-				}
 
-				game::mp::g_entities[client_num].flags ^= 2;
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-				                               utils::string::va("f \"demigod mode %s\"",
-				                                                 game::mp::g_entities[client_num].flags & 2
-					                                                 ? "^2on"
-					                                                 : "^1off"));
+				ent->flags ^= 2;
+
+				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+					utils::string::va("f \"demigod mode %s\"", ent->flags & 2 ? "^2on" : "^1off"));
 			});
 
-			add_sv("notarget", [](const int client_num, const params_sv&)
+			add_sv("notarget", [](game::mp::gentity_s* ent, const params_sv&)
 			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"Cheats are not enabled on this server\"");
+				if (!cheats_ok(ent))
 					return;
-				}
 
-				game::mp::g_entities[client_num].flags ^= 4;
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE, 
-				                               utils::string::va("f \"notarget %s\"", 
-				                                                 game::mp::g_entities[client_num].flags & 4 
-					                                                 ? "^2on" 
-					                                                 : "^1off"));
+				ent->flags ^= 4;
+
+				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+					utils::string::va("f \"notarget %s\"", ent->flags & 4 ? "^2on" : "^1off"));
 			});
 
-			add_sv("noclip", [](const int client_num, const params_sv&)
+			add_sv("noclip", [](game::mp::gentity_s* ent, const params_sv&)
 			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"Cheats are not enabled on this server\"");
+				if (!cheats_ok(ent))
 					return;
-				}
 
-				game::mp::g_entities[client_num].client->flags ^= 1;
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-				                               utils::string::va("f \"noclip %s\"",
-				                                                 game::mp::g_entities[client_num].client->flags & 1
-					                                                 ? "^2on"
-					                                                 : "^1off"));
+				ent->client->flags ^= 1;
+
+				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+					utils::string::va("f \"noclip %s\"", ent->client->flags & 1 ? "^2on" : "^1off"));
 			});
 
-			add_sv("ufo", [](const int client_num, const params_sv&)
+			add_sv("ufo", [](game::mp::gentity_s* ent, const params_sv&)
 			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"Cheats are not enabled on this server\"");
+				if (!cheats_ok(ent))
 					return;
-				}
 
-				game::mp::g_entities[client_num].client->flags ^= 2;
-				game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-				                               utils::string::va("f \"ufo %s\"",
-				                                                 game::mp::g_entities[client_num].client->flags & 2
-					                                                 ? "^2on"
-					                                                 : "^1off"));
+				ent->client->flags ^= 2;
+
+				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+					utils::string::va("f \"ufo %s\"", ent->client->flags & 2 ? "^2on" : "^1off"));
 			});
 
-			add_sv("give", [](const int client_num, const params_sv& params)
+			add_sv("give", [](game::mp::gentity_s* ent, const params_sv& params)
 			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"Cheats are not enabled on this server\"");
+				if (!cheats_ok(ent))
 					return;
-				}
 
 				if (params.size() < 2)
 				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"You did not specify a weapon name\"");
+					game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
+						"f \"You did not specify a weapon name\"");
 					return;
 				}
 
-				auto ps = game::SV_GetPlayerstateForClientNum(client_num);
+				auto ps = game::SV_GetPlayerstateForClientNum(ent->s.number);
 				const auto wp = game::G_GetWeaponForName(params.get(1));
 				if (wp)
 				{
 					if (game::G_GivePlayerWeapon(ps, wp, 0, 0, 0, 0, 0, 0))
 					{
 						game::G_InitializeAmmo(ps, wp, 0);
-						game::G_SelectWeapon(client_num, wp);
+						game::G_SelectWeapon(ent->s.number, wp);
 					}
 				}
 			});
 
-			add_sv("take", [](const int client_num, const params_sv& params)
+			add_sv("take", [](game::mp::gentity_s* ent, const params_sv& params)
 			{
-				if (!game::Dvar_FindVar("sv_cheats")->current.enabled)
-				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
-					                               "f \"Cheats are not enabled on this server\"");
+				if (!cheats_ok(ent))
 					return;
-				}
 
 				if (params.size() < 2)
 				{
-					game::SV_GameSendServerCommand(client_num, game::SV_CMD_RELIABLE,
+					game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
 					                               "f \"You did not specify a weapon name\"");
 					return;
 				}
 
-				auto ps = game::SV_GetPlayerstateForClientNum(client_num);
+				auto ps = game::SV_GetPlayerstateForClientNum(ent->s.number);
 				const auto wp = game::G_GetWeaponForName(params.get(1));
 				if (wp)
 				{

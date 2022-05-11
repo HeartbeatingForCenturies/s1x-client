@@ -1407,17 +1407,25 @@ namespace game
 
 		struct EntityState
 		{
-			char entityNum;
+			char number;
 		}; // size = ?
+
+		struct EntHandle
+		{
+			unsigned __int16 number;
+			unsigned __int16 infoIndex;
+		};
 
 		struct gentity_s
 		{
 			EntityState s;
 			char __pad0[343];
-			gclient_s* client;
+			gclient_s* client; // 0x158
 			char __pad1[80];
-			int flags;
-			char __pad2[300];
+			int flags; // 0x1B0
+			char __pad2[0x1c];
+			int health; // 0x1D0
+			char __pad3[0x10C];
 		};
 
 		static_assert(sizeof(gentity_s) == 0x2E0);

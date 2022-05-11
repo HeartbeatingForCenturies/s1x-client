@@ -1,5 +1,7 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+#include "steam/steam.hpp"
 
 #include "auth.hpp"
 #include "command.hpp"
@@ -10,9 +12,6 @@
 #include <utils/smbios.hpp>
 #include <utils/info_string.hpp>
 #include <utils/cryptography.hpp>
-
-#include "game/game.hpp"
-#include "steam/steam.hpp"
 
 namespace auth
 {
