@@ -32,7 +32,7 @@ namespace command
 			}
 		}
 
-		void client_command(const int client_num)
+		void client_command(const char client_num)
 		{
 			if (game::mp::g_entities[client_num].client == nullptr)
 			{
