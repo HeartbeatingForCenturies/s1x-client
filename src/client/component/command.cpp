@@ -1,11 +1,15 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+
 #include "game/game.hpp"
 #include "game/dvars.hpp"
+#include "game/scripting/entity.hpp"
+#include "game/scripting/execution.hpp"
 
 #include "command.hpp"
 #include "console.hpp"
 #include "game_console.hpp"
+#include "scheduler.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -576,10 +580,10 @@ namespace command
 				if (!cheats_ok(ent))
 					return;
 
-				ent->flags ^= 1;
+				ent->flags ^= game::FL_GODMODE;
 
 				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
-					utils::string::va("f \"godmode %s\"", ent->flags & 1 ? "^2on" : "^1off"));
+					utils::string::va("f \"godmode %s\"", (ent->flags & game::FL_GODMODE) ? "^2on" : "^1off"));
 			});
 
 			add_sv("demigod", [](game::mp::gentity_s* ent, const params_sv&)
@@ -587,10 +591,10 @@ namespace command
 				if (!cheats_ok(ent))
 					return;
 
-				ent->flags ^= 2;
+				ent->flags ^= game::FL_DEMI_GODMODE;
 
 				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
-					utils::string::va("f \"demigod mode %s\"", ent->flags & 2 ? "^2on" : "^1off"));
+					utils::string::va("f \"demigod mode %s\"", (ent->flags & game::FL_DEMI_GODMODE) ? "^2on" : "^1off"));
 			});
 
 			add_sv("notarget", [](game::mp::gentity_s* ent, const params_sv&)
@@ -598,10 +602,10 @@ namespace command
 				if (!cheats_ok(ent))
 					return;
 
-				ent->flags ^= 4;
+				ent->flags ^= game::FL_NOTARGET;
 
 				game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
-					utils::string::va("f \"notarget %s\"", ent->flags & 4 ? "^2on" : "^1off"));
+					utils::string::va("f \"notarget %s\"", (ent->flags & game::FL_NOTARGET) ? "^2on" : "^1off"));
 			});
 
 			add_sv("noclip", [](game::mp::gentity_s* ent, const params_sv&)
@@ -658,7 +662,7 @@ namespace command
 				if (params.size() < 2)
 				{
 					game::SV_GameSendServerCommand(ent->s.number, game::SV_CMD_RELIABLE,
-					                               "f \"You did not specify a weapon name\"");
+						"f \"You did not specify a weapon name\"");
 					return;
 				}
 
@@ -668,6 +672,24 @@ namespace command
 				{
 					game::G_TakePlayerWeapon(ps, wp);
 				}
+			});
+
+			add_sv("kill", [](game::mp::gentity_s* ent, const params_sv& params)
+			{
+				if (!cheats_ok(ent))
+					return;
+
+				scheduler::once([ent]()
+				{
+					try
+					{
+						const auto player = scripting::call("getentbynum", {ent->s.number}).as<scripting::entity>();
+						player.call("suicide");
+					}
+					catch (...)
+					{
+					}
+				}, scheduler::pipeline::server);
 			});
 		}
 	};

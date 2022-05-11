@@ -1340,6 +1340,13 @@ namespace game
 		TRACE_HITTYPE_GLASS
 	};
 
+	enum entityFlag
+	{
+		FL_GODMODE = 1 << 0,
+		FL_DEMI_GODMODE = 1 << 1,
+		FL_NOTARGET = 1 << 2,
+	};
+
 	struct trace_t
 	{
 		char pad[0x29];
