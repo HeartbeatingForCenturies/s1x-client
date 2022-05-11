@@ -1366,6 +1366,20 @@ namespace game
 		unsigned int data;
 	};
 
+	struct pmove_t
+	{
+		unsigned char __pad0[0x190];
+	};
+
+	static_assert(sizeof(pmove_t) == 0x190);
+
+	struct pml_t
+	{
+		unsigned char __pad0[0x130];
+	};
+
+	static_assert(sizeof(pml_t) == 0x130);
+
 	namespace mp
 	{
 		struct cachedSnapshot_t
@@ -1404,7 +1418,9 @@ namespace game
 			char __pad1[80];
 			int flags;
 			char __pad2[300];
-		}; // size = 736
+		};
+
+		static_assert(sizeof(gentity_s) == 0x2E0);
 
 		struct playerState_s
 		{

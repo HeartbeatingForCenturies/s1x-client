@@ -25,6 +25,9 @@ namespace dvars
 	game::dvar_t* g_speed = nullptr;
 	game::dvar_t* g_elevators = nullptr;
 
+	game::dvar_t* jump_height = nullptr;
+	game::dvar_t* jump_ladderPushVel = nullptr;
+
 	game::dvar_t* player_sustainAmmo = nullptr;
 
 	game::dvar_t* r_fullbright = nullptr;

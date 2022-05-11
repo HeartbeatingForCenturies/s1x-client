@@ -24,6 +24,9 @@ namespace dvars
 	extern game::dvar_t* g_speed;
 	extern game::dvar_t* g_elevators;
 
+	extern game::dvar_t* jump_height;
+	extern game::dvar_t* jump_ladderPushVel;
+
 	extern game::dvar_t* player_sustainAmmo;
 
 	extern game::dvar_t* r_fullbright;
