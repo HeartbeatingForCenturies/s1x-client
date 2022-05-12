@@ -267,7 +267,7 @@ namespace game
 
 	WEAK symbol<GfxDrawMethod_s> gfxDrawMethod{0x14CDFAFE8, 0x14D80FD98};
 
-	WEAK symbol<unsigned int> tls_index{0x14f65dAF0, 0x150085C44};
+	WEAK symbol<unsigned int> tls_index{0x14F65DAF0, 0x150085C44};
 
 	namespace mp
 	{
