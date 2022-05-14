@@ -21,13 +21,19 @@ namespace dvars
 
 	extern game::dvar_t* pm_bouncing;
 	extern game::dvar_t* g_gravity;
+	extern game::dvar_t* g_speed;
 	extern game::dvar_t* g_elevators;
+
+	extern game::dvar_t* jump_height;
+	extern game::dvar_t* jump_ladderPushVel;
 
 	extern game::dvar_t* player_sustainAmmo;
 
 	extern game::dvar_t* r_fullbright;
 
 	extern game::dvar_t* cg_legacyCrashHandling;
+
+	extern game::dvar_t* sv_cheats;
 
 	std::string dvar_get_vector_domain(const int components, const game::dvar_limits& domain);
 	std::string dvar_get_domain(const game::dvar_type type, const game::dvar_limits& domain);

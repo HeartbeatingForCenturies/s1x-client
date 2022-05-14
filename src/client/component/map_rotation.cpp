@@ -1,10 +1,12 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+
 #include "command.hpp"
 #include "scheduler.hpp"
+
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
-#include "game/game.hpp"
 
 namespace map_rotation
 {

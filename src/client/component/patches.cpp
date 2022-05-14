@@ -1,10 +1,11 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+#include "game/dvars.hpp"
+
 #include "command.hpp"
 #include "console.hpp"
 #include "network.hpp"
-#include "game/game.hpp"
-#include "game/dvars.hpp"
 #include "scheduler.hpp"
 #include "filesystem.hpp"
 #include "fastfiles.hpp"
@@ -183,7 +184,7 @@ namespace patches
 		{
 			command::params_sv params{};
 			const auto menu_id = atoi(params.get(1));
-			const auto client = &game::mp::svs_clients[ent->s.entityNum];
+			const auto client = &game::mp::svs_clients[ent->s.number];
 
 			// 22 => "end_game"
 			if (menu_id == 22 && client->header.remoteAddress.type != game::NA_LOOPBACK)
