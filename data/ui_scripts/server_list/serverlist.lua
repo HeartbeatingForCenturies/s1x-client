@@ -1,9 +1,8 @@
-local Lobby = luiglobals.Lobby
-local SystemLinkJoinMenu = LUI.mp_menus.SystemLinkJoinMenu
-
-if (not SystemLinkJoinMenu) then
+if (game:issingleplayer() or not Engine.InFrontend()) then
     return
 end
+
+local SystemLinkJoinMenu = LUI.mp_menus.SystemLinkJoinMenu
 
 game:addlocalizedstring("PLATFORM_SYSTEM_LINK_TITLE", "SERVER LIST")
 game:addlocalizedstring("MENU_NUMPLAYERS", "Players")
