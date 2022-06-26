@@ -83,10 +83,23 @@ namespace scripting::lua
 			return constants;
 		}
 
-		void setup_entity_type(sol::state& state, event_handler& handler, scheduler& scheduler)
+		vector normalize_vector(const vector& vec)
 		{
-			state["level"] = entity{*game::levelEntityId};
+			const auto length = std::sqrtf(
+				(vec.get_x() * vec.get_x()) +
+				(vec.get_y() * vec.get_y()) +
+				(vec.get_z() * vec.get_z())
+			);
 
+			return vector(
+				vec.get_x() / length,
+				vec.get_y() / length,
+				vec.get_z() / length
+			);
+		}
+
+		void setup_vector_type(sol::state& state)
+		{
 			auto vector_type = state.new_usertype<vector>("vector", sol::constructors<vector(float, float, float)>());
 			vector_type["x"] = sol::property(&vector::get_x, &vector::set_x);
 			vector_type["y"] = sol::property(&vector::get_y, &vector::set_y);
@@ -95,6 +108,139 @@ namespace scripting::lua
 			vector_type["r"] = sol::property(&vector::get_x, &vector::set_x);
 			vector_type["g"] = sol::property(&vector::get_y, &vector::set_y);
 			vector_type["b"] = sol::property(&vector::get_z, &vector::set_z);
+
+			vector_type[sol::meta_function::addition] = sol::overload(
+				[](const vector& a, const vector& b)
+			{
+				return vector(
+					a.get_x() + b.get_x(),
+					a.get_y() + b.get_y(),
+					a.get_z() + b.get_z()
+				);
+			},
+				[](const vector& a, const int value)
+			{
+				return vector(
+					a.get_x() + value,
+					a.get_y() + value,
+					a.get_z() + value
+				);
+			}
+			);
+
+			vector_type[sol::meta_function::subtraction] = sol::overload(
+				[](const vector& a, const vector& b)
+			{
+				return vector(
+					a.get_x() - b.get_x(),
+					a.get_y() - b.get_y(),
+					a.get_z() - b.get_z()
+				);
+			},
+				[](const vector& a, const int value)
+			{
+				return vector(
+					a.get_x() - value,
+					a.get_y() - value,
+					a.get_z() - value
+				);
+			}
+			);
+
+			vector_type[sol::meta_function::multiplication] = sol::overload(
+				[](const vector& a, const vector& b)
+			{
+				return vector(
+					a.get_x() * b.get_x(),
+					a.get_y() * b.get_y(),
+					a.get_z() * b.get_z()
+				);
+			},
+				[](const vector& a, const int value)
+			{
+				return vector(
+					a.get_x() * value,
+					a.get_y() * value,
+					a.get_z() * value
+				);
+			}
+			);
+
+			vector_type[sol::meta_function::division] = sol::overload(
+				[](const vector& a, const vector& b)
+			{
+				return vector(
+					a.get_x() / b.get_x(),
+					a.get_y() / b.get_y(),
+					a.get_z() / b.get_z()
+				);
+			},
+				[](const vector& a, const int value)
+			{
+				return vector(
+					a.get_x() / value,
+					a.get_y() / value,
+					a.get_z() / value
+				);
+			}
+			);
+
+			vector_type[sol::meta_function::equal_to] = [](const vector& a, const vector& b)
+			{
+				return a.get_x() == b.get_x() &&
+					a.get_y() == b.get_y() &&
+					a.get_z() == b.get_z();
+			};
+
+			vector_type[sol::meta_function::length] = [](const vector& a)
+			{
+				return std::sqrtf((a.get_x() * a.get_x()) + (a.get_y() * a.get_y()) + (a.get_z() * a.get_z()));
+			};
+
+			vector_type[sol::meta_function::to_string] = [](const vector& a)
+			{
+				return utils::string::va("(%g, %g, %g)", a.get_x(), a.get_y(), a.get_z());
+			};
+
+			vector_type["normalize"] = [](const vector& a)
+			{
+				return normalize_vector(a);
+			};
+
+			vector_type["toangles"] = [](const vector& a)
+			{
+				return call("vectortoangles", {a}).as<vector>();
+			};
+
+			vector_type["toyaw"] = [](const vector& a)
+			{
+				return call("vectortoyaw", {a}).as<vector>();
+			};
+
+			vector_type["tolerp"] = [](const vector& a)
+			{
+				return call("vectortolerp", {a}).as<vector>();
+			};
+
+			vector_type["toup"] = [](const vector& a)
+			{
+				return call("anglestoup", {a}).as<vector>();
+			};
+
+			vector_type["toright"] = [](const vector& a)
+			{
+				return call("anglestoright", {a}).as<vector>();
+			};
+
+			vector_type["toforward"] = [](const vector& a)
+			{
+				return call("anglestoforward", {a}).as<vector>();
+			};
+		}
+
+		void setup_entity_type(sol::state& state, event_handler& handler, scheduler& scheduler)
+		{
+			state["level"] = entity{*game::levelEntityId};
 
 			auto entity_type = state.new_usertype<entity>("entity");
 
@@ -445,6 +591,7 @@ namespace scripting::lua
 			return this->folder_;
 		};
 
+		setup_vector_type(this->state_);
 		setup_entity_type(this->state_, this->event_handler_, this->scheduler_);
 
 		printf("Loading script '%s'\n", this->folder_.data());
