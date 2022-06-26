@@ -170,7 +170,7 @@ namespace patches
 
 		void set_client_dvar_from_server_stub(void* a1, void* a2, const char* dvar, const char* value)
 		{
-			if (dvar == "cg_fov"s)
+			if (utils::string::to_lower(dvar) == "cg_fov")
 			{
 				return;
 			}
