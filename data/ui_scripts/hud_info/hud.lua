@@ -1,4 +1,4 @@
-local mphud = luiglobals.require("LUI.mp_hud.MPHud")
+local mphud = require("LUI.mp_hud.MPHud")
 local barheight = 18
 local textheight = 13
 local textoffsety = barheight / 2 - textheight / 2
@@ -71,10 +71,10 @@ function infoelement(data)
 			g = 0.3,
 			b = 0.3,
 		},
-		material = luiglobals.RegisterMaterial("distort_hud_bkgnd_ui_blur")
+		material = RegisterMaterial("distort_hud_bkgnd_ui_blur")
 	})
 
-	local labelfont = luiglobals.RegisterFont("fonts/bodyFontBold", textheight)
+	local labelfont = RegisterFont("fonts/bodyFontBold", textheight)
 
 	local label = LUI.UIText.new({
 		left = 5,
@@ -92,11 +92,11 @@ function infoelement(data)
 
 	label:setText(data.label)
 
-	local _, _, left = luiglobals.GetTextDimensions(data.label, labelfont, textheight)
+	local _, _, left = GetTextDimensions(data.label, labelfont, textheight)
 	local value = LUI.UIText.new({
 		left = left + 5,
 		top = textoffsety,
-		font = luiglobals.RegisterFont("fonts/bodyFont", textheight),
+		font = RegisterFont("fonts/bodyFont", textheight),
 		height = textheight + 1,
 		leftAnchor = true,
 		topAnchor = true,

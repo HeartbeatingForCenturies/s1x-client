@@ -174,6 +174,9 @@ namespace logger
 			}
 
 			com_error_hook.create(game::Com_Error, com_error_stub);
+
+			// Make havok script's print function actually print
+			utils::hook::jump(0x140701A1C, print);
 		}
 	};
 }

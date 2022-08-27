@@ -21,12 +21,20 @@ namespace dvars
 	game::dvar_t* g_playerCollision = nullptr;
 
 	game::dvar_t* pm_bouncing = nullptr;
+	game::dvar_t* g_gravity = nullptr;
+	game::dvar_t* g_speed = nullptr;
+	game::dvar_t* g_elevators = nullptr;
+
+	game::dvar_t* jump_height = nullptr;
+	game::dvar_t* jump_ladderPushVel = nullptr;
 
 	game::dvar_t* player_sustainAmmo = nullptr;
 
 	game::dvar_t* r_fullbright = nullptr;
 
 	game::dvar_t* cg_legacyCrashHandling = nullptr;
+
+	game::dvar_t* sv_cheats = nullptr;
 
 	std::string dvar_get_vector_domain(const int components, const game::dvar_limits& domain)
 	{

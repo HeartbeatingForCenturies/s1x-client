@@ -34,7 +34,7 @@ namespace logfile
 				return {};
 			}
 
-			const auto player = scripting::call("getEntByNum", {ent->s.entityNum});
+			const auto player = scripting::call("getEntByNum", {ent->s.number});
 
 			return scripting::lua::convert(state, player);
 		}
@@ -162,7 +162,7 @@ namespace logfile
 				scheduler::once([cmd, message, self]()
 				{
 					const scripting::entity level{*game::levelEntityId};
-					const auto player = scripting::call("getEntByNum", {self->s.entityNum}).as<scripting::entity>();
+					const auto player = scripting::call("getEntByNum", {self->s.number}).as<scripting::entity>();
 
 					scripting::notify(level, cmd, {player, message});
 					scripting::notify(player, cmd, {message});
