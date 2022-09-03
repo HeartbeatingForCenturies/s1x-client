@@ -107,16 +107,16 @@ namespace dedicated
 			std::this_thread::sleep_for(1ms);
 		}
 
-		game::dvar_t* gscr_set_dynamic_dvar()
+		void gscr_set_dynamic_dvar()
 		{
 			auto s = game::Scr_GetString(0);
 			auto* dvar = game::Dvar_FindVar(s);
-			if (dvar && !strncmp("scr_", dvar->name, 4))
+			if (dvar && !std::strncmp("scr_", dvar->name, 4))
 			{
-				return dvar;
+				return;
 			}
 
-			return gscr_set_dynamic_dvar_hook.invoke<game::dvar_t*>();
+			gscr_set_dynamic_dvar_hook.invoke<void>();
 		}
 
 		void kill_server()
