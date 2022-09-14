@@ -9,8 +9,6 @@
 
 #include <resource.hpp>
 
-#define FEAUTURED_TEMPLATE "{\"content_short\": \"Welcome to S1X\", \"image\": \"icon_pl_cat_exo\", \"content_long\": \"<body>After Years of gaining experience towards reverse engineering, xLabs developers written a fresh SDK for cod game series from scratch; a new client base which made it possible to push forward and modify x64 generation cod games. iw6x offers variety of new features aswell as unlocking access to developer features like dedicated server hosting and game console<br/><br/><i>*visit xlabs.dev for more info</i></body>\", \"popup_image\": \"iotd_image\", \"action\": \"popup\"}"
-
 namespace motd
 {
 	namespace
@@ -62,10 +60,6 @@ namespace motd
 				if (featured_optional)
 				{
 					marketing_featured_msg_str = featured_optional.value();
-				}
-				else
-				{
-					marketing_featured_msg_str = FEAUTURED_TEMPLATE; // FOR PREVIEW PURPOSE; REMOVE THIS AFTER ADDING CONTENT TO WEBSITE DEPOT
 				}
 				
 			}).detach();
