@@ -1202,7 +1202,7 @@ namespace game
 		int len;
 		int bytecodeLen;
 		const char* buffer;
-		char* bytecode;
+		unsigned char* bytecode;
 	};
 
 	struct StringTableCell
