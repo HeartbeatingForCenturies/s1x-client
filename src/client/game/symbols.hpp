@@ -158,10 +158,10 @@ namespace game
 
 	WEAK symbol<unsigned int()> Scr_AllocArray{0x140317C50, 0x1403F4280};
 	WEAK symbol<const float*(const float* v)> Scr_AllocVector{0x140317D10, 0x1403F4370};
-	WEAK symbol<const char*(int index)> Scr_GetString{0x14031C570, 0x1403F8C50};
-	WEAK symbol<unsigned int()> Scr_GetInt{0x14031C1F0, 0x1403F88D0};
-	WEAK symbol<float(int index)> Scr_GetFloat{0x14031C090, 0x1403F8820};
-	WEAK symbol<int()> Scr_GetNumParam{0x14031C2A0, 0x1403F8980};
+	WEAK symbol<const char*(unsigned int index)> Scr_GetString{0x14031C570, 0x1403F8C50};
+	WEAK symbol<int(unsigned int index)> Scr_GetInt{0x14031C1F0, 0x1403F88D0};
+	WEAK symbol<float(unsigned int index)> Scr_GetFloat{0x14031C090, 0x1403F8820};
+	WEAK symbol<unsigned int()> Scr_GetNumParam{0x14031C2A0, 0x1403F8980};
 	WEAK symbol<void()> Scr_ClearOutParams{0x14031B7C0, 0x1403F8040};
 	WEAK symbol<scr_entref_t(unsigned int entId)> Scr_GetEntityIdRef{0x14031A0D0, 0x1403F68A0};
 	WEAK symbol<int(unsigned int classnum, int entnum, int offset)> Scr_SetObjectField{0x14026B620, 0x140339450};
@@ -170,7 +170,7 @@ namespace game
 	WEAK symbol<unsigned __int16(int handle, unsigned int paramcount)> Scr_ExecThread{0x0, 0x1403F8120};
 	WEAK symbol<unsigned int(const char* name)> Scr_LoadScript{0x0, 0x1403EE250};
 	WEAK symbol<unsigned int(const char* script, unsigned int name)> Scr_GetFunctionHandle{0x0, 0x1403EE0D0};
-	WEAK symbol<unsigned int(void* func, int type, unsigned int name)> Scr_RegisterFunction{0x0, 0x1403EDAE0};
+	WEAK symbol<unsigned int(void* func, int type, unsigned int name)> Scr_RegisterFunction{0x1403115B0, 0x1403EDAE0};
 
 	WEAK symbol<unsigned int(unsigned int localId, const char* pos, unsigned int paramcount)> VM_Execute{0x0, 0x1403F9E40};
 

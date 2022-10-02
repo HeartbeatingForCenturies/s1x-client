@@ -185,7 +185,7 @@ namespace gsc
 				real_name = xsk::gsc::s1::resolver::token_name(id);
 			}
 
-			const auto script = load_custom_script(name, real_name);
+			auto* script = load_custom_script(name, real_name);
 			if (script)
 			{
 				return script;
