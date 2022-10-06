@@ -13,53 +13,51 @@ namespace ui_scripting
 	class function;
 	class script_value;
 
-	namespace
+	
+	template <typename T>
+	std::string get_typename()
 	{
-		template <typename T>
-		std::string get_typename()
+		auto& info = typeid(T);
+
+		if (info == typeid(std::string) ||
+			info == typeid(const char*))
 		{
-			auto& info = typeid(T);
-
-			if (info == typeid(std::string) ||
-				info == typeid(const char*))
-			{
-				return "string";
-			}
-
-			if (info == typeid(lightuserdata))
-			{
-				return "lightuserdata";
-			}
-
-			if (info == typeid(userdata))
-			{
-				return "userdata";
-			}
-
-			if (info == typeid(table))
-			{
-				return "table";
-			}
-
-			if (info == typeid(function))
-			{
-				return "function";
-			}
-
-			if (info == typeid(int) || 
-				info == typeid(float) || 
-				info == typeid(unsigned int))
-			{
-				return "number";
-			}
-
-			if (info == typeid(bool))
-			{
-				return "boolean";
-			}
-
-			return info.name();
+			return "string";
 		}
+
+		if (info == typeid(lightuserdata))
+		{
+			return "lightuserdata";
+		}
+
+		if (info == typeid(userdata))
+		{
+			return "userdata";
+		}
+
+		if (info == typeid(table))
+		{
+			return "table";
+		}
+
+		if (info == typeid(function))
+		{
+			return "function";
+		}
+
+		if (info == typeid(int) ||
+			info == typeid(float) ||
+			info == typeid(unsigned int))
+		{
+			return "number";
+		}
+
+		if (info == typeid(bool))
+		{
+			return "boolean";
+		}
+
+		return info.name();
 	}
 
 	class hks_object
