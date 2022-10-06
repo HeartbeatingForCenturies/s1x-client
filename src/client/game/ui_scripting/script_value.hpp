@@ -13,7 +13,6 @@ namespace ui_scripting
 	class function;
 	class script_value;
 
-	
 	template <typename T>
 	std::string get_typename()
 	{
