@@ -152,6 +152,9 @@ namespace logger
 			{
 				nullsub_56();
 				sub_1400E7420();
+
+				// Make havok script's print function actually print
+				utils::hook::jump(0x140701A1C, print);
 			}
 
 			if (!game::environment::is_sp())
@@ -160,9 +163,6 @@ namespace logger
 			}
 
 			com_error_hook.create(game::Com_Error, com_error_stub);
-
-			// Make havok script's print function actually print
-			utils::hook::jump(0x140701A1C, print);
 
 			logger_dev = game::Dvar_RegisterBool("logger_dev", false, game::DVAR_FLAG_SAVED, "Print dev stuff");
 		}
