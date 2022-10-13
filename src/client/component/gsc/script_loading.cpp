@@ -233,7 +233,7 @@ namespace gsc
 			return game::DB_FindXAssetHeader(game::ASSET_TYPE_SCRIPTFILE, name, 1).scriptfile;
 		}
 
-		int db_is_xasset_default(game::XAssetType type, const char* name)
+		int db_is_x_asset_default(game::XAssetType type, const char* name)
 		{
 			if (loaded_scripts.contains(name))
 			{
@@ -327,10 +327,8 @@ namespace gsc
 					{
 						return decompile_script_file(name, real_name);
 					}
-					else
-					{
-						throw std::runtime_error(std::format("Could not load gsc file '{}'", real_name));
-					}
+
+					throw std::runtime_error(std::format("Could not load gsc file '{}'", real_name));
 				}
 
 				std::vector<std::uint8_t> result;
@@ -341,7 +339,7 @@ namespace gsc
 
 			// ProcessScript
 			utils::hook::call(0x1403F7317, find_script);
-			utils::hook::call(0x1403F7327, db_is_xasset_default);
+			utils::hook::call(0x1403F7327, db_is_x_asset_default);
 
 			// GScr_LoadScripts
 			utils::hook::call(0x140330B19, gscr_load_game_type_script_stub);
