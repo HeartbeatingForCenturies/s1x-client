@@ -13,6 +13,8 @@ namespace logger
 	{
 		utils::hook::detour com_error_hook;
 
+		game::dvar_t* logger_dev = nullptr;
+
 		void print_error(const char* msg, ...)
 		{
 			char buffer[2048]{};
@@ -79,7 +81,6 @@ namespace logger
 
 		void print_dev(const char* msg, ...)
 		{
-			static const auto* logger_dev = game::Dvar_RegisterBool("logger_dev", false, game::DVAR_FLAG_SAVED, "Print dev stuff");
 			if (!logger_dev->current.enabled)
 			{
 				return;
@@ -162,6 +163,8 @@ namespace logger
 
 			// Make havok script's print function actually print
 			utils::hook::jump(0x140701A1C, print);
+
+			logger_dev = game::Dvar_RegisterBool("logger_dev", false, game::DVAR_FLAG_SAVED, "Print dev stuff");
 		}
 	};
 }
