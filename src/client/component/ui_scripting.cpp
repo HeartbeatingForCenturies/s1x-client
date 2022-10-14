@@ -31,16 +31,10 @@ namespace ui_scripting
 		utils::hook::detour hks_shutdown_hook;
 		utils::hook::detour hks_package_require_hook;
 
-		struct script
-		{
-			std::string name;
-			std::string root;
-		};
-
 		struct globals_t
 		{
 			std::string in_require_script;
-			std::vector<script> loaded_scripts;
+			std::unordered_map<std::string, std::string> loaded_scripts;
 			bool load_raw_script{};
 			std::string raw_script_name{};
 		};
@@ -49,20 +43,14 @@ namespace ui_scripting
 
 		bool is_loaded_script(const std::string& name)
 		{
-			return std::ranges::any_of(globals.loaded_scripts, [name](const auto& elem)
-			{
-					return elem.name == name;
-			});
+			return globals.loaded_scripts.contains(name);
 		}
 
 		std::string get_root_script(const std::string& name)
 		{
-			for (const auto& elem : globals.loaded_scripts)
+			if (const auto it = globals.loaded_scripts.find(name); it != globals.loaded_scripts.end())
 			{
-				if (elem.name == name)
-				{
-					return elem.root;
-				}
+				return it->second;
 			}
 
 			return {};
@@ -111,7 +99,7 @@ namespace ui_scripting
 
 		void load_script(const std::string& name, const std::string& data)
 		{
-			globals.loaded_scripts.push_back({name, name});
+			globals.loaded_scripts[name] = name;
 
 			const auto lua = get_globals();
 			const auto load_results = lua["loadstring"](data, name);
@@ -294,7 +282,7 @@ namespace ui_scripting
 			if (globals.load_raw_script)
 			{
 				globals.load_raw_script = false;
-				globals.loaded_scripts.push_back({globals.raw_script_name, globals.in_require_script});
+				globals.loaded_scripts[globals.raw_script_name] = globals.in_require_script;
 				return load_buffer(globals.raw_script_name, utils::io::read_file(globals.raw_script_name));
 			}
 
