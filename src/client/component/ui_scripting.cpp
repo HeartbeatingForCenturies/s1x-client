@@ -49,24 +49,19 @@ namespace ui_scripting
 
 		bool is_loaded_script(const std::string& name)
 		{
-			for (auto i = globals.loaded_scripts.begin(); i != globals.loaded_scripts.end(); ++i)
+			return std::ranges::any_of(globals.loaded_scripts, [name](const auto& elem)
 			{
-				if (i->name == name)
-				{
-					return true;
-				}
-			}
-
-			return false;
+					return elem.name == name;
+			});
 		}
 
 		std::string get_root_script(const std::string& name)
 		{
-			for (auto i = globals.loaded_scripts.begin(); i != globals.loaded_scripts.end(); ++i)
+			for (const auto& elem : globals.loaded_scripts)
 			{
-				if (i->name == name)
+				if (elem.name == name)
 				{
-					return i->root;
+					return elem.root;
 				}
 			}
 
@@ -266,8 +261,10 @@ namespace ui_scripting
 			return hks_package_require_hook.invoke<void*>(state);
 		}
 
-		game::XAssetHeader db_find_xasset_header_stub(game::XAssetType type, const char* name, int allow_create_default)
+		game::XAssetHeader db_find_x_asset_header_stub(game::XAssetType type, const char* name, int allow_create_default)
 		{
+			game::XAssetHeader header{.luaFile = nullptr};
+
 			if (!is_loaded_script(globals.in_require_script))
 			{
 				return game::DB_FindXAssetHeader(type, name, allow_create_default);
@@ -281,14 +278,14 @@ namespace ui_scripting
 			{
 				globals.load_raw_script = true;
 				globals.raw_script_name = target_script;
-				return static_cast<game::XAssetHeader>(reinterpret_cast<game::LuaFile*>(1));
+				header.luaFile = reinterpret_cast<game::LuaFile*>(1);
 			}
 			else if (name_.starts_with("ui/LUI/"))
 			{
 				return game::DB_FindXAssetHeader(type, name, allow_create_default);
 			}
 
-			return static_cast<game::XAssetHeader>(nullptr);
+			return header;
 		}
 
 		int hks_load_stub(game::hks::lua_State* state, void* compiler_options, 
@@ -300,11 +297,8 @@ namespace ui_scripting
 				globals.loaded_scripts.push_back({globals.raw_script_name, globals.in_require_script});
 				return load_buffer(globals.raw_script_name, utils::io::read_file(globals.raw_script_name));
 			}
-			else
-			{
-				return utils::hook::invoke<int>(0x14009CA10, state, compiler_options, reader,
-					reader_data, chunk_name);
-			}
+
+			return utils::hook::invoke<int>(0x14009CA10, state, compiler_options, reader, reader_data, chunk_name);
 		}
 
 		int main_handler(game::hks::lua_State* state)
@@ -316,7 +310,7 @@ namespace ui_scripting
 			}
 
 			const auto closure = value.v.cClosure;
-			if (converted_functions.find(closure) == converted_functions.end())
+			if (!converted_functions.contains(closure))
 			{
 				return 0;
 			}
@@ -364,15 +358,15 @@ namespace ui_scripting
 				return;
 			}
 
-			utils::hook::call(0x1400CB68B, db_find_xasset_header_stub);
-			utils::hook::call(0x1400CB7D6, db_find_xasset_header_stub);
+			utils::hook::call(0x1400CB68B, db_find_x_asset_header_stub);
+			utils::hook::call(0x1400CB7D6, db_find_x_asset_header_stub);
 			utils::hook::call(0x1400CB861, hks_load_stub);
 
 			hks_package_require_hook.create(0x1400781D0, hks_package_require_stub);
 			hks_start_hook.create(0x1400E4E40, hks_start_stub);
 			hks_shutdown_hook.create(0x1400DB9A0, hks_shutdown_stub);
 
-			command::add("lui_restart", []()
+			command::add("lui_restart", []
 			{
 				utils::hook::invoke<void>(0x1400DB9A0);
 				utils::hook::invoke<void>(0x1400E6730);
