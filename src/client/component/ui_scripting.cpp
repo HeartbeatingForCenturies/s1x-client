@@ -48,12 +48,8 @@ namespace ui_scripting
 
 		std::string get_root_script(const std::string& name)
 		{
-			if (const auto it = globals.loaded_scripts.find(name); it != globals.loaded_scripts.end())
-			{
-				return it->second;
-			}
-
-			return {};
+			const auto itr = globals.loaded_scripts.find(name);
+			return itr == globals.loaded_scripts.end() ? std::string() : itr->second;
 		}
 
 		table get_globals()
