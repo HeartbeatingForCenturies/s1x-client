@@ -31,16 +31,10 @@ namespace ui_scripting
 		utils::hook::detour hks_shutdown_hook;
 		utils::hook::detour hks_package_require_hook;
 
-		struct script
-		{
-			std::string name;
-			std::string root;
-		};
-
 		struct globals_t
 		{
 			std::string in_require_script;
-			std::vector<script> loaded_scripts;
+			std::unordered_map<std::string, std::string> loaded_scripts;
 			bool load_raw_script{};
 			std::string raw_script_name{};
 		};
@@ -49,28 +43,13 @@ namespace ui_scripting
 
 		bool is_loaded_script(const std::string& name)
 		{
-			for (auto i = globals.loaded_scripts.begin(); i != globals.loaded_scripts.end(); ++i)
-			{
-				if (i->name == name)
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return globals.loaded_scripts.contains(name);
 		}
 
 		std::string get_root_script(const std::string& name)
 		{
-			for (auto i = globals.loaded_scripts.begin(); i != globals.loaded_scripts.end(); ++i)
-			{
-				if (i->name == name)
-				{
-					return i->root;
-				}
-			}
-
-			return {};
+			const auto itr = globals.loaded_scripts.find(name);
+			return itr == globals.loaded_scripts.end() ? std::string() : itr->second;
 		}
 
 		table get_globals()
@@ -116,7 +95,7 @@ namespace ui_scripting
 
 		void load_script(const std::string& name, const std::string& data)
 		{
-			globals.loaded_scripts.push_back({name, name});
+			globals.loaded_scripts[name] = name;
 
 			const auto lua = get_globals();
 			const auto load_results = lua["loadstring"](data, name);
@@ -266,8 +245,10 @@ namespace ui_scripting
 			return hks_package_require_hook.invoke<void*>(state);
 		}
 
-		game::XAssetHeader db_find_xasset_header_stub(game::XAssetType type, const char* name, int allow_create_default)
+		game::XAssetHeader db_find_x_asset_header_stub(game::XAssetType type, const char* name, int allow_create_default)
 		{
+			game::XAssetHeader header{.luaFile = nullptr};
+
 			if (!is_loaded_script(globals.in_require_script))
 			{
 				return game::DB_FindXAssetHeader(type, name, allow_create_default);
@@ -281,14 +262,14 @@ namespace ui_scripting
 			{
 				globals.load_raw_script = true;
 				globals.raw_script_name = target_script;
-				return static_cast<game::XAssetHeader>(reinterpret_cast<game::LuaFile*>(1));
+				header.luaFile = reinterpret_cast<game::LuaFile*>(1);
 			}
 			else if (name_.starts_with("ui/LUI/"))
 			{
 				return game::DB_FindXAssetHeader(type, name, allow_create_default);
 			}
 
-			return static_cast<game::XAssetHeader>(nullptr);
+			return header;
 		}
 
 		int hks_load_stub(game::hks::lua_State* state, void* compiler_options, 
@@ -297,14 +278,11 @@ namespace ui_scripting
 			if (globals.load_raw_script)
 			{
 				globals.load_raw_script = false;
-				globals.loaded_scripts.push_back({globals.raw_script_name, globals.in_require_script});
+				globals.loaded_scripts[globals.raw_script_name] = globals.in_require_script;
 				return load_buffer(globals.raw_script_name, utils::io::read_file(globals.raw_script_name));
 			}
-			else
-			{
-				return utils::hook::invoke<int>(0x14009CA10, state, compiler_options, reader,
-					reader_data, chunk_name);
-			}
+
+			return utils::hook::invoke<int>(0x14009CA10, state, compiler_options, reader, reader_data, chunk_name);
 		}
 
 		int main_handler(game::hks::lua_State* state)
@@ -316,7 +294,7 @@ namespace ui_scripting
 			}
 
 			const auto closure = value.v.cClosure;
-			if (converted_functions.find(closure) == converted_functions.end())
+			if (!converted_functions.contains(closure))
 			{
 				return 0;
 			}
@@ -364,15 +342,15 @@ namespace ui_scripting
 				return;
 			}
 
-			utils::hook::call(0x1400CB68B, db_find_xasset_header_stub);
-			utils::hook::call(0x1400CB7D6, db_find_xasset_header_stub);
+			utils::hook::call(0x1400CB68B, db_find_x_asset_header_stub);
+			utils::hook::call(0x1400CB7D6, db_find_x_asset_header_stub);
 			utils::hook::call(0x1400CB861, hks_load_stub);
 
 			hks_package_require_hook.create(0x1400781D0, hks_package_require_stub);
 			hks_start_hook.create(0x1400E4E40, hks_start_stub);
 			hks_shutdown_hook.create(0x1400DB9A0, hks_shutdown_stub);
 
-			command::add("lui_restart", []()
+			command::add("lui_restart", []
 			{
 				utils::hook::invoke<void>(0x1400DB9A0);
 				utils::hook::invoke<void>(0x1400E6730);
