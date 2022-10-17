@@ -47,6 +47,16 @@ namespace gsc
 				return true;
 			}
 
+			// This will prevent 'fake' GSC raw files from being compiled. They are parsed by the game's own parser later.
+			if (name.starts_with("maps/createfx") || name.starts_with("maps/createart") ||
+				(name.starts_with("maps/mp") && name.ends_with("_fx.gsc")))
+			{
+#ifdef _DEBUG
+				console::info("Refusing to compile rawfile '%s\n", name.data());
+#endif
+				return false;
+			}
+
 			const auto* name_str = name.data();
 			if (game::DB_XAssetExists(game::ASSET_TYPE_RAWFILE, name_str) &&
 				!game::DB_IsXAssetDefault(game::ASSET_TYPE_RAWFILE, name_str))
