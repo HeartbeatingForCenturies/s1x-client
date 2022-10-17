@@ -1,11 +1,13 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
-#include "fastfiles.hpp"
+#include "game/dvars.hpp"
 
+#include "fastfiles.hpp"
 #include "command.hpp"
 #include "console.hpp"
 
 #include <utils/hook.hpp>
+#include <utils/io.hpp>
 #include <utils/concurrency.hpp>
 
 namespace fastfiles
@@ -15,6 +17,7 @@ namespace fastfiles
 	namespace
 	{
 		utils::hook::detour db_try_load_x_file_internal_hook;
+		utils::hook::detour db_find_x_asset_header_hook;
 
 		void db_try_load_x_file_internal(const char* zone_name, const int flags)
 		{
@@ -25,15 +28,60 @@ namespace fastfiles
 			});
 			return db_try_load_x_file_internal_hook.invoke<void>(zone_name, flags);
 		}
+
+		void dump_gsc_script(const std::string& name, game::XAssetHeader header)
+		{
+			if (!dvars::g_dump_scripts->current.enabled)
+			{
+				return;
+			}
+
+			std::string buffer;
+			buffer.append(header.scriptfile->name, std::strlen(header.scriptfile->name) + 1);
+			buffer.append(reinterpret_cast<char*>(&header.scriptfile->compressedLen), 4);
+			buffer.append(reinterpret_cast<char*>(&header.scriptfile->len), 4);
+			buffer.append(reinterpret_cast<char*>(&header.scriptfile->bytecodeLen), 4);
+			buffer.append(header.scriptfile->buffer, header.scriptfile->compressedLen);
+			buffer.append(reinterpret_cast<char*>(header.scriptfile->bytecode), header.scriptfile->bytecodeLen);
+
+			const auto out_name = std::format("gsc_dump/{}.gscbin", name);
+			utils::io::write_file(out_name, buffer);
+
+			console::info("Dumped %s\n", out_name.data());
+		}
+
+		game::XAssetHeader db_find_x_asset_header_stub(game::XAssetType type, const char* name, int allow_create_default)
+		{
+			const auto start = game::Sys_Milliseconds();
+			const auto result = db_find_x_asset_header_hook.invoke<game::XAssetHeader>(type, name, allow_create_default);
+			const auto diff = game::Sys_Milliseconds() - start;
+
+			if (type == game::ASSET_TYPE_SCRIPTFILE)
+			{
+				dump_gsc_script(name, result);
+			}
+
+			if (diff > 100)
+			{
+				console::print(
+					result.data == nullptr ? console::con_type_error : console::con_type_warning, "Waited %i msec for asset '%s' of type '%s'.\n",
+					diff,
+					name,
+					game::g_assetNames[type]
+				);
+			}
+
+			return result;
+		}
 	}
 
 	std::string get_current_fastfile()
 	{
-		std::string fastfile_copy;
-		current_fastfile.access([&](std::string& fastfile)
+		auto fastfile_copy = current_fastfile.access<std::string>([&](std::string& fastfile)
 		{
-			fastfile_copy = fastfile;
+			return fastfile;
 		});
+
 		return fastfile_copy;
 	}
 
@@ -70,6 +118,15 @@ namespace fastfiles
 		return new_pool;
 	}
 
+	void enum_assets(const game::XAssetType type, const std::function<void(game::XAssetHeader)>& callback, const bool include_override)
+	{
+		game::DB_EnumXAssets_Internal(type, static_cast<void(*)(game::XAssetHeader, void*)>([](game::XAssetHeader header, void* data)
+		{
+			const auto& cb = *static_cast<const std::function<void(game::XAssetHeader)>*>(data);
+			cb(header);
+		}), &callback, include_override);
+	}
+
 	class component final : public component_interface
 	{
 	public:
@@ -77,6 +134,9 @@ namespace fastfiles
 		{
 			db_try_load_x_file_internal_hook.create(
 				SELECT_VALUE(0x1401816F0, 0x1402741C0), &db_try_load_x_file_internal);
+
+			db_find_x_asset_header_hook.create(game::DB_FindXAssetHeader, db_find_x_asset_header_stub);
+			dvars::g_dump_scripts = game::Dvar_RegisterBool("g_dumpScripts", false, game::DVAR_FLAG_NONE, "Dump GSC scripts to binary format");
 
 			command::add("loadzone", [](const command::params& params)
 			{

@@ -342,9 +342,8 @@ namespace demonware
 
 		void bd_logger_stub(const char* const function, const char* const msg, ...)
 		{
-			static auto* enabled =
-				game::Dvar_RegisterBool("bd_logger_enabled", false, game::DVAR_FLAG_SAVED, "bdLogger");
-			if (!enabled->current.enabled)
+			static const auto* bd_logger_enabled = game::Dvar_RegisterBool("bd_logger_enabled", false, game::DVAR_FLAG_NONE, "Enable bdLogger");
+			if (!bd_logger_enabled->current.enabled)
 			{
 				return;
 			}

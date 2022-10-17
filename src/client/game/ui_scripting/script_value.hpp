@@ -13,53 +13,50 @@ namespace ui_scripting
 	class function;
 	class script_value;
 
-	namespace
+	template <typename T>
+	std::string get_typename()
 	{
-		template <typename T>
-		std::string get_typename()
+		auto& info = typeid(T);
+
+		if (info == typeid(std::string) ||
+			info == typeid(const char*))
 		{
-			auto& info = typeid(T);
-
-			if (info == typeid(std::string) ||
-				info == typeid(const char*))
-			{
-				return "string";
-			}
-
-			if (info == typeid(lightuserdata))
-			{
-				return "lightuserdata";
-			}
-
-			if (info == typeid(userdata))
-			{
-				return "userdata";
-			}
-
-			if (info == typeid(table))
-			{
-				return "table";
-			}
-
-			if (info == typeid(function))
-			{
-				return "function";
-			}
-
-			if (info == typeid(int) || 
-				info == typeid(float) || 
-				info == typeid(unsigned int))
-			{
-				return "number";
-			}
-
-			if (info == typeid(bool))
-			{
-				return "boolean";
-			}
-
-			return info.name();
+			return "string";
 		}
+
+		if (info == typeid(lightuserdata))
+		{
+			return "lightuserdata";
+		}
+
+		if (info == typeid(userdata))
+		{
+			return "userdata";
+		}
+
+		if (info == typeid(table))
+		{
+			return "table";
+		}
+
+		if (info == typeid(function))
+		{
+			return "function";
+		}
+
+		if (info == typeid(int) ||
+			info == typeid(float) ||
+			info == typeid(unsigned int))
+		{
+			return "number";
+		}
+
+		if (info == typeid(bool))
+		{
+			return "boolean";
+		}
+
+		return info.name();
 	}
 
 	class hks_object
@@ -167,7 +164,7 @@ namespace ui_scripting
 		{
 			if (!this->is<T>())
 			{
-				const auto hks_typename = game::hks::typenames[this->get_raw().t + 2];
+				const auto hks_typename = game::hks::s_compilerTypeName[this->get_raw().t + 2];
 				const auto typename_ = get_typename<T>();
 
 				throw std::runtime_error(utils::string::va("%s expected, got %s",

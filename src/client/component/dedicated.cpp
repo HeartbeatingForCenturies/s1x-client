@@ -17,6 +17,8 @@ namespace dedicated
 		utils::hook::detour gscr_set_dynamic_dvar_hook;
 		utils::hook::detour com_quit_f_hook;
 
+		const game::dvar_t* sv_lanOnly;
+
 		void init_dedicated_server()
 		{
 			static bool initialized = false;
@@ -29,8 +31,7 @@ namespace dedicated
 
 		void send_heartbeat()
 		{
-			auto* const dvar = game::Dvar_FindVar("sv_lanOnly");
-			if (dvar && dvar->current.enabled)
+			if (sv_lanOnly->current.enabled)
 			{
 				return;
 			}
@@ -107,16 +108,16 @@ namespace dedicated
 			std::this_thread::sleep_for(1ms);
 		}
 
-		game::dvar_t* gscr_set_dynamic_dvar()
+		void gscr_set_dynamic_dvar()
 		{
 			auto s = game::Scr_GetString(0);
 			auto* dvar = game::Dvar_FindVar(s);
-			if (dvar && !strncmp("scr_", dvar->name, 4))
+			if (dvar && !std::strncmp("scr_", dvar->name, 4))
 			{
-				return dvar;
+				return;
 			}
 
-			return gscr_set_dynamic_dvar_hook.invoke<game::dvar_t*>();
+			gscr_set_dynamic_dvar_hook.invoke<void>();
 		}
 
 		void kill_server()
@@ -135,12 +136,12 @@ namespace dedicated
 
 		void sys_error_stub(const char* msg, ...)
 		{
-			char buffer[2048];
+			char buffer[2048]{};
 
 			va_list ap;
 			va_start(ap, msg);
 
-			vsnprintf_s(buffer, sizeof(buffer), _TRUNCATE, msg, ap);
+			vsnprintf_s(buffer, _TRUNCATE, msg, ap);
 
 			va_end(ap);
 
@@ -175,11 +176,9 @@ namespace dedicated
 				return;
 			}
 
-			// Register dedicated dvar
 			game::Dvar_RegisterBool("dedicated", true, game::DVAR_FLAG_READ, "Dedicated server");
 
-			// Add lanonly mode
-			game::Dvar_RegisterBool("sv_lanOnly", false, game::DVAR_FLAG_NONE, "Don't send heartbeat");
+			sv_lanOnly = game::Dvar_RegisterBool("sv_lanOnly", false, game::DVAR_FLAG_NONE, "Don't send heartbeat");
 
 			// Disable VirtualLobby
 			dvars::override::Dvar_RegisterBool("virtualLobbyEnabled", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);

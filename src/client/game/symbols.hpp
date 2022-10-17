@@ -46,23 +46,19 @@ namespace game
 	WEAK symbol<bool()> CL_IsCgameInitialized{0x140136560, 0x1401FD510};
 
 	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{0x1400EE500, 0x1401A3050};
-	WEAK symbol<void(int localClientNum, /*mp::cg_s**/void* cg, const char* dvar, const char* value)>
-	CG_SetClientDvarFromServer
-		{0, 0x1401BF0A0};
+	WEAK symbol<void(int localClientNum, /*mp::cg_s**/void* cg, const char* dvar, const char* value)> CG_SetClientDvarFromServer{0, 0x1401BF0A0};
 
-	WEAK symbol<void(XAssetType type, void (__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)>
-	DB_EnumXAssets_FastFile{0x14017D7C0, 0x14026EC10};
-	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), const void* inData, bool includeOverride)>
-	DB_EnumXAssets_Internal{0x14017D830, 0x14026EC80};
-	WEAK symbol<XAssetEntry(XAssetType type, const char* name)>
-	DB_FindXAssetEntry{0x14017D830, 0x14026F020};
-	WEAK symbol<XAssetHeader(XAssetType type, const char *name, int allowCreateDefault)>
-	DB_FindXAssetHeader{0x14017DCA0, 0x14026F0F0};
+	WEAK symbol<void(XAssetType type, void (__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)> DB_EnumXAssets_FastFile{0x14017D7C0, 0x14026EC10};
+	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), const void* inData, bool includeOverride)> DB_EnumXAssets_Internal{0x14017D830, 0x14026EC80};
+	WEAK symbol<XAssetEntry(XAssetType type, const char* name)> DB_FindXAssetEntry{0x14017D830, 0x14026F020};
+	WEAK symbol<XAssetHeader(XAssetType type, const char *name, int allowCreateDefault)> DB_FindXAssetHeader{0x14017DCA0, 0x14026F0F0};
 	WEAK symbol<const char* (const XAsset* asset)> DB_GetXAssetName{0x140151C00, 0x140240DD0};
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{0x140151C20, 0x140240DF0};
-	WEAK symbol<void(XZoneInfo* zoneInfo, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{
-		0x1402F8B50, 0x140270F30
-	};
+	WEAK symbol<void(XZoneInfo* zoneInfo, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{0x1402F8B50, 0x140270F30};
+	WEAK symbol<int(XAssetType type, const char* name)> DB_XAssetExists{0x0, 0x1402750F0};
+	WEAK symbol<int(XAssetType type, const char* name)> DB_IsXAssetDefault{0x0, 0x140270320};
+	WEAK symbol<int(const RawFile* rawfile)> DB_GetRawFileLen{0x0, 0x14026FCC0};
+	WEAK symbol<void(const RawFile* rawfile, char* buf, int size)> DB_GetRawBuffer{0x0, 0x14026FB90};
 
 	WEAK symbol<dvar_t*(const char* name)> Dvar_FindVar{0x140370860, 0x1404BF8B0};
 	WEAK symbol<void(const dvar_t* dvar)> Dvar_ClearModified{0x140370700, 0x1404BF690};
@@ -130,30 +126,25 @@ namespace game
 
 	WEAK symbol<unsigned int(int)> Live_SyncOnlineDataFlags{0x1404459A0, 0x140562830};
 
-	WEAK symbol<void(int clientNum, const char* menu, int a3, int a4, unsigned int a5)> LUI_OpenMenu{0, 0x14048E450};
+	WEAK symbol<void(int localClientNum, const char* menuName, int isPopup, int isModal, unsigned int isExclusive)> LUI_OpenMenu{0, 0x14048E450};
 	WEAK symbol<void()> LUI_EnterCriticalSection{0, 0x1400D2B10};
 	WEAK symbol<void()> LUI_LeaveCriticalSection{0, 0x1400D7620};
 
-	WEAK symbol<bool(int clientNum, const char* menu)> Menu_IsMenuOpenAndVisible{0, 0x140488570};
+	WEAK symbol<bool(int localClientNum, const char* menuName)> Menu_IsMenuOpenAndVisible{0, 0x140488570};
 
 	WEAK symbol<Material*(const char* material)> Material_RegisterHandle{0x1404919D0, 0x1405AFBE0};
 
 	WEAK symbol<void(netadr_s*, sockaddr*)> NetadrToSockadr{0, 0x1404B6F10};
 
 	WEAK symbol<void(netsrc_t, netadr_s*, const char*)> NET_OutOfBandPrint{0, 0x1403DADC0};
-	WEAK symbol<void(netsrc_t sock, int length, const void* data, const netadr_s* to)> NET_SendLoopPacket{
-		0, 0x1403DAF80
-	};
+	WEAK symbol<void(netsrc_t sock, int length, const void* data, const netadr_s* to)> NET_SendLoopPacket{0, 0x1403DAF80};
 	WEAK symbol<bool(const char* s, netadr_s* a)> NET_StringToAdr{0, 0x1403DB070};
 
 	WEAK symbol<void(float x, float y, float width, float height, float s0, float t0, float s1, float t1,
 	                 float* color, Material* material)> R_AddCmdDrawStretchPic{0x1404A2580, 0x1405C0CB0};
-	WEAK symbol<void(const char*, int, Font_s*, float, float, float, float, float, float*, int)> R_AddCmdDrawText{
-		0x1404A2BF0, 0x1405C1320
-	};
+	WEAK symbol<void(const char*, int, Font_s*, float, float, float, float, float, float*, int)> R_AddCmdDrawText{0x1404A2BF0, 0x1405C1320};
 
-	WEAK symbol<void(const char*, int, Font_s*, float, float, float, float, float, const float*, int, int, char)>
-	R_AddCmdDrawTextWithCursor{0x1404A35E0, 0x1405C1D10};
+	WEAK symbol<void(const char*, int, Font_s*, float, float, float, float, float, const float*, int, int, char)> R_AddCmdDrawTextWithCursor{0x1404A35E0, 0x1405C1D10};
 	WEAK symbol<Font_s*(const char* font)> R_RegisterFont{0x140481F90, 0x14059F3C0};
 	WEAK symbol<void()> R_SyncRenderThread{0x1404A4D60, 0x1405C34F0};
 	WEAK symbol<int(const char* text, int maxChars, Font_s* font)> R_TextWidth{0x140482270, 0x14059F6B0};
@@ -162,16 +153,19 @@ namespace game
 
 	WEAK symbol<unsigned int()> Scr_AllocArray{0x140317C50, 0x1403F4280};
 	WEAK symbol<const float*(const float* v)> Scr_AllocVector{0x140317D10, 0x1403F4370};
-	WEAK symbol<const char*(int index)> Scr_GetString{0x14031C570, 0x1403F8C50};
-	WEAK symbol<unsigned int()> Scr_GetInt{0x14031C1F0, 0x1403F88D0};
-	WEAK symbol<float(int index)> Scr_GetFloat{0x14031C090, 0x1403F8820};
-	WEAK symbol<int()> Scr_GetNumParam{0x14031C2A0, 0x1403F8980};
+	WEAK symbol<const char*(unsigned int index)> Scr_GetString{0x14031C570, 0x1403F8C50};
+	WEAK symbol<int(unsigned int index)> Scr_GetInt{0x14031C1F0, 0x1403F88D0};
+	WEAK symbol<float(unsigned int index)> Scr_GetFloat{0x14031C090, 0x1403F8820};
+	WEAK symbol<unsigned int()> Scr_GetNumParam{0x14031C2A0, 0x1403F8980};
 	WEAK symbol<void()> Scr_ClearOutParams{0x14031B7C0, 0x1403F8040};
 	WEAK symbol<scr_entref_t(unsigned int entId)> Scr_GetEntityIdRef{0x14031A0D0, 0x1403F68A0};
 	WEAK symbol<int(unsigned int classnum, int entnum, int offset)> Scr_SetObjectField{0x14026B620, 0x140339450};
-	WEAK symbol<void(unsigned int id, scr_string_t stringValue, unsigned int paramcount)> Scr_NotifyId{
-		0x14031CB80, 0x1403F92D0
-	};
+	WEAK symbol<void(unsigned int id, scr_string_t stringValue, unsigned int paramcount)> Scr_NotifyId{0x14031CB80, 0x1403F92D0};
+
+	WEAK symbol<unsigned __int16(int handle, unsigned int paramcount)> Scr_ExecThread{0x0, 0x1403F8120};
+	WEAK symbol<unsigned int(const char* name)> Scr_LoadScript{0x0, 0x1403EE250};
+	WEAK symbol<unsigned int(const char* script, unsigned int name)> Scr_GetFunctionHandle{0x0, 0x1403EE0D0};
+	WEAK symbol<unsigned int(void* func, int type, unsigned int name)> Scr_RegisterFunction{0x1403115B0, 0x1403EDAE0};
 
 	WEAK symbol<unsigned int(unsigned int localId, const char* pos, unsigned int paramcount)> VM_Execute{0x0, 0x1403F9E40};
 
@@ -196,9 +190,7 @@ namespace game
 	WEAK symbol<void(mp::client_t* client)> SV_DropClient{0, 0x140438A30};
 	WEAK symbol<void(mp::client_t*, const char*, int)> SV_ExecuteClientCommand{0, 0x15121D8E6};
 	WEAK symbol<void(int localClientNum)> SV_FastRestart{0, 0x1404374E0};
-	WEAK symbol<void(int clientNum, svscmd_type type, const char* text)> SV_GameSendServerCommand{
-		0x1403F3A70, 0x14043E120
-	};
+	WEAK symbol<void(int clientNum, svscmd_type type, const char* text)> SV_GameSendServerCommand{0x1403F3A70, 0x14043E120};
 	WEAK symbol<const char*(int clientNum)> SV_GetGuid{0, 0x14043E1E0};
 	WEAK symbol<int(int clientNum)> SV_GetClientPing{0, 0x14043E1C0};
 	WEAK symbol<playerState_s*(int num)> SV_GetPlayerstateForClientNum{0x1403F3AB0, 0x14043E260};
@@ -206,9 +198,7 @@ namespace game
 	WEAK symbol<bool()> SV_Loaded{0x1403F42C0, 0x14043FA50};
 	WEAK symbol<bool(const char* map)> SV_MapExists{0, 0x140437800};
 	WEAK symbol<void(int localClientNum, const char* map, bool mapIsPreloaded)> SV_StartMap{0, 0x140438320};
-	WEAK symbol<void(int localClientNum, const char* map, bool mapIsPreloaded, bool migrate)> SV_StartMapForParty{
-		0, 0x140438490
-	};
+	WEAK symbol<void(int localClientNum, const char* map, bool mapIsPreloaded, bool migrate)> SV_StartMapForParty{0, 0x140438490};
 
 	WEAK symbol<void(int index, const char* string)> SV_SetConfigstring{0, 0x14043FCA0};
 
@@ -228,6 +218,11 @@ namespace game
 	WEAK symbol<const char*(const char*)> UI_GetGameTypeDisplayName{0, 0x1403B1670};
 	WEAK symbol<void(unsigned int localClientNum, const char** args)> UI_RunMenuScript{0, 0x140490060};
 	WEAK symbol<int(const char* text, int maxChars, Font_s* font, float scale)> UI_TextWidth{0, 0x140492380};
+
+	WEAK symbol<const char*()> SEH_GetCurrentLanguageName{0x140339300, 0x1404745C0};
+
+	WEAK symbol<void*(unsigned int size, unsigned int alignment, unsigned int type, int source)> PMem_AllocFromSource_NoDebug{0x0, 0x1404C7BA0};
+	WEAK symbol<void*(unsigned int size)> Hunk_AllocateTempMemoryHighInternal{0x0, 0x1404B68B0};
 
 	WEAK symbol<void*(jmp_buf* Buf, int Value)> longjmp{0x14059C5C0, 0x1406FD930};
 	WEAK symbol<int(jmp_buf* Buf)> _setjmp{0x14059CD00, 0x1406FE070};
@@ -301,15 +296,13 @@ namespace game
 		WEAK symbol<HksObject* (HksObject* result, lua_State* s, const HksObject* table, const HksObject* key)> hks_obj_gettable{0, 0x14009D800};
 		WEAK symbol<void(lua_State* s, int nargs, int nresults, const unsigned int* pc)> vm_call_internal{0, 0x1400C9EC0};
 		WEAK symbol<HashTable*(lua_State* s, unsigned int arraySize, unsigned int hashSize)> Hashtable_Create{0, 0x14008AAE0};
-		WEAK symbol<cclosure*(lua_State* s, lua_function function, int num_upvalues, 
-			int internal_, int profilerTreatClosureAsFunc)> cclosure_Create{0, 0x14008AD00};
+		WEAK symbol<cclosure*(lua_State* s, lua_function function, int num_upvalues, int internal_, int profilerTreatClosureAsFunc)> cclosure_Create{0, 0x14008AD00};
 		WEAK symbol<int(lua_State* s, int t)> hksi_luaL_ref{0, 0x1400A7D60};
 		WEAK symbol<void(lua_State* s, int t, int ref)> hksi_luaL_unref{0, 0x1400A0660};
-		WEAK symbol<int(lua_State* s, const HksCompilerSettings* options, const char* buff, 
-			unsigned __int64 sz, const char* name)> hksi_hksL_loadbuffer{0, 0x14009ECA0};
+		WEAK symbol<int(lua_State* s, const HksCompilerSettings* options, const char* buff, unsigned __int64 sz, const char* name)> hksi_hksL_loadbuffer{0, 0x14009ECA0};
 		WEAK symbol<int(lua_State* s, const char* what, lua_Debug* ar)> hksi_lua_getinfo{0, 0x1400A0C00};
 		WEAK symbol<int(lua_State* s, int level, lua_Debug* ar)> hksi_lua_getstack{0, 0x1400A0EC0};
 		WEAK symbol<void(lua_State* s, const char* fmt, ...)> hksi_luaL_error{0, 0x1400A03D0};
-		WEAK symbol<const char*> typenames{0, 0x1409AB270};
+		WEAK symbol<const char*> s_compilerTypeName{0, 0x1409AB270};
 	}
 }
