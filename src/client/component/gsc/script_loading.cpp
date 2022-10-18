@@ -47,16 +47,6 @@ namespace gsc
 				return true;
 			}
 
-			// This will prevent 'fake' GSC raw files from being compiled. They are parsed by the game's own parser later.
-			if (name.starts_with("maps/createfx") || name.starts_with("maps/createart") ||
-				(name.starts_with("maps/mp") && name.ends_with("_fx.gsc")))
-			{
-#ifdef _DEBUG
-				console::info("Refusing to compile rawfile '%s\n", name.data());
-#endif
-				return false;
-			}
-
 			const auto* name_str = name.data();
 			if (game::DB_XAssetExists(game::ASSET_TYPE_RAWFILE, name_str) &&
 				!game::DB_IsXAssetDefault(game::ASSET_TYPE_RAWFILE, name_str))
@@ -81,6 +71,17 @@ namespace gsc
 			if (const auto got = loaded_scripts.find(real_name); got != loaded_scripts.end())
 			{
 				return got->second;
+			}
+
+			// This will prevent 'fake' GSC raw files from being compiled.
+			// The GSC fake files are leftovers and have an actual scriptfiles counterpart that we must load instead.
+			if (real_name.starts_with("maps/createfx") || real_name.starts_with("maps/createart") ||
+				(real_name.starts_with("maps/mp") && real_name.ends_with("_fx.gsc")))
+			{
+				if (game::DB_XAssetExists(game::ASSET_TYPE_SCRIPTFILE, real_name.data()))
+				{
+					return game::DB_FindXAssetHeader(game::ASSET_TYPE_SCRIPTFILE, real_name.data(), false).scriptfile;
+				}
 			}
 
 			std::string source_buffer{};
