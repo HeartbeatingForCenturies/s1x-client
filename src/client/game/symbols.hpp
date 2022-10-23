@@ -24,12 +24,8 @@ namespace game
 	WEAK symbol<void(float, float, int)> Com_SetSlowMotion{0, 0x1403D19B0};
 	WEAK symbol<void()> Com_Quit_f{0x1402F9390, 0x1403D08C0};
 
-	WEAK symbol<void(const char* cmdName, void (), cmd_function_s* allocedCmd)> Cmd_AddCommandInternal{
-		0x1402EDDB0, 0x1403AF2C0
-	};
-	WEAK symbol<void(int localClientNum, int controllerIndex, const char* text)> Cmd_ExecuteSingleCommand{
-		0x1402EE350, 0x1403AF900
-	};
+	WEAK symbol<void(const char* cmdName, void (), cmd_function_s* allocedCmd)> Cmd_AddCommandInternal{0x1402EDDB0, 0x1403AF2C0};
+	WEAK symbol<void(int localClientNum, int controllerIndex, const char* text)> Cmd_ExecuteSingleCommand{0x1402EE350, 0x1403AF900};
 	WEAK symbol<void(const char*)> Cmd_RemoveCommand{0x1402EE910, 0x1403AFEF0};
 	WEAK symbol<void(const char* text_in)> Cmd_TokenizeString{0x1402EEA30, 0x1403B0020};
 	WEAK symbol<void()> Cmd_EndTokenizeString{0x1402EE000, 0x1403AF5B0};
@@ -44,6 +40,9 @@ namespace game
 	                 void (int, int, const char*))> Cbuf_ExecuteBufferInternal{0x1402ED9A0, 0x1403AEE80};
 
 	WEAK symbol<bool()> CL_IsCgameInitialized{0x140136560, 0x1401FD510};
+	WEAK symbol<void(int localClientNum, const char* string)> CL_ForwardCommandToServer{0x0, 0x14020B310};
+	WEAK symbol<void(int localClientNum)> CL_WritePacket{0x0, 0x1402058F0};
+	WEAK symbol<void(int localClientNum)> CL_Disconnect{0x0, 0x140209EC0};
 
 	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{0x1400EE500, 0x1401A3050};
 	WEAK symbol<void(int localClientNum, /*mp::cg_s**/void* cg, const char* dvar, const char* value)> CG_SetClientDvarFromServer{0, 0x1401BF0A0};
