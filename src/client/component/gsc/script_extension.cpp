@@ -10,6 +10,8 @@
 #include "script_error.hpp"
 #include "script_extension.hpp"
 
+#include <utils/string.hpp>
+
 #include <xsk/gsc/types.hpp>
 #include <xsk/resolver.hpp>
 
@@ -196,6 +198,27 @@ namespace gsc
 
 			console::info("\n");
 		}
+
+		void assert_cmd()
+		{
+			if (!game::Scr_GetInt(0))
+			{
+				scr_error("Assert fail");
+			}
+		}
+
+		void assert_ex_cmd()
+		{
+			if (!game::Scr_GetInt(0))
+			{
+				scr_error(utils::string::va("Assert fail: %s", game::Scr_GetString(1)));
+			}
+		}
+
+		void assert_msg_cmd()
+		{
+			scr_error(utils::string::va("Assert fail: %s", game::Scr_GetString(0)));
+		}
 	}
 
 	void scr_error(const char* error)
@@ -248,6 +271,10 @@ namespace gsc
 			utils::hook::call(0x1403FCAB0, vm_error_stub); // LargeLocalResetToMark
 
 			utils::hook::call(0x1403EDF1F, scr_get_function_stub);
+
+			override_function("assert", &assert_cmd);
+			override_function("assertex", &assert_ex_cmd);
+			override_function("assertmsg", &assert_ex_cmd);
 		}
 	};
 }
