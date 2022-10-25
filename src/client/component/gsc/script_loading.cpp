@@ -81,9 +81,9 @@ namespace gsc
 
 		game::ScriptFile* load_custom_script(const char* file_name, const std::string& real_name)
 		{
-			if (const auto got = loaded_scripts.find(real_name); got != loaded_scripts.end())
+			if (const auto itr = loaded_scripts.find(real_name); itr != loaded_scripts.end())
 			{
-				return got->second;
+				return itr->second;
 			}
 
 			std::string source_buffer{};

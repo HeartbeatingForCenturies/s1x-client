@@ -44,7 +44,7 @@ namespace command
 	void add(const char* name, const std::function<void(const params&)>& callback);
 	void add(const char* name, const std::function<void()>& callback);
 
-	void add_sv(const char* name, std::function<void(game::mp::gentity_s*, const params_sv&)> callback);
+	void add_sv(const char* name, const std::function<void(game::mp::gentity_s*, const params_sv&)>& callback);
 
 	void execute(std::string command, bool sync = false);
 }

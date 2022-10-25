@@ -33,9 +33,9 @@ namespace command
 			params params = {};
 
 			const auto command = utils::string::to_lower(params[0]);
-			if (handlers.contains(command))
+			if (const auto itr = handlers.find(command); itr != handlers.end())
 			{
-				handlers[command](params);
+				itr->second(params);
 			}
 		}
 
@@ -50,9 +50,9 @@ namespace command
 			params_sv params = {};
 
 			const auto command = utils::string::to_lower(params[0]);
-			if (const auto got = handlers_sv.find(command); got != handlers_sv.end())
+			if (const auto itr = handlers_sv.find(command); itr != handlers_sv.end())
 			{
-				got->second(&game::mp::g_entities[client_num], params);
+				itr->second(&game::mp::g_entities[client_num], params);
 			}
 
 			client_command_hook.invoke<void>(client_num);
@@ -219,7 +219,7 @@ namespace command
 		});
 	}
 
-	void add_sv(const char* name, std::function<void(game::mp::gentity_s*, const params_sv&)> callback)
+	void add_sv(const char* name, const std::function<void(game::mp::gentity_s*, const params_sv&)>& callback)
 	{
 		// doing this so the sv command would show up in the console
 		add_raw(name, nullptr);
@@ -227,7 +227,9 @@ namespace command
 		const auto command = utils::string::to_lower(name);
 
 		if (!handlers_sv.contains(command))
-			handlers_sv[command] = std::move(callback);
+		{
+			handlers_sv[command] = callback;
+		}
 	}
 
 	bool cheats_ok(const game::mp::gentity_s* ent)

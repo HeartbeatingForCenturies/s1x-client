@@ -171,9 +171,9 @@ namespace gsc
 
 		void scr_register_function_stub(void* func, int type, unsigned int name)
 		{
-			if (const auto got = builtin_funcs_overrides.find(name); got != builtin_funcs_overrides.end())
+			if (const auto itr = builtin_funcs_overrides.find(name); itr != builtin_funcs_overrides.end())
 			{
-				func = got->second;
+				func = itr->second;
 			}
 
 			scr_register_function_hook.invoke<void>(func, type, name);
