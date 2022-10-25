@@ -138,17 +138,6 @@ namespace ui_scripting
 		{
 			const auto lua = get_globals();
 
-			lua["io"]["fileexists"] = utils::io::file_exists;
-			lua["io"]["writefile"] = utils::io::write_file;
-			lua["io"]["movefile"] = utils::io::move_file;
-			lua["io"]["filesize"] = utils::io::file_size;
-			lua["io"]["createdirectory"] = utils::io::create_directory;
-			lua["io"]["directoryexists"] = utils::io::directory_exists;
-			lua["io"]["directoryisempty"] = utils::io::directory_is_empty;
-			lua["io"]["listfiles"] = utils::io::list_files;
-			lua["io"]["removefile"] = utils::io::remove_file;
-			lua["io"]["readfile"] = static_cast<std::string(*)(const std::string&)>(utils::io::read_file);
-
 			using game = table;
 			auto game_type = game();
 			lua["game"] = game_type;
