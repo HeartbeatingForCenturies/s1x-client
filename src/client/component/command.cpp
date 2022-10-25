@@ -206,7 +206,9 @@ namespace command
 		const auto command = utils::string::to_lower(name);
 
 		if (!handlers.contains(command))
+		{
 			add_raw(name, main_handler);
+		}
 
 		handlers[command] = callback;
 	}
