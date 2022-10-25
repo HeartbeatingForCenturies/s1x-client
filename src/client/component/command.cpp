@@ -21,6 +21,8 @@ namespace command
 {
 	namespace
 	{
+		constexpr auto CMD_MAX_NESTING = 8;
+
 		utils::hook::detour client_command_hook;
 
 		std::unordered_map<std::string, std::function<void(params&)>> handlers;
@@ -31,7 +33,7 @@ namespace command
 			params params = {};
 
 			const auto command = utils::string::to_lower(params[0]);
-			if (handlers.find(command) != handlers.end())
+			if (handlers.contains(command))
 			{
 				handlers[command](params);
 			}
@@ -131,6 +133,7 @@ namespace command
 	params::params()
 		: nesting_(game::cmd_args->nesting)
 	{
+		assert(this->nesting_ < CMD_MAX_NESTING);
 	}
 
 	int params::size() const
@@ -163,6 +166,7 @@ namespace command
 	params_sv::params_sv()
 		: nesting_(game::sv_cmd_args->nesting)
 	{
+		assert(this->nesting_ < CMD_MAX_NESTING);
 	}
 
 	int params_sv::size() const
@@ -201,7 +205,7 @@ namespace command
 	{
 		const auto command = utils::string::to_lower(name);
 
-		if (handlers.find(command) == handlers.end())
+		if (!handlers.contains(command))
 			add_raw(name, main_handler);
 
 		handlers[command] = callback;
@@ -222,7 +226,7 @@ namespace command
 
 		const auto command = utils::string::to_lower(name);
 
-		if (handlers_sv.find(command) == handlers_sv.end())
+		if (!handlers_sv.contains(command))
 			handlers_sv[command] = std::move(callback);
 	}
 

@@ -5,7 +5,6 @@
 #include "game/dvars.hpp"
 
 #include "console.hpp"
-#include "scheduler.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -177,17 +176,14 @@ namespace dvar_cheats
 			utils::hook::call(0x1401BB782, cg_set_client_dvar_from_server);
 			// check for dvars being sent as string before parsing ids
 
-			scheduler::once([]()
-			{
 #ifdef _DEBUG
-				constexpr auto value = true;
+			constexpr auto value = true;
 #else
-				constexpr auto value = false;
+			constexpr auto value = false;
 #endif
 
-				dvars::sv_cheats = game::Dvar_RegisterBool("sv_cheats", value, game::DvarFlags::DVAR_FLAG_REPLICATED,
-					"Allow cheat commands and dvars on this server");
-			}, scheduler::pipeline::main);
+			dvars::sv_cheats = game::Dvar_RegisterBool("sv_cheats", value, game::DVAR_FLAG_REPLICATED,
+				"Allow cheat commands and dvars on this server");
 		}
 	};
 }

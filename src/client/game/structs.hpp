@@ -22,6 +22,9 @@ namespace game
 		unsigned short classnum;
 	};
 
+	typedef void(*BuiltinMethod)(scr_entref_t);
+	typedef void(*BuiltinFunction)();
+
 	enum scriptType_e
 	{
 		SCRIPT_NONE = 0,
