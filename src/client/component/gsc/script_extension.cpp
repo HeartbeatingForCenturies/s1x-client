@@ -6,6 +6,7 @@
 #include <utils/hook.hpp>
 
 #include "component/console.hpp"
+#include "component/command.hpp"
 
 #include "script_error.hpp"
 #include "script_extension.hpp"
@@ -275,6 +276,12 @@ namespace gsc
 			override_function("assert", &assert_cmd);
 			override_function("assertex", &assert_ex_cmd);
 			override_function("assertmsg", &assert_ex_cmd);
+
+			add_function("executecommand", []
+			{
+				const auto* cmd = game::Scr_GetString(0);
+				command::execute(cmd);
+			});
 		}
 	};
 }

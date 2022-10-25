@@ -8,6 +8,7 @@
 #include "component/scripting.hpp"
 
 #include <utils/hook.hpp>
+#include <utils/string.hpp>
 
 namespace gsc
 {
@@ -80,6 +81,24 @@ namespace gsc
 
 			return res;
 		}
+
+		unsigned int scr_get_const_string(unsigned int index)
+		{
+			if (index < game::scr_VmPub->outparamcount)
+			{
+				auto* value = game::scr_VmPub->top - index;
+				if (game::Scr_CastString(value))
+				{
+					assert(value->type == game::SCRIPT_STRING);
+					return value->u.stringValue;
+				}
+
+				game::Scr_ErrorInternal();
+			}
+
+			scr_error(utils::string::va("Parameter %u does not exist", index + 1));
+			return 0;
+		}
 	}
 
 	std::optional<std::pair<std::string, std::string>> find_function(const char* pos)
@@ -114,6 +133,9 @@ namespace gsc
 			utils::hook::call(0x1403ED7E6, compile_error_stub); // LinkFile
 			utils::hook::call(0x1403ED8D0, compile_error_stub); // LinkFile
 			utils::hook::call(0x1403ED9DB, find_variable_stub); // Scr_EmitFunction
+
+			// Restore basic error messages to scr functions
+			utils::hook::jump(0x1403F8510, scr_get_const_string);
 		}
 
 		void pre_destroy() override

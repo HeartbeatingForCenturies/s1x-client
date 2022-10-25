@@ -41,8 +41,7 @@ namespace scripting
 		std::vector<std::function<void(int)>> shutdown_callbacks;
 		std::vector<std::function<void()>> init_callbacks;
 
-		void vm_notify_stub(const unsigned int notify_list_owner_id, const game::scr_string_t string_value,
-		                    game::VariableValue* top)
+		void vm_notify_stub(const unsigned int notify_list_owner_id, const game::scr_string_t string_value, game::VariableValue* top)
 		{
 			if (!game::VirtualLobby_Loaded())
 			{
