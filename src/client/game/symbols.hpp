@@ -36,8 +36,7 @@ namespace game
 
 	WEAK symbol<void(int localClientNum, void (*)(int localClientNum))> Cbuf_AddCall{0x1402ED820, 0x1403AECF0};
 	WEAK symbol<void(int localClientNum, const char* text)> Cbuf_AddText{0x1402ED890, 0x1403AED70};
-	WEAK symbol<void(int localClientNum, int controllerIndex, const char* buffer,
-	                 void (int, int, const char*))> Cbuf_ExecuteBufferInternal{0x1402ED9A0, 0x1403AEE80};
+	WEAK symbol<void(int localClientNum, int controllerIndex, const char* buffer, void (int, int, const char*))> Cbuf_ExecuteBufferInternal{0x1402ED9A0, 0x1403AEE80};
 
 	WEAK symbol<bool()> CL_IsCgameInitialized{0x140136560, 0x1401FD510};
 	WEAK symbol<void(int localClientNum, const char* string)> CL_ForwardCommandToServer{0x0, 0x14020B310};
@@ -66,9 +65,7 @@ namespace game
 	WEAK symbol<void(dvar_t* dvar, DvarSetSource source)> Dvar_Reset{0x140372950, 0x1404C1DB0};
 	WEAK symbol<void(const char* dvar, const char* buffer)> Dvar_SetCommand{0x1403730D0, 0x1404C2520};
 	WEAK symbol<void(dvar_t* dvar, const char* string)> Dvar_SetString{0x140373DE0, 0x1404C3610};
-	WEAK symbol<void(const char*, const char*, DvarSetSource)> Dvar_SetFromStringByNameFromSource{
-		0x1403737D0, 0x1404C2E40
-	};
+	WEAK symbol<void(const char*, const char*, DvarSetSource)> Dvar_SetFromStringByNameFromSource{0x1403737D0, 0x1404C2E40};
 	WEAK symbol<const char*(dvar_t* dvar, dvar_value value)> Dvar_ValueToString{0x140374E10, 0x1404C47B0};
 
 	WEAK symbol<dvar_t*(const char* dvarName, bool value, unsigned int flags, const char* description)>
@@ -100,9 +97,7 @@ namespace game
 	WEAK symbol<unsigned int(unsigned int parentId, unsigned int name)> FindVariable{0x1403165D0, 0x1403F2DC0};
 	WEAK symbol<unsigned int(int entnum, unsigned int classnum)> FindEntityId{0x1403166D0, 0x1403F2CC0};
 	WEAK symbol<scr_string_t(unsigned int parentId, unsigned int id)> GetVariableName{0x1403170E0, 0x1403F37F0};
-	WEAK symbol<void(VariableValue* result, unsigned int classnum, int entnum, int offset)> GetEntityFieldValue{
-		0x14031AAD0, 0x1403F72A0
-	};
+	WEAK symbol<void(VariableValue* result, unsigned int classnum, int entnum, int offset)> GetEntityFieldValue{0x14031AAD0, 0x1403F72A0};
 	WEAK symbol<unsigned int(unsigned int)> GetObjectType{0x140316F70, 0x1403F3670};
 	WEAK symbol<unsigned int(unsigned int, unsigned int)> GetVariable{0x0, 0x1403F3730};
 
@@ -110,9 +105,7 @@ namespace game
 
 	WEAK symbol<int(int clientNum)> G_GetClientScore{0, 0x1402F6AB0};
 	WEAK symbol<unsigned int(const char* name)> G_GetWeaponForName{0x140274590, 0x14033FF60};
-	WEAK symbol<int(playerState_s* ps, unsigned int weapon, int dualWield, int startInAltMode, int, int, int, char,
-	                ...)>
-	G_GivePlayerWeapon{0x1402749B0, 0x140340470};
+	WEAK symbol<int(playerState_s* ps, unsigned int weapon, int dualWield, int startInAltMode, int, int, int, char)> G_GivePlayerWeapon{0x1402749B0, 0x140340470};
 	WEAK symbol<void(playerState_s* ps, unsigned int weapon, int hadWeapon)> G_InitializeAmmo{0x1402217F0, 0x1402F22B0};
 	WEAK symbol<void(int clientNum, unsigned int weapon)> G_SelectWeapon{0x140275380, 0x140340D50};
 	WEAK symbol<int(playerState_s* ps, unsigned int weapon)> G_TakePlayerWeapon{0x1402754E0, 0x1403411D0};
@@ -160,6 +153,7 @@ namespace game
 	WEAK symbol<scr_entref_t(unsigned int entId)> Scr_GetEntityIdRef{0x14031A0D0, 0x1403F68A0};
 	WEAK symbol<int(unsigned int classnum, int entnum, int offset)> Scr_SetObjectField{0x14026B620, 0x140339450};
 	WEAK symbol<void(unsigned int id, scr_string_t stringValue, unsigned int paramcount)> Scr_NotifyId{0x14031CB80, 0x1403F92D0};
+	WEAK symbol<bool(VariableValue* value)> Scr_CastString{0x0, 0x1403F4500};
 
 	WEAK symbol<unsigned __int16(int handle, unsigned int paramcount)> Scr_ExecThread{0x0, 0x1403F8120};
 	WEAK symbol<unsigned int(const char* name)> Scr_LoadScript{0x0, 0x1403EE250};
@@ -167,10 +161,12 @@ namespace game
 	WEAK symbol<unsigned int(void* func, int type, unsigned int name)> Scr_RegisterFunction{0x1403115B0, 0x1403EDAE0};
 
 	WEAK symbol<unsigned int(unsigned int localId, const char* pos, unsigned int paramcount)> VM_Execute{0x0, 0x1403F9E40};
+	WEAK symbol<void()> Scr_ErrorInternal{0x0, 0x1403F80A0};
 
 	WEAK symbol<const char*(scr_string_t stringValue)> SL_ConvertToString{0x140314850, 0x1403F0F10};
 	WEAK symbol<scr_string_t(const char* str)> SL_FindString{0x140314AF0, 0x1403F11C0};
 	WEAK symbol<scr_string_t(const char* str, unsigned int user)> SL_GetString{0x140314D90, 0x1403F1440};
+	WEAK symbol<unsigned int(char const* str)> SL_GetCanonicalString{0x140311770, 0x1403EDCA0};
 
 	WEAK symbol<void(int arg, char* buffer, int bufferLength)> SV_Cmd_ArgvBuffer{0x1402EEFD0, 0x1403B05C0};
 	WEAK symbol<void(const char* text_in)> SV_Cmd_TokenizeString{0, 0x1403B0640};
@@ -252,6 +248,8 @@ namespace game
 	WEAK symbol<const char*> command_whitelist{0x140808EF0, 0x1409B8DC0};
 
 	WEAK symbol<SOCKET> query_socket{0, 0x14B5B9180};
+
+	WEAK symbol<int> level_time{0x0, 0x144959C2C};
 
 	WEAK symbol<void*> DB_XAssetPool{0x140804690, 0x1409B40D0};
 	WEAK symbol<unsigned int> db_hashTable{0x142C3E050, 0x143716B10};
