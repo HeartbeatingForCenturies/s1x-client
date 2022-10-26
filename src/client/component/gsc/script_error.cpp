@@ -130,8 +130,8 @@ namespace gsc
 
 			scr_emit_function_hook.create(0x1403ED900, &scr_emit_function_stub);
 
-			utils::hook::call(0x1403ED7E6, compile_error_stub); // LinkFile
-			utils::hook::call(0x1403ED8D0, compile_error_stub); // LinkFile
+			utils::hook::call(0x1403ED894, compile_error_stub); // LinkFile
+			utils::hook::call(0x1403ED8E8, compile_error_stub); // LinkFile
 			utils::hook::call(0x1403ED9DB, find_variable_stub); // Scr_EmitFunction
 
 			// Restore basic error messages to scr functions
