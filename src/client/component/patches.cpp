@@ -14,7 +14,7 @@
 #include <utils/string.hpp>
 #include <utils/hook.hpp>
 
-#include "version.hpp"
+#include <version.hpp>
 
 namespace patches
 {
@@ -118,7 +118,7 @@ namespace patches
 			return 0;
 		}
 
-		const char* db_read_raw_file_stub(const char* filename, char* buf, const int size)
+		char* db_read_raw_file_stub(const char* filename, char* buf, const int size)
 		{
 			std::string file_name = filename;
 			if (file_name.find(".cfg") == std::string::npos)
@@ -133,9 +133,7 @@ namespace patches
 				return buf;
 			}
 
-			// DB_ReadRawFile
-			return reinterpret_cast<const char*(*)(const char*, char*, int)>(SELECT_VALUE(0x140180E30, 0x140273080))(
-				filename, buf, size);
+			return game::DB_ReadRawFile(filename, buf, size);
 		}
 
 		void aim_assist_add_to_target_list(void* a1, void* a2)

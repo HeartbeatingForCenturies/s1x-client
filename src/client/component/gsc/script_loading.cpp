@@ -10,6 +10,8 @@
 #include "component/scripting.hpp"
 #include "component/fastfiles.hpp"
 
+#include "script_loading.hpp"
+
 #include <xsk/gsc/types.hpp>
 #include <xsk/gsc/interfaces/compiler.hpp>
 #include <xsk/gsc/interfaces/decompiler.hpp>
@@ -47,7 +49,8 @@ namespace gsc
 				return true;
 			}
 
-			// This will prevent 'fake' GSC raw files from being compiled. They are parsed by the game's own parser later.
+			// This will prevent 'fake' GSC raw files from being compiled.
+			// They are parsed by the game's own parser later as they are special files.
 			if (name.starts_with("maps/createfx") || name.starts_with("maps/createart") ||
 				(name.starts_with("maps/mp") && name.ends_with("_fx.gsc")))
 			{
@@ -78,9 +81,9 @@ namespace gsc
 
 		game::ScriptFile* load_custom_script(const char* file_name, const std::string& real_name)
 		{
-			if (const auto got = loaded_scripts.find(real_name); got != loaded_scripts.end())
+			if (const auto itr = loaded_scripts.find(real_name); itr != loaded_scripts.end())
 			{
-				return got->second;
+				return itr->second;
 			}
 
 			std::string source_buffer{};
@@ -225,24 +228,6 @@ namespace gsc
 			}
 		}
 
-		game::ScriptFile* find_script(game::XAssetType /*type*/, const char* name, int /*allow_create_default*/)
-		{
-			std::string real_name = name;
-			const auto id = static_cast<std::uint16_t>(std::atoi(name));
-			if (id)
-			{
-				real_name = xsk::gsc::s1::resolver::token_name(id);
-			}
-
-			auto* script = load_custom_script(name, real_name);
-			if (script)
-			{
-				return script;
-			}
-
-			return game::DB_FindXAssetHeader(game::ASSET_TYPE_SCRIPTFILE, name, 1).scriptfile;
-		}
-
 		int db_is_x_asset_default(game::XAssetType type, const char* name)
 		{
 			if (loaded_scripts.contains(name))
@@ -253,9 +238,9 @@ namespace gsc
 			return game::DB_IsXAssetDefault(type, name);
 		}
 
-		void gscr_load_game_type_script_stub()
+		void gscr_post_load_scripts_stub()
 		{
-			utils::hook::invoke<void>(0x140330490);
+			utils::hook::invoke<void>(0x140323F20);
 
 			clear();
 
@@ -314,6 +299,24 @@ namespace gsc
 		}
 	}
 
+	game::ScriptFile* find_script(game::XAssetType type, const char* name, int allow_create_default)
+	{
+		std::string real_name = name;
+		const auto id = static_cast<std::uint16_t>(std::atoi(name));
+		if (id)
+		{
+			real_name = xsk::gsc::s1::resolver::token_name(id);
+		}
+
+		auto* script = load_custom_script(name, real_name);
+		if (script)
+		{
+			return script;
+		}
+
+		return game::DB_FindXAssetHeader(type, name, allow_create_default).scriptfile;
+	}
+
 	class loading final : public component_interface
 	{
 	public:
@@ -352,7 +355,7 @@ namespace gsc
 			utils::hook::call(0x1403F7327, db_is_x_asset_default);
 
 			// GScr_LoadScripts
-			utils::hook::call(0x140330B19, gscr_load_game_type_script_stub);
+			utils::hook::call(0x140330B97, gscr_post_load_scripts_stub);
 
 			// Load our scripts with an uncompressed stack
 			utils::hook::call(0x1403F7380, db_get_raw_buffer_stub);

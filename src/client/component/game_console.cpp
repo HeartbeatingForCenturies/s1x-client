@@ -365,7 +365,7 @@ namespace game_console
 
 	void print_internal(const char* fmt, ...)
 	{
-		char va_buffer[0x200] = {0};
+		char va_buffer[0x200]{};
 
 		va_list ap;
 		va_start(ap, fmt);

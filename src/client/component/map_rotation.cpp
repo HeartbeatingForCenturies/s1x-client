@@ -3,6 +3,7 @@
 #include "game/game.hpp"
 
 #include "command.hpp"
+#include "console.hpp"
 #include "scheduler.hpp"
 
 #include <utils/hook.hpp>
@@ -126,7 +127,7 @@ namespace map_rotation
 					change_process_priority();
 					if (!game::SV_MapExists(value.data()))
 					{
-						printf("map_rotation: '%s' map doesn't exist!\n", value.data());
+						console::info("map_rotation: '%s' map doesn't exist!\n", value.data());
 						launch_default_map();
 						return;
 					}
@@ -135,7 +136,7 @@ namespace map_rotation
 				}
 				else
 				{
-					printf("Invalid map rotation key: %s\n", key.data());
+					console::info("Invalid map rotation key: %s\n", key.data());
 				}
 			}
 

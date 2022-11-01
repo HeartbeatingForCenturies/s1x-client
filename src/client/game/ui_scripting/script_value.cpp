@@ -2,7 +2,6 @@
 #include "execution.hpp"
 #include "types.hpp"
 #include "script_value.hpp"
-#include "../../component/ui_scripting.hpp"
 
 namespace ui_scripting
 {

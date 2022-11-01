@@ -25,6 +25,7 @@ namespace dvars
 	game::dvar_t* g_gravity = nullptr;
 	game::dvar_t* g_speed = nullptr;
 	game::dvar_t* g_elevators = nullptr;
+	game::dvar_t* g_log = nullptr;
 
 	game::dvar_t* jump_height = nullptr;
 	game::dvar_t* jump_ladderPushVel = nullptr;

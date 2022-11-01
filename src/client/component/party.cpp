@@ -14,6 +14,8 @@
 #include <utils/cryptography.hpp>
 #include <utils/hook.hpp>
 
+#include <version.hpp>
+
 namespace party
 {
 	namespace
@@ -80,29 +82,18 @@ namespace party
 
 		std::string get_dvar_string(const std::string& dvar)
 		{
-			auto* dvar_value = game::Dvar_FindVar(dvar.data());
+			const auto* dvar_value = game::Dvar_FindVar(dvar.data());
 			if (dvar_value && dvar_value->current.string)
 			{
-				return dvar_value->current.string;
+				return {dvar_value->current.string};
 			}
 
 			return {};
 		}
 
-		int get_dvar_int(const std::string& dvar)
-		{
-			auto* dvar_value = game::Dvar_FindVar(dvar.data());
-			if (dvar_value && dvar_value->current.integer)
-			{
-				return dvar_value->current.integer;
-			}
-
-			return -1;
-		}
-
 		bool get_dvar_bool(const std::string& dvar)
 		{
-			auto* dvar_value = game::Dvar_FindVar(dvar.data());
+			const auto* dvar_value = game::Dvar_FindVar(dvar.data());
 			if (dvar_value && dvar_value->current.enabled)
 			{
 				return dvar_value->current.enabled;
@@ -128,22 +119,20 @@ namespace party
 			{
 				if (game::CL_IsCgameInitialized())
 				{
-					// CL_ForwardCommandToServer
-					reinterpret_cast<void (*)(int, const char*)>(0x14020B310)(0, "disconnect");
-					// CL_WritePacket
-					reinterpret_cast<void (*)(int)>(0x1402058F0)(0);
+					game::CL_ForwardCommandToServer(0, "disconnect");
+					game::CL_WritePacket(0);
 				}
-				// CL_Disconnect
-				reinterpret_cast<void (*)(int)>(0x140209EC0)(0);
+
+				game::CL_Disconnect(0);
 			}
 		}
 
-		utils::hook::detour cldisconnect_hook;
+		utils::hook::detour cl_disconnect_hook;
 
-		void cldisconnect_stub(int a1)
+		void cl_disconnect_stub(int a1)
 		{
 			clear_sv_motd();
-			cldisconnect_hook.invoke<void>(a1);
+			cl_disconnect_hook.invoke<void>(a1);
 		}
 
 		const auto drop_reason_stub = utils::hook::assemble([](utils::hook::assembler& a)
@@ -156,7 +145,7 @@ namespace party
 
 	void clear_sv_motd()
 	{
-		party::sv_motd.clear();
+		sv_motd.clear();
 	}
 
 	int get_client_num_by_name(const std::string& name)
@@ -305,7 +294,7 @@ namespace party
 			utils::hook::jump(0x14020A010, disconnect_stub);
 
 			// detour CL_Disconnect to clear motd
-			cldisconnect_hook.create(0x140209EC0, cldisconnect_stub);
+			cl_disconnect_hook.create(0x140209EC0, cl_disconnect_stub);
 
 			if (game::environment::is_mp())
 			{
@@ -548,6 +537,7 @@ namespace party
 				info.set("playmode", utils::string::va("%i", game::Com_GetCurrentCoDPlayMode()));
 				info.set("sv_running", utils::string::va("%i", get_dvar_bool("sv_running")));
 				info.set("dedicated", utils::string::va("%i", get_dvar_bool("dedicated")));
+				info.set("shortversion", SHORTVERSION);
 
 				network::send(target, "infoResponse", info.build(), '\n');
 			});

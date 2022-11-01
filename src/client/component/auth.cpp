@@ -6,6 +6,7 @@
 #include "auth.hpp"
 #include "command.hpp"
 #include "network.hpp"
+#include "console.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -219,9 +220,9 @@ namespace auth
 				utils::hook::call(0x140208C54, send_connect_data_stub);
 			}
 
-			command::add("guid", []()
+			command::add("guid", []
 			{
-				printf("Your guid: %llX\n", steam::SteamUser()->GetSteamID().bits);
+				console::info("Your guid: %llX\n", steam::SteamUser()->GetSteamID().bits);
 			});
 		}
 	};

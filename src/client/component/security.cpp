@@ -1,7 +1,10 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
-#include <utils/hook.hpp>
 #include "game/game.hpp"
+
+#include "console.hpp"
+
+#include <utils/hook.hpp>
 
 namespace security
 {
@@ -21,7 +24,7 @@ namespace security
 			if(snapshot.num_clients > 1200 && !printed)
 			{
 				printed = true;
-				printf("Too many entities (%d)... remapping!\n", snapshot.num_clients);
+				console::info("Too many entities (%d)... remapping!\n", snapshot.num_clients);
 			}
 			
 			snapshot.num_clients = std::min(snapshot.num_clients, 1200);

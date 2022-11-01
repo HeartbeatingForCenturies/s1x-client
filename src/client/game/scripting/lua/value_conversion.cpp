@@ -1,8 +1,9 @@
 #include <std_include.hpp>
 #include "value_conversion.hpp"
-#include "../functions.hpp"
-#include "../execution.hpp"
-#include ".../../component/logfile.hpp"
+
+#include "game/scripting/functions.hpp"
+#include "game/scripting/execution.hpp"
+#include "component/notifies.hpp"
 
 namespace scripting::lua
 {
@@ -120,9 +121,8 @@ namespace scripting::lua
 		game::VariableValue convert_function(sol::lua_value value)
 		{
 			const auto function = value.as<sol::protected_function>();
-			const auto index = reinterpret_cast<char*>(logfile::vm_execute_hooks.size());
-
-			logfile::vm_execute_hooks[index] = function;
+			const auto index = reinterpret_cast<char*>(notifies::get_hook_count() + 1);
+			notifies::set_lua_hook(index, function);
 
 			game::VariableValue func;
 			func.type = game::SCRIPT_FUNCTION;
@@ -133,30 +133,28 @@ namespace scripting::lua
 
 		sol::lua_value convert_function(lua_State* state, const char* pos)
 		{
-			return sol::overload(
-				[pos](const entity& entity, const sol::this_state s, sol::variadic_args va)
+			return sol::overload([pos](const entity& entity, const sol::this_state s, sol::variadic_args va)
+			{
+				std::vector<script_value> arguments{};
+
+				for (auto arg : va)
 				{
-					std::vector<script_value> arguments{};
-
-					for (auto arg : va)
-					{
-						arguments.push_back(convert({s, arg}));
-					}
-
-					return convert(s, exec_ent_thread(entity, pos, arguments));
-				},
-				[pos](const sol::this_state s, sol::variadic_args va)
-				{
-					std::vector<script_value> arguments{};
-
-					for (auto arg : va)
-					{
-						arguments.push_back(convert({s, arg}));
-					}
-
-					return convert(s, exec_ent_thread(*game::levelEntityId, pos, arguments));
+					arguments.push_back(convert({s, arg}));
 				}
-			);
+
+				return convert(s, exec_ent_thread(entity, pos, arguments));
+			},
+			[pos](const sol::this_state s, sol::variadic_args va)
+			{
+				std::vector<script_value> arguments{};
+
+				for (auto arg : va)
+				{
+					arguments.push_back(convert({s, arg}));
+				}
+
+				return convert(s, exec_ent_thread(*game::levelEntityId, pos, arguments));
+			});
 		}
 	}
 
@@ -167,8 +165,7 @@ namespace scripting::lua
 
 		const auto offset = 64000 * (parent_id & 3);
 
-		metatable[sol::meta_function::new_index] = [offset, parent_id](const sol::table t, const sol::this_state s,
-			const sol::lua_value& field, const sol::lua_value& value)
+		metatable[sol::meta_function::new_index] = [offset, parent_id](const sol::table t, const sol::this_state s, const sol::lua_value& field, const sol::lua_value& value)
 		{
 			const auto id = field.is<std::string>()
 				? scripting::find_token_id(field.as<std::string>())
@@ -190,8 +187,7 @@ namespace scripting::lua
 			variable->u.u = new_variable.u;
 		};
 
-		metatable[sol::meta_function::index] = [offset, parent_id](const sol::table t, const sol::this_state s,
-			const sol::lua_value& field)
+		metatable[sol::meta_function::index] = [offset, parent_id](const sol::table t, const sol::this_state s, const sol::lua_value& field)
 		{
 			const auto id = field.is<std::string>()
 				? scripting::find_token_id(field.as<std::string>())

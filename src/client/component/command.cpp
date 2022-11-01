@@ -10,6 +10,7 @@
 #include "console.hpp"
 #include "game_console.hpp"
 #include "scheduler.hpp"
+#include "fastfiles.hpp"
 
 #include <utils/hook.hpp>
 #include <utils/string.hpp>
@@ -20,6 +21,8 @@ namespace command
 {
 	namespace
 	{
+		constexpr auto CMD_MAX_NESTING = 8;
+
 		utils::hook::detour client_command_hook;
 
 		std::unordered_map<std::string, std::function<void(params&)>> handlers;
@@ -30,9 +33,9 @@ namespace command
 			params params = {};
 
 			const auto command = utils::string::to_lower(params[0]);
-			if (handlers.find(command) != handlers.end())
+			if (const auto itr = handlers.find(command); itr != handlers.end())
 			{
-				handlers[command](params);
+				itr->second(params);
 			}
 		}
 
@@ -47,9 +50,9 @@ namespace command
 			params_sv params = {};
 
 			const auto command = utils::string::to_lower(params[0]);
-			if (const auto got = handlers_sv.find(command); got != handlers_sv.end())
+			if (const auto itr = handlers_sv.find(command); itr != handlers_sv.end())
 			{
-				got->second(&game::mp::g_entities[client_num], params);
+				itr->second(&game::mp::g_entities[client_num], params);
 			}
 
 			client_command_hook.invoke<void>(client_num);
@@ -130,6 +133,7 @@ namespace command
 	params::params()
 		: nesting_(game::cmd_args->nesting)
 	{
+		assert(this->nesting_ < CMD_MAX_NESTING);
 	}
 
 	int params::size() const
@@ -162,6 +166,7 @@ namespace command
 	params_sv::params_sv()
 		: nesting_(game::sv_cmd_args->nesting)
 	{
+		assert(this->nesting_ < CMD_MAX_NESTING);
 	}
 
 	int params_sv::size() const
@@ -200,8 +205,10 @@ namespace command
 	{
 		const auto command = utils::string::to_lower(name);
 
-		if (handlers.find(command) == handlers.end())
+		if (!handlers.contains(command))
+		{
 			add_raw(name, main_handler);
+		}
 
 		handlers[command] = callback;
 	}
@@ -214,15 +221,17 @@ namespace command
 		});
 	}
 
-	void add_sv(const char* name, std::function<void(game::mp::gentity_s*, const params_sv&)> callback)
+	void add_sv(const char* name, const std::function<void(game::mp::gentity_s*, const params_sv&)>& callback)
 	{
 		// doing this so the sv command would show up in the console
 		add_raw(name, nullptr);
 
 		const auto command = utils::string::to_lower(name);
 
-		if (handlers_sv.find(command) == handlers_sv.end())
-			handlers_sv[command] = std::move(callback);
+		if (!handlers_sv.contains(command))
+		{
+			handlers_sv[command] = callback;
+		}
 	}
 
 	bool cheats_ok(const game::mp::gentity_s* ent)
@@ -256,15 +265,6 @@ namespace command
 		{
 			game::Cbuf_AddText(0, command.data());
 		}
-	}
-
-	void enum_assets(const game::XAssetType type, const std::function<void(game::XAssetHeader)>& callback, const bool includeOverride)
-	{
-		game::DB_EnumXAssets_Internal(type, static_cast<void(*)(game::XAssetHeader, void*)>([](game::XAssetHeader header, void* data)
-		{
-			const auto& cb = *static_cast<const std::function<void(game::XAssetHeader)>*>(data);
-			cb(header);
-		}), &callback, includeOverride);
 	}
 
 	class component final : public component_interface
@@ -407,7 +407,7 @@ namespace command
 					console::info("Listing assets in pool %s\n", game::g_assetNames[type]);
 
 					const std::string filter = params.get(2);
-					enum_assets(type, [type, filter](const game::XAssetHeader header)
+					fastfiles::enum_assets(type, [type, filter](const game::XAssetHeader header)
 					{
 						const auto asset = game::XAsset{ type, header };
 						const auto* const asset_name = game::DB_GetXAssetName(&asset);

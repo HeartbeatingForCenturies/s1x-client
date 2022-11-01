@@ -1,10 +1,12 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+
+#include "console.hpp"
 #include "scheduler.hpp"
 #include "server_list.hpp"
 #include "network.hpp"
 #include "command.hpp"
-#include "game/game.hpp"
 #include "dvars.hpp"
 
 #include <utils/hook.hpp>
@@ -78,12 +80,11 @@ namespace dedicated
 			return console_command_queue;
 		}
 
-		void execute_console_command(const int client, const char* command)
+		void execute_console_command([[maybe_unused]] const int local_client_num, const char* command)
 		{
 			if (game::Live_SyncOnlineDataFlags(0) == 0)
 			{
-				game::Cbuf_AddText(client, command);
-				game::Cbuf_AddText(client, "\n");
+				command::execute(command);
 			}
 			else
 			{
@@ -145,7 +146,7 @@ namespace dedicated
 
 			va_end(ap);
 
-			scheduler::once([]()
+			scheduler::once([]
 			{
 				command::execute("map_rotate");
 			}, scheduler::main, 3s);
@@ -285,7 +286,7 @@ namespace dedicated
 			{
 				if (game::Live_SyncOnlineDataFlags(0) == 32 && game::Sys_IsDatabaseReady2())
 				{
-					scheduler::once([]()
+					scheduler::once([]
 					{
 						command::execute("xstartprivateparty", true);
 						command::execute("disconnect", true); // 32 -> 0
@@ -296,13 +297,13 @@ namespace dedicated
 				return scheduler::cond_continue;
 			}, scheduler::pipeline::main, 1s);
 
-			scheduler::on_game_initialized([]()
+			scheduler::on_game_initialized([]
 			{
 				initialize();
 
-				printf("==================================\n");
-				printf("Server started!\n");
-				printf("==================================\n");
+				console::info("==================================\n");
+				console::info("Server started!\n");
+				console::info("==================================\n");
 
 				// remove disconnect command
 				game::Cmd_RemoveCommand(reinterpret_cast<const char*>(751));

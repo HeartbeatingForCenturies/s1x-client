@@ -55,6 +55,7 @@
 #undef min
 #endif
 
+#include <ranges>
 #include <map>
 #include <atomic>
 #include <vector>
@@ -72,6 +73,7 @@
 #include <optional>
 #include <unordered_set>
 #include <variant>
+#include <format>
 
 #include <gsl/gsl>
 #include <udis86.h>
