@@ -79,7 +79,7 @@ namespace notifies
 			const int means_of_death, const unsigned int weapon, const bool is_alternate, const float* v_dir, const unsigned int hit_loc, int ps_time_offset, int death_anim_duration)
 		{
 			{
-				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409E62B0)[hit_loc];
+				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409B5400)[hit_loc];
 				const auto _mod = convert_mod(means_of_death);
 
 				const auto _weapon = get_weapon_name(weapon, is_alternate);
@@ -117,7 +117,7 @@ namespace notifies
 			const int means_of_death, const unsigned int weapon, const bool is_alternate, const float* v_point, const float* v_dir, const unsigned int hit_loc, const int time_offset)
 		{
 			{
-				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409E62B0)[hit_loc];
+				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409B5400)[hit_loc];
 				const auto _mod = convert_mod(means_of_death);
 
 				const auto _weapon = get_weapon_name(weapon, is_alternate);
