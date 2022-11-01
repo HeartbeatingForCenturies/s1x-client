@@ -1,10 +1,12 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+
+#include "console.hpp"
 #include "scheduler.hpp"
 #include "server_list.hpp"
 #include "network.hpp"
 #include "command.hpp"
-#include "game/game.hpp"
 #include "dvars.hpp"
 
 #include <utils/hook.hpp>
@@ -299,9 +301,9 @@ namespace dedicated
 			{
 				initialize();
 
-				printf("==================================\n");
-				printf("Server started!\n");
-				printf("==================================\n");
+				console::info("==================================\n");
+				console::info("Server started!\n");
+				console::info("==================================\n");
 
 				// remove disconnect command
 				game::Cmd_RemoveCommand(reinterpret_cast<const char*>(751));

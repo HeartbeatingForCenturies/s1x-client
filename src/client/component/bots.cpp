@@ -4,6 +4,7 @@
 #include "game/scripting/execution.hpp"
 
 #include "command.hpp"
+#include "console.hpp"
 #include "scheduler.hpp"
 #include "party.hpp"
 #include "network.hpp"
@@ -93,7 +94,7 @@ namespace bots
 			game::netadr_s master{};
 			if (server_list::get_master_server(master))
 			{
-				printf("Getting bots...\n");
+				console::info("Getting bots...\n");
 				network::send(master, "getbots");
 			}
 		}

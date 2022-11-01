@@ -57,6 +57,7 @@ namespace game
 	WEAK symbol<int(XAssetType type, const char* name)> DB_IsXAssetDefault{0x0, 0x140270320};
 	WEAK symbol<int(const RawFile* rawfile)> DB_GetRawFileLen{0x0, 0x14026FCC0};
 	WEAK symbol<void(const RawFile* rawfile, char* buf, int size)> DB_GetRawBuffer{0x0, 0x14026FB90};
+	WEAK symbol<char*(const char* filename, char* buf, int size)> DB_ReadRawFile{0x140180E30, 0x140273080};
 
 	WEAK symbol<dvar_t*(const char* name)> Dvar_FindVar{0x140370860, 0x1404BF8B0};
 	WEAK symbol<void(const dvar_t* dvar)> Dvar_ClearModified{0x140370700, 0x1404BF690};

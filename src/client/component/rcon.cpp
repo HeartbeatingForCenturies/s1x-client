@@ -1,13 +1,14 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
-#include <utils/hook.hpp>
-#include <utils/string.hpp>
 #include "game/game.hpp"
 
 #include "command.hpp"
 #include "console.hpp"
 #include "network.hpp"
 #include "scheduler.hpp"
+
+#include <utils/hook.hpp>
+#include <utils/string.hpp>
 
 namespace rcon
 {
@@ -112,6 +113,7 @@ namespace rcon
 			network::send(redirect_target_, "print", message);
 			return true;
 		}
+		
 		return false;
 	}
 
