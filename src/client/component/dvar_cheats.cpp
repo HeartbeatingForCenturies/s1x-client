@@ -182,8 +182,7 @@ namespace dvar_cheats
 			constexpr auto value = false;
 #endif
 
-			dvars::sv_cheats = game::Dvar_RegisterBool("sv_cheats", value, game::DVAR_FLAG_REPLICATED,
-				"Allow cheat commands and dvars on this server");
+			dvars::sv_cheats = game::Dvar_RegisterBool("sv_cheats", value, game::DVAR_FLAG_REPLICATED, "Allow cheat commands and dvars on this server");
 		}
 	};
 }

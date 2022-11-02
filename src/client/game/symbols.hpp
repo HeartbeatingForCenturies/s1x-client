@@ -46,17 +46,17 @@ namespace game
 	WEAK symbol<void(int localClientNum, const char* message)> CG_GameMessage{0x1400EE500, 0x1401A3050};
 	WEAK symbol<void(int localClientNum, /*mp::cg_s**/void* cg, const char* dvar, const char* value)> CG_SetClientDvarFromServer{0, 0x1401BF0A0};
 
-	WEAK symbol<void(XAssetType type, void (__cdecl* func)(XAssetHeader, void*), void* inData, bool includeOverride)> DB_EnumXAssets_FastFile{0x14017D7C0, 0x14026EC10};
-	WEAK symbol<void(XAssetType type, void(__cdecl* func)(XAssetHeader, void*), const void* inData, bool includeOverride)> DB_EnumXAssets_Internal{0x14017D830, 0x14026EC80};
+	WEAK symbol<void(XAssetType type, void (*func)(XAssetHeader, void*), void* inData, bool includeOverride)> DB_EnumXAssets_FastFile{0x14017D7C0, 0x14026EC10};
+	WEAK symbol<void(XAssetType type, void(*func)(XAssetHeader, void*), const void* inData, bool includeOverride)> DB_EnumXAssets_Internal{0x14017D830, 0x14026EC80};
 	WEAK symbol<XAssetEntry(XAssetType type, const char* name)> DB_FindXAssetEntry{0x14017D830, 0x14026F020};
 	WEAK symbol<XAssetHeader(XAssetType type, const char *name, int allowCreateDefault)> DB_FindXAssetHeader{0x14017DCA0, 0x14026F0F0};
-	WEAK symbol<const char* (const XAsset* asset)> DB_GetXAssetName{0x140151C00, 0x140240DD0};
+	WEAK symbol<const char*(const XAsset* asset)> DB_GetXAssetName{0x140151C00, 0x140240DD0};
 	WEAK symbol<int(XAssetType type)> DB_GetXAssetTypeSize{0x140151C20, 0x140240DF0};
 	WEAK symbol<void(XZoneInfo* zoneInfo, unsigned int zoneCount, DBSyncMode syncMode)> DB_LoadXAssets{0x1402F8B50, 0x140270F30};
-	WEAK symbol<int(XAssetType type, const char* name)> DB_XAssetExists{0x0, 0x1402750F0};
-	WEAK symbol<int(XAssetType type, const char* name)> DB_IsXAssetDefault{0x0, 0x140270320};
-	WEAK symbol<int(const RawFile* rawfile)> DB_GetRawFileLen{0x0, 0x14026FCC0};
-	WEAK symbol<void(const RawFile* rawfile, char* buf, int size)> DB_GetRawBuffer{0x0, 0x14026FB90};
+	WEAK symbol<int(XAssetType type, const char* name)> DB_XAssetExists{0x140182190, 0x1402750F0};
+	WEAK symbol<int(XAssetType type, const char* name)> DB_IsXAssetDefault{0x14017EEF0, 0x140270320};
+	WEAK symbol<int(const RawFile* rawfile)> DB_GetRawFileLen{0x14017E890, 0x14026FCC0};
+	WEAK symbol<void(const RawFile* rawfile, char* buf, int size)> DB_GetRawBuffer{0x14017E750, 0x14026FB90};
 	WEAK symbol<char*(const char* filename, char* buf, int size)> DB_ReadRawFile{0x140180E30, 0x140273080};
 
 	WEAK symbol<dvar_t*(const char* name)> Dvar_FindVar{0x140370860, 0x1404BF8B0};
