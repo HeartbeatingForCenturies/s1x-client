@@ -6,11 +6,12 @@
 #include "game/scripting/lua/value_conversion.hpp"
 #include "game/scripting/lua/error.hpp"
 
-#include <utils/hook.hpp>
-
+#include "command.hpp"
 #include "scheduler.hpp"
 #include "notifies.hpp"
 #include "scripting.hpp"
+
+#include <utils/hook.hpp>
 
 namespace notifies
 {
@@ -79,7 +80,7 @@ namespace notifies
 			const int means_of_death, const unsigned int weapon, const bool is_alternate, const float* v_dir, const unsigned int hit_loc, int ps_time_offset, int death_anim_duration)
 		{
 			{
-				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409E62B0)[hit_loc];
+				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409B5400)[hit_loc];
 				const auto _mod = convert_mod(means_of_death);
 
 				const auto _weapon = get_weapon_name(weapon, is_alternate);
@@ -117,7 +118,7 @@ namespace notifies
 			const int means_of_death, const unsigned int weapon, const bool is_alternate, const float* v_point, const float* v_dir, const unsigned int hit_loc, const int time_offset)
 		{
 			{
-				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409E62B0)[hit_loc];
+				const std::string _hit_loc = reinterpret_cast<const char**>(0x1409B5400)[hit_loc];
 				const auto _mod = convert_mod(means_of_death);
 
 				const auto _weapon = get_weapon_name(weapon, is_alternate);
@@ -154,31 +155,44 @@ namespace notifies
 
 		void client_command_stub(const int client_num)
 		{
-			auto self = &game::mp::g_entities[client_num];
-
-			if (!self->client)
+			if (game::mp::g_entities[client_num].client == nullptr)
 			{
 				return;
 			}
 
-			char cmd[1024]{};
-			game::SV_Cmd_ArgvBuffer(0, cmd, sizeof(cmd));
+			command::params_sv params;
 
-			if (cmd == "say"s || cmd == "say_team"s)
+			if (params[0] == "say"s || params[0] == "say_team"s)
 			{
-				auto hidden = false;
 				std::string message(game::ConcatArgs(1));
 
-				hidden = message[1] == '/';
-				message.erase(0, hidden ? 2 : 1);
+				auto msg_index = 0;
+				if (message[msg_index] == '\x15')
+				{
+					msg_index = 1;
+				}
 
-				scheduler::once([cmd, message, self]()
+				auto hidden = false;
+				if (message[msg_index] == '/')
+				{
+					hidden = true;
+
+					if (msg_index == 1)
+					{
+						// Overwrite / with \x15 only if present
+						message[msg_index] = message[msg_index - 1];
+					}
+					// Skip over the first character
+					message.erase(message.begin());
+				}
+
+				scheduler::once([params, message, client_num]
 				{
 					const scripting::entity level{*game::levelEntityId};
-					const auto player = scripting::call("getEntByNum", {self->s.number}).as<scripting::entity>();
+					const auto player = scripting::call("getEntByNum", {client_num}).as<scripting::entity>();
 
-					scripting::notify(level, cmd, {player, message});
-					scripting::notify(player, cmd, {message});
+					scripting::notify(level, params[0], {player, message});
+					scripting::notify(player, params[0], {message});
 				}, scheduler::pipeline::server);
 
 				if (hidden)
