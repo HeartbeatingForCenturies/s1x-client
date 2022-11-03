@@ -275,7 +275,7 @@ namespace gsc
 
 			override_function("assert", &assert_cmd);
 			override_function("assertex", &assert_ex_cmd);
-			override_function("assertmsg", &assert_ex_cmd);
+			override_function("assertmsg", &assert_msg_cmd);
 
 			add_function("executecommand", []
 			{

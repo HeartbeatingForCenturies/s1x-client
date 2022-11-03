@@ -242,6 +242,11 @@ namespace gsc
 		{
 			utils::hook::invoke<void>(0x140323F20);
 
+			if (game::VirtualLobby_Loaded())
+			{
+				return;
+			}
+
 			clear();
 
 			fastfiles::enum_assets(game::ASSET_TYPE_RAWFILE, [](const game::XAssetHeader header)
@@ -276,11 +281,14 @@ namespace gsc
 
 		void g_load_structs_stub()
 		{
-			for (auto& function_handle : main_handles)
+			if (!game::VirtualLobby_Loaded())
 			{
-				console::info("Executing '%s::main'\n", function_handle.first.data());
-				const auto thread = game::Scr_ExecThread(function_handle.second, 0);
-				game::RemoveRefToObject(thread);
+				for (auto& function_handle : main_handles)
+				{
+					console::info("Executing '%s::main'\n", function_handle.first.data());
+					const auto thread = game::Scr_ExecThread(function_handle.second, 0);
+					game::RemoveRefToObject(thread);
+				}
 			}
 
 			utils::hook::invoke<void>(0x1403380D0);
@@ -289,6 +297,11 @@ namespace gsc
 		void scr_load_level_stub()
 		{
 			utils::hook::invoke<void>(0x140325B90);
+
+			if (game::VirtualLobby_Loaded())
+			{
+				return;
+			}
 
 			for (auto& function_handle : init_handles)
 			{

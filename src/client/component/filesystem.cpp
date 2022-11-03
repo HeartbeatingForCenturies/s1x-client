@@ -65,30 +65,13 @@ namespace filesystem
 			game::FS_Startup(gamename);
 		}
 
-		std::vector<std::filesystem::path> get_paths(const std::filesystem::path& path)
-		{
-			std::vector<std::filesystem::path> paths{};
-
-			const auto code = game::SEH_GetCurrentLanguageName();
-
-			paths.push_back(path);
-
-			paths.push_back(path / code);
-
-			return paths;
-		}
-
 		bool can_insert_path(const std::filesystem::path& path)
 		{
-			for (const auto& path_ : get_search_paths_internal())
+			const auto& paths = get_search_paths_internal();
+			return std::ranges::none_of(paths.cbegin(), paths.cend(), [path](const auto& elem)
 			{
-				if (path_ == path)
-				{
-					return false;
-				}
-			}
-
-			return true;
+				return elem == path;
+			});
 		}
 	}
 
@@ -190,14 +173,10 @@ namespace filesystem
 			return;
 		}
 
-		const auto paths = get_paths(path);
-		for (const auto& path_ : paths)
+		if (can_insert_path(path))
 		{
-			if (can_insert_path(path_))
-			{
-				console::info("[FS] Registering path '%s'\n", path_.generic_string().data());
-				get_search_paths_internal().push_front(path_);
-			}
+			console::info("[FS] Registering path '%s'\n", path.generic_string().data());
+			get_search_paths_internal().push_front(path);
 		}
 	}
 
@@ -208,21 +187,17 @@ namespace filesystem
 			return;
 		}
 
-		const auto paths = get_paths(path);
-		for (const auto& path_ : paths)
+		auto& search_paths = get_search_paths_internal();
+		for (auto i = search_paths.begin(); i != search_paths.end();)
 		{
-			auto& search_paths = get_search_paths_internal();
-			for (auto i = search_paths.begin(); i != search_paths.end();)
+			if (*i == path)
 			{
-				if (*i == path_)
-				{
-					console::info("[FS] Unregistering path '%s'\n", path_.generic_string().data());
-					i = search_paths.erase(i);
-				}
-				else
-				{
-					++i;
-				}
+				console::info("[FS] Unregistering path '%s'\n", path.generic_string().data());
+				i = search_paths.erase(i);
+			}
+			else
+			{
+				++i;
 			}
 		}
 	}
