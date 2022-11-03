@@ -165,10 +165,10 @@ namespace notifies
 
 			if (params[0] == "say"s || params[0] == "say_team"s)
 			{
-				std::string message(game::ConcatArgs(1));
+				std::string message(params.join(1));
 
 				auto msg_index = 0;
-				if (message[msg_index] == '\x15')
+				if (message[msg_index] == '\x1F')
 				{
 					msg_index = 1;
 				}
@@ -180,7 +180,7 @@ namespace notifies
 
 					if (msg_index == 1)
 					{
-						// Overwrite / with \x15 only if present
+						// Overwrite / with \x1F only if present
 						message[msg_index] = message[msg_index - 1];
 					}
 					// Skip over the first character
@@ -192,13 +192,13 @@ namespace notifies
 					const scripting::entity level{*game::levelEntityId};
 					const auto player = scripting::call("getEntByNum", {client_num}).as<scripting::entity>();
 
-					scripting::notify(level, params[0], {player, message});
-					scripting::notify(player, params[0], {message});
+					notify(level, params[0], {player, message});
+					notify(player, params[0], {message});
 
 					game_log::g_log_printf("%s;%s;%i;%s;%s\n",
 						params[0],
 						player.call("getguid").as<const char*>(),
-						player.call("getentitynumber").as<int>(),
+						client_num,
 						player.get("name").as<const char*>(),
 						message.data()
 					);
