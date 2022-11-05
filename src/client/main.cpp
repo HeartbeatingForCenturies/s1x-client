@@ -188,11 +188,11 @@ int main()
 	// people will start with admin rights if it crashes.
 	limit_parallel_dll_loading();
 
-	std::srand(uint32_t(time(nullptr)));
+	srand(uint32_t(time(nullptr)));
 
 	{
 		auto premature_shutdown = true;
-		const auto _ = gsl::finally([&premature_shutdown]
+		const auto _ = gsl::finally([&premature_shutdown]()
 		{
 			if (premature_shutdown)
 			{
@@ -227,12 +227,17 @@ int main()
 
 			premature_shutdown = false;
 		}
-		catch (std::exception& ex)
+		catch (std::exception& e)
 		{
-			MessageBoxA(nullptr, ex.what(), nullptr, MB_ICONERROR);
+			MessageBoxA(nullptr, e.what(), "ERROR", MB_ICONERROR);
 			return 1;
 		}
 	}
 
 	return static_cast<int>(entry_point());
+}
+
+int __stdcall WinMain(HINSTANCE, HINSTANCE, PSTR, int)
+{
+	return main();
 }
