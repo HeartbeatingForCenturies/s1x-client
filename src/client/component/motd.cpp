@@ -1,5 +1,7 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+
 #include "motd.hpp"
 #include "images.hpp"
 
