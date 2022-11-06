@@ -1,11 +1,12 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+
 #include "server_list.hpp"
 #include "localized_strings.hpp"
 #include "network.hpp"
 #include "scheduler.hpp"
 #include "party.hpp"
-#include "game/game.hpp"
 
 #include <utils/cryptography.hpp>
 #include <utils/string.hpp>
@@ -157,7 +158,7 @@ namespace server_list
 
 		void sort_serverlist()
 		{
-			std::stable_sort(servers.begin(), servers.end(), [](const server_info& a, const server_info& b)
+			std::ranges::stable_sort(servers, [](const server_info& a, const server_info& b)
 			{
 				if (a.clients == b.clients)
 				{
@@ -310,21 +311,21 @@ namespace server_list
 	void handle_info_response(const game::netadr_s& address, const utils::info_string& info)
 	{
 		// Don't show servers that aren't dedicated!
-		const auto dedicated = std::atoi(info.get("dedicated").data());
-		if (!dedicated)
+		const auto dedicated = info.get("dedicated");
+		if (dedicated != "1"s)
 		{
 			return;
 		}
 
 		// Don't show servers that aren't running!
-		const auto sv_running = std::atoi(info.get("sv_running").data());
-		if (!sv_running)
+		const auto sv_running = info.get("sv_running");
+		if (sv_running != "1"s)
 		{
 			return;
 		}
 
 		// Only handle servers of the same playmode!
-		const auto playmode = game::CodPlayMode(std::atoi(info.get("playmode").data()));
+		const auto playmode = static_cast<game::CodPlayMode>(std::atoi(info.get("playmode").data()));
 		if (game::Com_GetCurrentCoDPlayMode() != playmode)
 		{
 			return;
@@ -352,9 +353,9 @@ namespace server_list
 		server.map_name = game::UI_GetMapDisplayName(info.get("mapname").data());
 		server.game_type = game::UI_GetGameTypeDisplayName(info.get("gametype").data());
 		server.play_mode = playmode;
-		server.clients = atoi(info.get("clients").data());
-		server.max_clients = atoi(info.get("sv_maxclients").data());
-		server.bots = atoi(info.get("bots").data());
+		server.clients = std::atoi(info.get("clients").data());
+		server.max_clients = std::atoi(info.get("sv_maxclients").data());
+		server.bots = std::atoi(info.get("bots").data());
 		server.ping = std::min(now - start_time, 999);
 
 		server.in_game = 1;

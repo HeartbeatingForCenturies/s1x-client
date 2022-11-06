@@ -277,7 +277,7 @@ namespace party
 
 	int server_client_count()
 	{
-		return party::sv_maxclients;
+		return sv_maxclients;
 	}
 
 	class component final : public component_interface
@@ -584,7 +584,7 @@ namespace party
 				}
 
 				const auto sv_running = info.get("sv_running");
-				if (sv_running.empty() || sv_running == "0"s)
+				if (sv_running != "1"s)
 				{
 					const auto* error_msg = "Server not running.";
 					console::error("%s\n", error_msg);
