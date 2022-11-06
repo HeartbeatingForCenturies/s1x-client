@@ -69,7 +69,7 @@ namespace motd
 
 		void post_unpack() override
 		{
-			if (!game::environment::is_mp())
+			if (game::environment::is_sp())
 			{
 				return;
 			}
