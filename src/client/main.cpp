@@ -163,7 +163,7 @@ void limit_parallel_dll_loading()
 void apply_environment()
 {
 	wchar_t* buffer{};
-	size_t size{};
+	std::size_t size{};
 	if (_wdupenv_s(&buffer, &size, L"XLABS_AW_INSTALL") != 0 || buffer == nullptr)
 	{
 		throw std::runtime_error("Please use the X Labs launcher to run the game!");
@@ -171,12 +171,11 @@ void apply_environment()
 
 	const auto _ = gsl::finally([&]
 	{
-		free(buffer);
+		std::free(buffer);
 	});
 
-	const std::wstring dir{buffer, size};
-	SetCurrentDirectoryW(dir.data());
-	SetDllDirectoryW(dir.data());
+	SetCurrentDirectoryW(buffer);
+	SetDllDirectoryW(buffer);
 }
 
 int main()
@@ -188,11 +187,11 @@ int main()
 	// people will start with admin rights if it crashes.
 	limit_parallel_dll_loading();
 
-	srand(uint32_t(time(nullptr)));
+	std::srand(uint32_t(time(nullptr)));
 
 	{
 		auto premature_shutdown = true;
-		const auto _ = gsl::finally([&premature_shutdown]()
+		const auto _ = gsl::finally([&premature_shutdown]
 		{
 			if (premature_shutdown)
 			{
