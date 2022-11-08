@@ -1,17 +1,16 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
-#include "scheduler.hpp"
 #include "game/game.hpp"
 
 #include "console.hpp"
 #include "command.hpp"
 #include "network.hpp"
 #include "party.hpp"
+#include "scheduler.hpp"
 
 #include <utils/string.hpp>
 
 #include <discord_rpc.h>
-#include <component/party.hpp>
 
 namespace discord
 {

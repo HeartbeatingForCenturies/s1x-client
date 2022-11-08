@@ -1,5 +1,7 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+
 #include "party.hpp"
 #include "console.hpp"
 #include "command.hpp"
@@ -28,6 +30,7 @@ namespace party
 		} connect_state;
 
 		std::string sv_motd;
+
 		int sv_maxclients;
 
 		void perform_game_initialization()
@@ -530,13 +533,13 @@ namespace party
 				info.set("xuid", utils::string::va("%llX", steam::SteamUser()->GetSteamID().bits));
 				info.set("mapname", get_dvar_string("mapname"));
 				info.set("isPrivate", get_dvar_string("g_password").empty() ? "0" : "1");
-				info.set("clients", utils::string::va("%i", get_client_count()));
-				info.set("bots", utils::string::va("%i", get_bot_count()));
-				info.set("sv_maxclients", utils::string::va("%i", *game::mp::svs_numclients));
-				info.set("protocol", utils::string::va("%i", PROTOCOL));
+				info.set("clients", std::to_string(get_client_count()));
+				info.set("bots", std::to_string(get_bot_count()));
+				info.set("sv_maxclients", std::to_string(*game::mp::svs_numclients));
+				info.set("protocol", std::to_string(PROTOCOL));
 				info.set("playmode", utils::string::va("%i", game::Com_GetCurrentCoDPlayMode()));
-				info.set("sv_running", utils::string::va("%i", get_dvar_bool("sv_running")));
-				info.set("dedicated", utils::string::va("%i", get_dvar_bool("dedicated")));
+				info.set("sv_running", std::to_string(get_dvar_bool("sv_running")));
+				info.set("dedicated", std::to_string(get_dvar_bool("dedicated")));
 				info.set("shortversion", SHORTVERSION);
 
 				network::send(target, "infoResponse", info.build(), '\n');
