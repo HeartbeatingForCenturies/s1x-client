@@ -96,7 +96,7 @@ namespace fps
 
 		void cg_draw_fps()
 		{
-			if (cg_drawFPS->current.integer > 0)
+			if (cg_drawFPS && cg_drawFPS->current.integer > 0)
 			{
 				const auto fps = get_fps();
 
