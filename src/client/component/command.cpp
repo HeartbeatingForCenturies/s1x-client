@@ -186,7 +186,7 @@ namespace command
 
 	std::string params_sv::join(const int index) const
 	{
-		std::string result = {};
+		std::string result;
 
 		for (auto i = index; i < this->size(); i++)
 		{

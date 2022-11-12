@@ -1,5 +1,7 @@
 #include <std_include.hpp>
 #include "loader/component_loader.hpp"
+#include "game/game.hpp"
+
 #include "party.hpp"
 #include "console.hpp"
 #include "command.hpp"
@@ -28,6 +30,7 @@ namespace party
 		} connect_state;
 
 		std::string sv_motd;
+
 		int sv_maxclients;
 
 		void perform_game_initialization()
@@ -277,7 +280,7 @@ namespace party
 
 	int server_client_count()
 	{
-		return party::sv_maxclients;
+		return sv_maxclients;
 	}
 
 	class component final : public component_interface
@@ -431,7 +434,7 @@ namespace party
 				{
 					for (auto i = 0; i < *game::mp::svs_numclients; ++i)
 					{
-						scheduler::once([i, reason]()
+						scheduler::once([i, reason]
 						{
 							game::SV_KickClientNum(i, reason.data());
 						}, scheduler::pipeline::server);
@@ -519,10 +522,10 @@ namespace party
 
 			utils::hook::call(0x14048811C, didyouknow_stub); // allow custom didyouknow based on sv_motd
 
-			network::on("getInfo", [](const game::netadr_s& target, const std::string_view& data)
+			network::on("getInfo", [](const game::netadr_s& target, const std::string& data)
 			{
 				utils::info_string info{};
-				info.set("challenge", std::string{data});
+				info.set("challenge", data);
 				info.set("gamename", "S1");
 				info.set("hostname", get_dvar_string("sv_hostname"));
 				info.set("gametype", get_dvar_string("g_gametype"));
@@ -530,21 +533,26 @@ namespace party
 				info.set("xuid", utils::string::va("%llX", steam::SteamUser()->GetSteamID().bits));
 				info.set("mapname", get_dvar_string("mapname"));
 				info.set("isPrivate", get_dvar_string("g_password").empty() ? "0" : "1");
-				info.set("clients", utils::string::va("%i", get_client_count()));
-				info.set("bots", utils::string::va("%i", get_bot_count()));
-				info.set("sv_maxclients", utils::string::va("%i", *game::mp::svs_numclients));
-				info.set("protocol", utils::string::va("%i", PROTOCOL));
+				info.set("clients", std::to_string(get_client_count()));
+				info.set("bots", std::to_string(get_bot_count()));
+				info.set("sv_maxclients", std::to_string(*game::mp::svs_numclients));
+				info.set("protocol", std::to_string(PROTOCOL));
 				info.set("playmode", utils::string::va("%i", game::Com_GetCurrentCoDPlayMode()));
-				info.set("sv_running", utils::string::va("%i", get_dvar_bool("sv_running")));
-				info.set("dedicated", utils::string::va("%i", get_dvar_bool("dedicated")));
+				info.set("sv_running", std::to_string(get_dvar_bool("sv_running")));
+				info.set("dedicated", std::to_string(get_dvar_bool("dedicated")));
 				info.set("shortversion", SHORTVERSION);
 
 				network::send(target, "infoResponse", info.build(), '\n');
 			});
 
-			network::on("infoResponse", [](const game::netadr_s& target, const std::string_view& data)
+			if (game::environment::is_dedi())
 			{
-				const utils::info_string info{data};
+				return;
+			}
+
+			network::on("infoResponse", [](const game::netadr_s& target, const std::string& data)
+			{
+				const utils::info_string info(data);
 				server_list::handle_info_response(target, info);
 
 				if (connect_state.host != target)
@@ -554,59 +562,67 @@ namespace party
 
 				if (info.get("challenge") != connect_state.challenge)
 				{
-					const auto str = "Invalid challenge.";
-					printf("%s\n", str);
-					game::Com_Error(game::ERR_DROP, str);
+					const auto* error_msg = "Invalid challenge.";
+					console::error("%s\n", error_msg);
+					game::Com_Error(game::ERR_DROP, "%s", error_msg);
 					return;
 				}
 
 				const auto gamename = info.get("gamename");
 				if (gamename != "S1"s)
 				{
-					const auto str = "Invalid gamename.";
-					printf("%s\n", str);
-					game::Com_Error(game::ERR_DROP, str);
+					const auto* error_msg = "Invalid gamename.";
+					console::error("%s\n", error_msg);
+					game::Com_Error(game::ERR_DROP, "%s", error_msg);
 					return;
 				}
 
 				const auto playmode = info.get("playmode");
-				if (game::CodPlayMode(std::atoi(playmode.data())) != game::Com_GetCurrentCoDPlayMode())
+				if (std::atoi(playmode.data()) != game::Com_GetCurrentCoDPlayMode())
 				{
-					const auto str = "Invalid playmode.";
-					printf("%s\n", str);
-					game::Com_Error(game::ERR_DROP, str);
+					const auto* error_msg = "Invalid playmode.";
+					console::error("%s\n", error_msg);
+					game::Com_Error(game::ERR_DROP, "%s", error_msg);
 					return;
 				}
 
 				const auto sv_running = info.get("sv_running");
-				if (!std::atoi(sv_running.data()))
+				if (sv_running != "1"s)
 				{
-					const auto str = "Server not running.";
-					printf("%s\n", str);
-					game::Com_Error(game::ERR_DROP, str);
+					const auto* error_msg = "Server not running.";
+					console::error("%s\n", error_msg);
+					game::Com_Error(game::ERR_DROP, "%s", error_msg);
 					return;
 				}
 
 				const auto mapname = info.get("mapname");
 				if (mapname.empty())
 				{
-					const auto str = "Invalid map.";
-					printf("%s\n", str);
-					game::Com_Error(game::ERR_DROP, str);
+					const auto* error_msg = "Invalid map.";
+					console::error("%s\n", error_msg);
+					game::Com_Error(game::ERR_DROP, "%s", error_msg);
 					return;
 				}
 
 				const auto gametype = info.get("gametype");
 				if (gametype.empty())
 				{
-					const auto str = "Invalid gametype.";
-					printf("%s\n", str);
-					game::Com_Error(game::ERR_DROP, str);
+					const auto* error_msg = "Invalid gametype.";
+					console::error("%s\n", error_msg);
+					game::Com_Error(game::ERR_DROP, "%s", error_msg);
 					return;
 				}
 
-				party::sv_motd = info.get("sv_motd");
-				party::sv_maxclients = std::stoi(info.get("sv_maxclients"));
+				sv_motd = info.get("sv_motd");
+
+				try
+				{
+					sv_maxclients = std::stoi(info.get("sv_maxclients"));
+				}
+				catch([[maybe_unused]] const std::exception& ex)
+				{
+					sv_maxclients = 1;
+				}
 
 				connect_to_party(target, mapname, gametype);
 			});

@@ -242,6 +242,11 @@ namespace gsc
 		{
 			utils::hook::invoke<void>(0x140323F20);
 
+			if (game::VirtualLobby_Loaded())
+			{
+				return;
+			}
+
 			clear();
 
 			fastfiles::enum_assets(game::ASSET_TYPE_RAWFILE, [](const game::XAssetHeader header)
@@ -276,11 +281,14 @@ namespace gsc
 
 		void g_load_structs_stub()
 		{
-			for (auto& function_handle : main_handles)
+			if (!game::VirtualLobby_Loaded())
 			{
-				console::info("Executing '%s::main'\n", function_handle.first.data());
-				const auto thread = game::Scr_ExecThread(function_handle.second, 0);
-				game::RemoveRefToObject(thread);
+				for (auto& function_handle : main_handles)
+				{
+					console::info("Executing '%s::main'\n", function_handle.first.data());
+					const auto thread = game::Scr_ExecThread(function_handle.second, 0);
+					game::RemoveRefToObject(thread);
+				}
 			}
 
 			utils::hook::invoke<void>(0x1403380D0);
@@ -289,6 +297,11 @@ namespace gsc
 		void scr_load_level_stub()
 		{
 			utils::hook::invoke<void>(0x140325B90);
+
+			if (game::VirtualLobby_Loaded())
+			{
+				return;
+			}
 
 			for (auto& function_handle : init_handles)
 			{
@@ -322,6 +335,9 @@ namespace gsc
 	public:
 		void post_unpack() override
 		{
+			// Load our scripts with an uncompressed stack
+			utils::hook::call(SELECT_VALUE(0x14031ABB0, 0x1403F7380), db_get_raw_buffer_stub);
+
 			if (game::environment::is_sp())
 			{
 				return;
@@ -356,9 +372,6 @@ namespace gsc
 
 			// GScr_LoadScripts
 			utils::hook::call(0x140330B97, gscr_post_load_scripts_stub);
-
-			// Load our scripts with an uncompressed stack
-			utils::hook::call(0x1403F7380, db_get_raw_buffer_stub);
 
 			// Exec script handles
 			utils::hook::call(0x1402F71AE, g_load_structs_stub);

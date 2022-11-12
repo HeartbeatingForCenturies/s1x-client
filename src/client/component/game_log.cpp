@@ -54,7 +54,7 @@ namespace game_log
 		va_list ap;
 		va_start(ap, fmt);
 
-		vsprintf_s(buffer, fmt, ap);
+		vsnprintf_s(buffer, _TRUNCATE, fmt, ap);
 
 		va_end(ap);
 
