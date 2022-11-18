@@ -217,8 +217,8 @@ namespace game
 
 	WEAK symbol<const char*()> SEH_GetCurrentLanguageName{0x140339300, 0x1404745C0};
 
-	WEAK symbol<void*(unsigned int size, unsigned int alignment, unsigned int type, int source)> PMem_AllocFromSource_NoDebug{0x0, 0x1404C7BA0};
-	WEAK symbol<void*(unsigned int size)> Hunk_AllocateTempMemoryHighInternal{0x0, 0x1404B68B0};
+	WEAK symbol<void*(unsigned int size, unsigned int alignment, unsigned int type, int source)> PMem_AllocFromSource_NoDebug{0x1403775F0, 0x1404C7BA0};
+	WEAK symbol<void*(unsigned int size)> Hunk_AllocateTempMemoryHighInternal{0x140369D60, 0x1404B68B0};
 
 	WEAK symbol<void*(jmp_buf* Buf, int Value)> longjmp{0x14059C5C0, 0x1406FD930};
 	WEAK symbol<int(jmp_buf* Buf)> _setjmp{0x14059CD00, 0x1406FE070};
