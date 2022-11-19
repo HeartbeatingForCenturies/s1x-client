@@ -173,7 +173,7 @@ namespace fps
 			scheduler::loop(cg_draw_fps, scheduler::pipeline::renderer);
 			if (game::environment::is_mp())
 			{
-				cg_drawPing = game::Dvar_RegisterInt("cg_drawPing", 0, 0, 1, game::DVAR_FLAG_SAVED, "Choose to draw ping");
+				cg_drawPing = game::Dvar_RegisterInt("cg_drawPing", 0, 0, 1, game::DVAR_FLAG_SAVED, "Draw ping");
 				scheduler::loop(cg_draw_ping, scheduler::pipeline::renderer);
 			}
 
