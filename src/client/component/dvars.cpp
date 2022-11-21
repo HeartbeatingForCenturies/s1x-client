@@ -82,22 +82,22 @@ namespace dvars
 		static std::unordered_set<std::string> set_int_disables;
 		static std::unordered_set<std::string> set_string_disables;
 
-		void Dvar_SetBool(const std::string& name)
+		void set_bool(const std::string& name)
 		{
 			set_bool_disables.emplace(name);
 		}
 
-		void Dvar_SetFloat(const std::string& name)
+		void set_float(const std::string& name)
 		{
 			set_float_disables.emplace(name);
 		}
 
-		void Dvar_SetInt(const std::string& name)
+		void set_int(const std::string& name)
 		{
 			set_int_disables.emplace(name);
 		}
 
-		void Dvar_SetString(const std::string& name)
+		void set_string(const std::string& name)
 		{
 			set_string_disables.emplace(name);
 		}
