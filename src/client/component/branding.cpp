@@ -41,7 +41,7 @@ namespace branding
 			}
 			localized_strings::override("LUA_MENU_LEGAL_COPYRIGHT", "S1x: " VERSION);
 
-			dvars::override::Dvar_SetString("version", utils::string::va("S1x %s", VERSION));
+			dvars::override::set_string("version", utils::string::va("S1x %s", VERSION));
 
 			ui_get_formatted_build_number_hook.create(
 				SELECT_VALUE(0x14035B3F0, 0x1404A8950), ui_get_formatted_build_number_stub);
