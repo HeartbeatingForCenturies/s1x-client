@@ -243,10 +243,10 @@ namespace network
 				utils::hook::call(0x140439D98, &net_compare_address);
 
 				// increase cl_maxpackets
-				dvars::override::Dvar_RegisterInt("cl_maxpackets", 1000, 1, 1000, game::DVAR_FLAG_SAVED);
+				dvars::override::register_int("cl_maxpackets", 1000, 1, 1000, game::DVAR_FLAG_SAVED);
 
 				// increase snaps
-				dvars::override::Dvar_RegisterInt("sv_remote_client_snapshot_msec", 33, 33, 100, game::DVAR_FLAG_NONE);
+				dvars::override::register_int("sv_remote_client_snapshot_msec", 33, 33, 100, game::DVAR_FLAG_NONE);
 
 				// ignore impure client
 				utils::hook::jump(0x14043AC0D, reinterpret_cast<void*>(0x14043ACA3));

@@ -182,13 +182,13 @@ namespace dedicated
 			sv_lanOnly = game::Dvar_RegisterBool("sv_lanOnly", false, game::DVAR_FLAG_NONE, "Don't send heartbeat");
 
 			// Disable VirtualLobby
-			dvars::override::Dvar_RegisterBool("virtualLobbyEnabled", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
+			dvars::override::register_bool("virtualLobbyEnabled", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
 
 			// Disable r_preloadShaders
-			dvars::override::Dvar_RegisterBool("r_preloadShaders", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
+			dvars::override::register_bool("r_preloadShaders", false, game::DVAR_FLAG_NONE | game::DVAR_FLAG_READ);
 
 			// Don't allow sv_hostname to be changed by the game
-			dvars::disable::Dvar_SetString("sv_hostname");
+			dvars::disable::set_string("sv_hostname");
 
 			// Stop crashing from sys_errors
 			utils::hook::jump(0x1404D6260, sys_error_stub);
