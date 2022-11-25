@@ -76,10 +76,7 @@ namespace utils
 
 	void memory::free(void* data)
 	{
-		if (data)
-		{
-			std::free(data);
-		}
+		std::free(data);
 	}
 
 	void memory::free(const void* data)
