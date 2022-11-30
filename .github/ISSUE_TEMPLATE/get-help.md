@@ -18,11 +18,7 @@ A short, concise description of the outcome you are trying to achieve.
 
 **What problem are you having?**
 A clear and concise description of the problem that is blocking you from your desired outcome, ex. "S1x is crashing with this error message: ..."
-Please walk us through the steps you have taken when you encountered this problem.
 If S1x is crashing, include the minidump file and the crash address in text form. Screenshots showing the message box with the crash address are not acceptable.
-
-**What have you tried so far?**
-Describe any steps you've already taken to try to get past this issue. Have you found a workaround?
 
 **What version of S1x are you using?**
 Please make sure you are up to date with the latest build from the master branch.
