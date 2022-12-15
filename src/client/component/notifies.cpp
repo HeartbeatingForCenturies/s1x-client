@@ -187,13 +187,15 @@ namespace notifies
 					message.erase(message.begin());
 				}
 
-				scheduler::once([params, message, client_num]
+				scheduler::once([params, message, msg_index, client_num]
 				{
 					const scripting::entity level{*game::levelEntityId};
 					const auto player = scripting::call("getEntByNum", {client_num}).as<scripting::entity>();
+					// Remove \x1F before sending the notify only if present
+					const auto notify_msg = msg_index ? message.substr(1) : message;
 
-					notify(level, params[0], {player, message});
-					notify(player, params[0], {message});
+					notify(level, params[0], {player, notify_msg});
+					notify(player, params[0], {notify_msg});
 
 					game_log::g_log_printf("%s;%s;%i;%s;%s\n",
 						params[0],
