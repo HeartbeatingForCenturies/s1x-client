@@ -87,6 +87,12 @@ namespace map_rotation
 
 				++i;
 			}
+
+			if (i == rotation.get_entries_size())
+			{
+				console::error("Map rotation does not contain any map. Restarting\n");
+				launch_default_map();
+			}
 		}
 
 		void load_rotation(const std::string& data)
@@ -266,7 +272,7 @@ namespace map_rotation
 			}
 			else
 			{
-				throw parse_rotation_error();
+				throw map_rotation_parse_error();
 			}
 		}
 	}
