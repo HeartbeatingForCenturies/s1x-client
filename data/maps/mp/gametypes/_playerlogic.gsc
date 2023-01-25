@@ -1211,10 +1211,6 @@ removeplayerondisconnect()
 
 initclientdvarssplitscreenspecific()
 {
-    if ( level.splitscreen || self issplitscreenplayer() )
-        self setclientdvars( "cg_hudGrenadeIconHeight", "37.5", "cg_hudGrenadeIconWidth", "37.5", "cg_hudGrenadeIconOffset", "75", "cg_hudGrenadePointerHeight", "18", "cg_hudGrenadePointerWidth", "37.5", "cg_hudGrenadePointerPivot", "18 40.5", "cg_fovscale", "0.75" );
-    else
-        self setclientdvars( "cg_hudGrenadeIconHeight", "75", "cg_hudGrenadeIconWidth", "75", "cg_hudGrenadeIconOffset", "50", "cg_hudGrenadePointerHeight", "36", "cg_hudGrenadePointerWidth", "75", "cg_hudGrenadePointerPivot", "36 81", "cg_fovscale", "1" );
 }
 
 initclientdvars()
@@ -1236,24 +1232,6 @@ initclientdvars()
         setdvar( "cg_drawFriendlyNamesAlways", 1 );
     else
         setdvar( "cg_drawFriendlyNamesAlways", 0 );
-
-    initclientdvarssplitscreenspecific();
-
-    if ( maps\mp\_utility::getgametypenumlives() )
-        self setclientdvars( "cg_deadChatWithDead", 1, "cg_deadChatWithTeam", 0, "cg_deadHearTeamLiving", 0, "cg_deadHearAllLiving", 0 );
-    else
-        self setclientdvars( "cg_deadChatWithDead", 0, "cg_deadChatWithTeam", 1, "cg_deadHearTeamLiving", 1, "cg_deadHearAllLiving", 0 );
-
-    if ( level.teambased )
-        self setclientdvars( "cg_everyonehearseveryone", 0 );
-
-    if ( getdvarint( "scr_hitloc_debug" ) )
-    {
-        for ( var_0 = 0; var_0 < 6; var_0++ )
-            self setclientdvar( "ui_hitloc_" + var_0, "" );
-
-        self.hitlocinited = 1;
-    }
 }
 
 getlowestavailableclientid()
@@ -1573,7 +1551,7 @@ callback_playerconnect()
                 thread kickifdontspawn();
                 return;
             }
-            else if ( !maps\mp\_utility::matchmakinggame() && maps\mp\_utility::allowteamchoice() )
+            else if ( maps\mp\_utility::allowteamchoice() && !isbot( self ) )
             {
                 maps\mp\gametypes\_menus::menuspectator();
                 thread setuioptionsmenu( 1 );

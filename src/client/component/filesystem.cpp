@@ -233,7 +233,7 @@ namespace filesystem
 		void post_unpack() override
 		{
 			// Set fs_basegame
-			dvars::override::Dvar_RegisterString("fs_basegame", "s1x", game::DVAR_FLAG_WRITE);
+			dvars::override::register_string("fs_basegame", "s1x", game::DVAR_FLAG_WRITE);
 
 			if (game::environment::is_sp())
 			{

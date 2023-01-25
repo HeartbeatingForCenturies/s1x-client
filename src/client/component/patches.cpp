@@ -286,15 +286,15 @@ namespace patches
 			utils::hook::set(0x14023BDC0, 0xC3C033);
 
 			// disable emblems
-			dvars::override::Dvar_RegisterInt("emblems_active", 0, 0, 0, game::DVAR_FLAG_NONE);
+			dvars::override::register_int("emblems_active", 0, 0, 0, game::DVAR_FLAG_NONE);
 			utils::hook::set<uint8_t>(0x140479590, 0xC3); // don't register commands
 
 			// disable elite_clan
-			dvars::override::Dvar_RegisterInt("elite_clan_active", 0, 0, 0, game::DVAR_FLAG_NONE);
+			dvars::override::register_int("elite_clan_active", 0, 0, 0, game::DVAR_FLAG_NONE);
 			utils::hook::set<uint8_t>(0x14054AB20, 0xC3); // don't register commands
 
 			// disable codPointStore
-			dvars::override::Dvar_RegisterInt("codPointStore_enabled", 0, 0, 0, game::DVAR_FLAG_NONE);
+			dvars::override::register_int("codPointStore_enabled", 0, 0, 0, game::DVAR_FLAG_NONE);
 
 			// don't register every replicated dvar as a network dvar
 			utils::hook::nop(0x1403534BE, 5); // dvar_foreach
@@ -309,27 +309,27 @@ namespace patches
 			utils::hook::set<uint8_t>(0x14019B9B9, 0xEB);
 
 			// some anti tamper thing that kills performance
-			dvars::override::Dvar_RegisterInt("dvl", 0, 0, 0, game::DVAR_FLAG_READ);
+			dvars::override::register_int("dvl", 0, 0, 0, game::DVAR_FLAG_READ);
 
 			// unlock safeArea_*
 			utils::hook::jump(0x140219F5E, 0x140219F67);
 			utils::hook::jump(0x140219F80, 0x140219F8E);
-			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
-			dvars::override::Dvar_RegisterFloat("safeArea_adjusted_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
-			dvars::override::Dvar_RegisterFloat("safeArea_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
-			dvars::override::Dvar_RegisterFloat("safeArea_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::register_float("safeArea_adjusted_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::register_float("safeArea_adjusted_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::register_float("safeArea_horizontal", 1, 0, 1, game::DVAR_FLAG_SAVED);
+			dvars::override::register_float("safeArea_vertical", 1, 0, 1, game::DVAR_FLAG_SAVED);
 
 			// move chat position on the screen above menu splashes
-			dvars::override::Dvar_RegisterVector2("cg_hudChatPosition", 5, 170, 0, 640, game::DVAR_FLAG_SAVED);
+			dvars::override::register_vector2("cg_hudChatPosition", 5, 170, 0, 640, game::DVAR_FLAG_SAVED);
 
 			// allow servers to check for new packages more often
-			dvars::override::Dvar_RegisterInt("sv_network_fps", 1000, 20, 1000, game::DVAR_FLAG_SAVED);
+			dvars::override::register_int("sv_network_fps", 1000, 20, 1000, game::DVAR_FLAG_SAVED);
 
 			// Massively increate timeouts
-			dvars::override::Dvar_RegisterInt("cl_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // Seems unused
-			dvars::override::Dvar_RegisterInt("sv_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // 30 - 0 - 1800
-			dvars::override::Dvar_RegisterInt("cl_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // Seems unused
-			dvars::override::Dvar_RegisterInt("sv_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // 60 - 0 - 1800
+			dvars::override::register_int("cl_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // Seems unused
+			dvars::override::register_int("sv_timeout", 90, 90, 1800, game::DVAR_FLAG_NONE); // 30 - 0 - 1800
+			dvars::override::register_int("cl_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // Seems unused
+			dvars::override::register_int("sv_connectTimeout", 120, 120, 1800, game::DVAR_FLAG_NONE); // 60 - 0 - 1800
       
 			game::Dvar_RegisterInt("scr_game_spectatetype", 1, 0, 99, game::DVAR_FLAG_REPLICATED, "");
       
