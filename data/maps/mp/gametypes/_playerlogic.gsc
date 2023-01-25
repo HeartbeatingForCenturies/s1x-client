@@ -1551,7 +1551,7 @@ callback_playerconnect()
                 thread kickifdontspawn();
                 return;
             }
-            else if ( !maps\mp\_utility::matchmakinggame() && maps\mp\_utility::allowteamchoice() )
+            else if ( maps\mp\_utility::allowteamchoice() && !isbot( self ) )
             {
                 maps\mp\gametypes\_menus::menuspectator();
                 thread setuioptionsmenu( 1 );
