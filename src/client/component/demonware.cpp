@@ -115,7 +115,7 @@ namespace demonware
 
 		namespace io
 		{
-			hostent* gethostbyname_stub(const char* name)
+			hostent* WINAPI gethostbyname_stub(const char* name)
 			{
 #ifdef DEBUG
 				printf("[ network ]: [gethostbyname]: \"%s\"\n", name);
@@ -152,7 +152,7 @@ namespace demonware
 				return &host;
 			}
 
-			int connect_stub(const SOCKET s, const struct sockaddr* addr, const int len)
+			int WINAPI connect_stub(const SOCKET s, const sockaddr* addr, const int len)
 			{
 				if (len == sizeof(sockaddr_in))
 				{
@@ -163,7 +163,7 @@ namespace demonware
 				return connect(s, addr, len);
 			}
 
-			int closesocket_stub(const SOCKET s)
+			int WINAPI closesocket_stub(const SOCKET s)
 			{
 				remove_blocking_socket(s);
 				socket_unlink(s);
@@ -171,7 +171,7 @@ namespace demonware
 				return closesocket(s);
 			}
 
-			int send_stub(const SOCKET s, const char* buf, const int len, const int flags)
+			int WINAPI send_stub(const SOCKET s, const char* buf, const int len, const int flags)
 			{
 				auto* server = find_server(s);
 
@@ -184,7 +184,7 @@ namespace demonware
 				return send(s, buf, len, flags);
 			}
 
-			int recv_stub(const SOCKET s, char* buf, const int len, const int flags)
+			int WINAPI recv_stub(const SOCKET s, char* buf, const int len, const int flags)
 			{
 				auto* server = find_server(s);
 
@@ -204,8 +204,8 @@ namespace demonware
 				return recv(s, buf, len, flags);
 			}
 
-			int sendto_stub(const SOCKET s, const char* buf, const int len, const int flags, const sockaddr* to,
-			                const int tolen)
+			int WINAPI sendto_stub(const SOCKET s, const char* buf, const int len, const int flags, const sockaddr* to,
+			                      const int tolen)
 			{
 				const auto* in_addr = reinterpret_cast<const sockaddr_in*>(to);
 				auto* server = udp_servers.find(in_addr->sin_addr.s_addr);
@@ -219,8 +219,8 @@ namespace demonware
 				return sendto(s, buf, len, flags, to, tolen);
 			}
 
-			int recvfrom_stub(const SOCKET s, char* buf, const int len, const int flags, struct sockaddr* from,
-			                  int* fromlen)
+			int WINAPI recvfrom_stub(const SOCKET s, char* buf, const int len, const int flags, sockaddr* from,
+			                        int* fromlen)
 			{
 				// Not supported yet
 				if (is_socket_blocking(s, UDP_BLOCKING))
@@ -246,8 +246,8 @@ namespace demonware
 				return recvfrom(s, buf, len, flags, from, fromlen);
 			}
 
-			int select_stub(const int nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds,
-			                struct timeval* timeout)
+			int WINAPI select_stub(const int nfds, fd_set* readfds, fd_set* writefds, fd_set* exceptfds,
+			                      timeval* timeout)
 			{
 				if (exit_server)
 				{
@@ -323,7 +323,7 @@ namespace demonware
 				return result;
 			}
 
-			int ioctlsocket_stub(const SOCKET s, const long cmd, u_long* argp)
+			int WINAPI ioctlsocket_stub(const SOCKET s, const long cmd, u_long* argp)
 			{
 				if (static_cast<unsigned long>(cmd) == (FIONBIO))
 				{
@@ -358,12 +358,8 @@ namespace demonware
 
 			va_end(ap);
 		}
-	}
 
-	class component final : public component_interface
-	{
-	public:
-		component()
+		void startup_dw()
 		{
 			udp_servers.create<stun_server>("s1-stun.us.demonware.net");
 			udp_servers.create<stun_server>("s1-stun.eu.demonware.net");
@@ -379,9 +375,15 @@ namespace demonware
 			tcp_servers.create<lobby_server>("aw-pc-lobby.prod.demonware.net");
 			tcp_servers.create<umbrella_server>("prod.umbrella.demonware.net");
 		}
+	}
 
+	class component final : public component_interface
+	{
+	public:
 		void post_load() override
 		{
+			startup_dw();
+
 			server_thread = utils::thread::create_named_thread("Demonware", server_main);
 		}
 
