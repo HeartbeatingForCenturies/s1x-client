@@ -1,12 +1,14 @@
 #include <std_include.hpp>
+#include "game/game.hpp"
+
 #include "../services.hpp"
 
 #include <utils/nt.hpp>
 #include <utils/io.hpp>
 #include <utils/cryptography.hpp>
 
-#include "game/game.hpp"
-#include "component/motd.hpp"
+#include <component/motd.hpp>
+#include <component/filesystem.hpp>
 
 namespace demonware
 {
@@ -19,18 +21,21 @@ namespace demonware
 		this->register_task(13, &bdStorage::unk13);
 
 		this->map_publisher_resource_variant(".*\\motd-.*\\.txt", motd::get_text);
-		this->map_publisher_resource("ffotd-.*\\.ff", DW_FASTFILE);
-		this->map_publisher_resource("playlists(_.+)?\\.aggr", DW_PLAYLISTS);
-		this->map_publisher_resource("social_[Tt][Uu][0-9]+\\.cfg", DW_SOCIAL_CONFIG);
-		this->map_publisher_resource("mm\\.cfg", DW_MM_CONFIG);
-		this->map_publisher_resource("entitlement_config\\.info", DW_ENTITLEMENT_CONFIG);
-		this->map_publisher_resource("lootConfig_[Tt][Uu][0-9]+\\.csv", DW_LOOT_CONFIG);
-		this->map_publisher_resource("winStoreConfig_[Tt][Uu][0-9]+\\.csv", DW_STORE_CONFIG);
+		this->map_publisher_resource("ffotd-.*\\.ff", "dw/ffotd-1.22.1.ff", DW_FASTFILE);
+		this->map_publisher_resource("playlists(_.+)?\\.aggr", "dw/playlists_tu22.aggr", DW_PLAYLISTS);
+		this->map_publisher_resource("social_[Tt][Uu][0-9]+\\.cfg", "dw/social_tu22.cfg", DW_SOCIAL_CONFIG);
+		this->map_publisher_resource("mm\\.cfg", "dw/mm.cfg", DW_MM_CONFIG);
+		this->map_publisher_resource("entitlement_config\\.info", "dw/entitlement_config.info", DW_ENTITLEMENT_CONFIG);
+		this->map_publisher_resource("lootConfig_[Tt][Uu][0-9]+\\.csv", "dw/lootConfig_tu22.csv", DW_LOOT_CONFIG);
+		this->map_publisher_resource("winStoreConfig_[Tt][Uu][0-9]+\\.csv", "dw/winStoreConfig_tu22.csv", DW_STORE_CONFIG);
 	}
 
-	void bdStorage::map_publisher_resource(const std::string& expression, const INT id)
+	void bdStorage::map_publisher_resource(const std::string& expression, const std::string& path, const int id)
 	{
-		auto data = utils::nt::load_resource(id);
+		auto data = filesystem::exists(path)
+			? filesystem::read_file(path)
+			: utils::nt::load_resource(id);
+
 		this->map_publisher_resource_variant(expression, std::move(data));
 	}
 
@@ -44,7 +49,7 @@ namespace demonware
 		this->publisher_resources_.emplace_back(std::regex{expression}, std::move(resource));
 	}
 
-	bool bdStorage::load_publisher_resource(const std::string& name, std::string& buffer)
+	bool bdStorage::load_publisher_resource(const std::string& name, std::string& buffer) const
 	{
 		for (const auto& resource : this->publisher_resources_)
 		{
