@@ -1921,13 +1921,13 @@ verifydedicatedconfiguration()
     for (;;)
     {
         if ( level.rankedmatch )
-            exitlevel( 0 );
+            _func_16A( 0 );
 
         if ( !getdvarint( "xblive_privatematch" ) )
-            exitlevel( 0 );
+            _func_16A( 0 );
 
         if ( getdvar( "dedicated" ) != "dedicated LAN server" && getdvar( "dedicated" ) != "dedicated internet server" )
-            exitlevel( 0 );
+            _func_16A( 0 );
 
         wait 5;
     }
@@ -2438,7 +2438,7 @@ endgameovertime( var_0, var_1 )
     level notify( "restarting" );
     game["state"] = "playing";
     setdvar( "ui_game_state", game["state"] );
-    map_restart( 1 );
+    _func_169( 1 );
 }
 
 endgamehalftime( var_0 )
@@ -2519,7 +2519,7 @@ endgamehalftime( var_0 )
     level notify( "restarting" );
     game["state"] = "playing";
     setdvar( "ui_game_state", game["state"] );
-    map_restart( 1 );
+    _func_169( 1 );
 }
 
 updategameduration()
@@ -2652,7 +2652,7 @@ endgame( var_0, var_1, var_2 )
             level notify( "restarting" );
             game["state"] = "playing";
             setdvar( "ui_game_state", "playing" );
-            map_restart( 1 );
+            _func_169( 1 );
             return;
         }
 
@@ -2909,7 +2909,7 @@ endgame( var_0, var_1, var_2 )
     }
 
     level notify( "exitLevel_called" );
-    exitlevel( 0 );
+    _func_16A( 0 );
 }
 
 getgamewinner( var_0, var_1 )
