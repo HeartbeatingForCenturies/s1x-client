@@ -13,8 +13,7 @@
 
 #include <utils/string.hpp>
 
-#include <xsk/gsc/types.hpp>
-#include <xsk/resolver.hpp>
+#include <gsc_interface.hpp>
 
 namespace gsc
 {
@@ -96,11 +95,11 @@ namespace gsc
 
 			if (function_id > 0x1000)
 			{
-				console::warn("in call to builtin method \"%s\"%s", xsk::gsc::s1::resolver::method_name(function_id).data(), error.data());
+				console::warn("in call to builtin method \"%s\"%s", gsc::cxt->meth_name(function_id).data(), error.data());
 			}
 			else
 			{
-				console::warn("in call to builtin function \"%s\"%s", xsk::gsc::s1::resolver::function_name(function_id).data(), error.data());
+				console::warn("in call to builtin function \"%s\"%s", gsc::cxt->func_name(function_id).data(), error.data());
 			}
 		}
 
@@ -108,7 +107,8 @@ namespace gsc
 		{
 			try
 			{
-				return {xsk::gsc::s1::resolver::opcode_name(opcode)};
+				auto index = gsc::cxt->opcode_enum(opcode);
+				return {xsk::gsc::opcode_name(index)};
 			}
 			catch (...)
 			{
@@ -232,7 +232,7 @@ namespace gsc
 
 	void override_function(const std::string& name, game::BuiltinFunction func)
 	{
-		const auto id = xsk::gsc::s1::resolver::function_id(name);
+		const auto id = gsc::cxt->func_id(name);
 		builtin_funcs_overrides.emplace(id, func);
 	}
 
@@ -240,7 +240,7 @@ namespace gsc
 	{
 		++function_id_start;
 		functions[function_id_start] = function;
-		xsk::gsc::s1::resolver::add_function(name, function_id_start);
+		gsc::cxt->func_add(name, function_id_start);
 	}
 
 	class extension final : public component_interface
