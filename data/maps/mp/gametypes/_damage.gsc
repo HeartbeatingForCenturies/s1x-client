@@ -104,7 +104,7 @@ handlesuicidedeath( var_0, var_1 )
         [[ level.onsuicidedeath ]]( self );
 
     if ( isdefined( self.friendlydamage ) )
-        self iclientprintlnbold( &"MP_FRIENDLY_FIRE_WILL_NOT" );
+        self iprintlnbold( &"MP_FRIENDLY_FIRE_WILL_NOT" );
 
     self.pers["suicideSpawnDelay"] = maps\mp\gametypes\_tweakables::gettweakablevalue( "game", "suicidespawndelay" );
 }
@@ -326,7 +326,7 @@ callback_playergrenadesuicide( var_0, var_1, var_2, var_3, var_4, var_5, var_6, 
             var_8 = 1;
 
         if ( var_8 )
-            var_0 startlaststand();
+            var_0 laststanddie();
 
         [[ level.callbackplayerlaststand ]]( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, 0 );
     }
@@ -3240,17 +3240,17 @@ _obituary( var_0, var_1, var_2, var_3 )
 
         if ( var_7 == "spectator" )
         {
-            var_6 iclientprintln( &"MP_OBITUARY_NEUTRAL", var_1.name, var_0.name );
+            var_6 iprintlnbold( &"MP_OBITUARY_NEUTRAL", var_1.name, var_0.name );
             continue;
         }
 
         if ( var_7 == var_4 )
         {
-            var_6 iclientprintln( &"MP_OBITUARY_ENEMY", var_1.name, var_0.name );
+            var_6 iprintlnbold( &"MP_OBITUARY_ENEMY", var_1.name, var_0.name );
             continue;
         }
 
-        var_6 iclientprintln( &"MP_OBITUARY_FRIENDLY", var_1.name, var_0.name );
+        var_6 iprintlnbold( &"MP_OBITUARY_FRIENDLY", var_1.name, var_0.name );
     }
 }
 
