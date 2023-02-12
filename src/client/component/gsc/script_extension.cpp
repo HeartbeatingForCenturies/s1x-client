@@ -107,8 +107,8 @@ namespace gsc
 		{
 			try
 			{
-				auto index = gsc::cxt->opcode_enum(opcode);
-				return {xsk::gsc::opcode_name(index)};
+				const auto index = gsc::cxt->opcode_enum(opcode);
+				return {gsc::cxt->opcode_name(index)};
 			}
 			catch (...)
 			{
