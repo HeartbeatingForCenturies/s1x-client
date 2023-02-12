@@ -204,6 +204,11 @@ namespace party
 		return count;
 	}
 
+	game::netadr_s& get_target()
+	{
+		return connect_state.host;
+	}
+
 	void connect(const game::netadr_s& target)
 	{
 		if (game::environment::is_sp())

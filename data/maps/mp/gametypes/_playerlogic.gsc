@@ -1,5 +1,5 @@
 // S1 GSC SOURCE
-// Decompiled by https://github.com/xensik/gsc-tool
+// Dumped by https://github.com/xensik/gsc-tool
 
 timeuntilwavespawn( var_0 )
 {
@@ -419,7 +419,7 @@ showspawnnotifies()
 
 getspawnorigin( var_0 )
 {
-    if ( !getstarttime( var_0.origin ) )
+    if ( !positionwouldtelefrag( var_0.origin ) )
         return var_0.origin;
 
     if ( !isdefined( var_0.alternates ) )
@@ -427,7 +427,7 @@ getspawnorigin( var_0 )
 
     foreach ( var_2 in var_0.alternates )
     {
-        if ( !getstarttime( var_2 ) )
+        if ( !positionwouldtelefrag( var_2 ) )
             return var_2;
     }
 
@@ -619,7 +619,7 @@ spawnplayer( var_0, var_1 )
         foreach ( var_11 in level.ugvs )
         {
             if ( distancesquared( var_11.origin, var_2.playerspawnpos ) < 1024 )
-                var_11 notify( "damage", 5000, var_11.owner, ( 0.0, 0.0, 0.0 ), ( 0.0, 0.0, 0.0 ), "MOD_EXPLOSIVE", "", "", "", undefined, "killstreak_emp_mp" );
+                var_11 notify( "damage", 5000, var_11.owner, ( 0, 0, 0 ), ( 0, 0, 0 ), "MOD_EXPLOSIVE", "", "", "", undefined, "killstreak_emp_mp" );
         }
 
         var_5 = self.setspawnpoint.playerspawnpos;
@@ -825,7 +825,7 @@ spawnplayer( var_0, var_1 )
         var_17 = self.pers["team"];
 
         if ( maps\mp\_utility::inovertime() )
-            thread maps\mp\gametypes\_hud_message::oldnotifymessage( game["strings"]["overtime"], game["strings"]["overtime_hint"], undefined, ( 1.0, 0.0, 0.0 ), "mp_last_stand" );
+            thread maps\mp\gametypes\_hud_message::oldnotifymessage( game["strings"]["overtime"], game["strings"]["overtime_hint"], undefined, ( 1, 0, 0 ), "mp_last_stand" );
 
         thread showspawnnotifies();
     }
@@ -1169,15 +1169,13 @@ callback_playerdisconnect( var_0 )
         if ( maps\mp\_utility::getminutespassed() )
             var_4 = self.score / maps\mp\_utility::getminutespassed();
 
-        _func_173( self, self.clientid, int( var_4 ) );
+        setplayerteamrank( self, self.clientid, int( var_4 ) );
     }
 
     reconevent( "script_mp_playerquit: player_name %s, player %d, gameTime %d", self.name, self.clientid, gettime() );
     var_5 = self getentitynumber();
     var_6 = self.guid;
-    var_7 = "Q;" + var_6 + ";" + var_5 + ";" + self.name + "\n";
-
-    logprint( var_7 );
+    logprint( "Q;" + var_6 + ";" + var_5 + ";" + self.name + "\n" );
     thread maps\mp\_events::disconnected();
 
     if ( level.gameended )
@@ -1283,7 +1281,7 @@ setupsavedactionslots()
 
 logplayerconsoleidandonwifiinmatchdata()
 {
-    var_0 = _func_2CE();
+    var_0 = getcodanywherecurrentplatform();
     var_1 = self getcommonplayerdata( "consoleIDChunkLow", var_0 );
     var_2 = self getcommonplayerdata( "consoleIDChunkHigh", var_0 );
 
@@ -1426,7 +1424,7 @@ callback_playerconnect()
         setmatchdata( "players", self.clientid, "isBot", isai( self ) );
         var_4 = self getentitynumber();
         setmatchdata( "players", self.clientid, "codeClientNum", maps\mp\_utility::clamptobyte( var_4 ) );
-        var_5 = _func_2CE();
+        var_5 = getcodanywherecurrentplatform();
         var_3 = self getcommonplayerdata( "connectionIDChunkLow", var_5 );
         var_2 = self getcommonplayerdata( "connectionIDChunkHigh", var_5 );
         setmatchdata( "players", self.clientid, "connectionIDChunkLow", var_3 );

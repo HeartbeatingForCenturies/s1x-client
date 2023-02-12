@@ -70,7 +70,7 @@ namespace game_log
 	class component final : public component_interface
 	{
 	public:
-		void post_load() override
+		void post_unpack() override
 		{
 			if (game::environment::is_sp())
 			{

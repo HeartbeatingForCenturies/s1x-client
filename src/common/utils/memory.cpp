@@ -57,7 +57,7 @@ namespace utils
 	{
 		std::lock_guard _(this->mutex_);
 
-		const auto data = memory::duplicate_string(string);
+		auto* data = memory::duplicate_string(string);
 		this->pool_.push_back(data);
 		return data;
 	}

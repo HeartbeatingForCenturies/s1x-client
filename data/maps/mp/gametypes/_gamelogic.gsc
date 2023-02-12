@@ -1,5 +1,5 @@
 // S1 GSC SOURCE
-// Decompiled by https://github.com/xensik/gsc-tool
+// Dumped by https://github.com/xensik/gsc-tool
 
 onforfeit( var_0 )
 {
@@ -445,7 +445,7 @@ waittillfinalkillcamdone()
 timelimitclock_intermission( var_0 )
 {
     setgameendtime( gettime() + int( var_0 * 1000 ) );
-    var_1 = spawn( "script_origin", ( 0.0, 0.0, 0.0 ) );
+    var_1 = spawn( "script_origin", ( 0, 0, 0 ) );
     var_1 hide();
 
     if ( var_0 >= 10.0 )
@@ -527,7 +527,7 @@ graceperiod()
 
     if ( !isdefined( game["clientActive"] ) )
     {
-        while ( getplaylistid() == 0 )
+        while ( getactiveclientcount() == 0 )
             wait 0.05;
 
         game["clientActive"] = 1;
@@ -675,8 +675,8 @@ updatewinstats( var_0 )
 
                 var_0 maps\mp\gametypes\_missions::processchallenge( "ch_gun_crushing" );
                 break;
-            case "ctf":
             case "twar":
+            case "ctf":
                 if ( game["shut_out"][var_0.team] )
                     var_0 maps\mp\gametypes\_missions::processchallenge( "ch_" + level.gametype + "_crushing" );
 
@@ -723,13 +723,13 @@ checkgameendchallenges()
                 {
                     case "_a":
                         var_4 maps\mp\gametypes\_missions::processchallenge( "ch_dom_alphalock" );
-                        continue;
+                        break;
                     case "_b":
                         var_4 maps\mp\gametypes\_missions::processchallenge( "ch_dom_bravolock" );
-                        continue;
+                        break;
                     case "_c":
                         var_4 maps\mp\gametypes\_missions::processchallenge( "ch_dom_charlielock" );
-                        continue;
+                        break;
                 }
             }
         }
@@ -897,7 +897,7 @@ updatematchbonusscores( var_0 )
         }
 
         if ( var_1 != "tie" )
-            clientannouncement( var_1 );
+            setwinningteam( var_1 );
 
         foreach ( var_4 in level.players )
         {
@@ -1024,7 +1024,7 @@ setxenonranks( var_0 )
         if ( maps\mp\_utility::getminutespassed() )
             var_4 = var_3.score / maps\mp\_utility::getminutespassed();
 
-        _func_173( var_3, var_3.clientid, int( var_4 ) );
+        setplayerteamrank( var_3, var_3.clientid, int( var_4 ) );
     }
 }
 
@@ -1059,7 +1059,7 @@ checktimelimit( var_0 )
         return;
 
     if ( maps\mp\_utility::gettimepassedpercentage() > level.timepercentagecutoff )
-        setnojipscore( 1 );
+        setnojiptime( 1 );
 
     var_1 = gettimeremaining();
 
@@ -1625,12 +1625,12 @@ callback_startgametype()
         game["strings"]["cowards_way"] = &"PLATFORM_COWARDS_WAY_OUT";
         game["colors"]["blue"] = ( 0.25, 0.25, 0.75 );
         game["colors"]["red"] = ( 0.75, 0.25, 0.25 );
-        game["colors"]["white"] = ( 1.0, 1.0, 1.0 );
-        game["colors"]["black"] = ( 0.0, 0.0, 0.0 );
+        game["colors"]["white"] = ( 1, 1, 1 );
+        game["colors"]["black"] = ( 0, 0, 0 );
         game["colors"]["grey"] = ( 0.5, 0.5, 0.5 );
         game["colors"]["green"] = ( 0.25, 0.75, 0.25 );
-        game["colors"]["yellow"] = ( 0.65, 0.65, 0.0 );
-        game["colors"]["orange"] = ( 1.0, 0.45, 0.0 );
+        game["colors"]["yellow"] = ( 0.65, 0.65, 0 );
+        game["colors"]["orange"] = ( 1, 0.45, 0 );
         game["colors"]["cyan"] = ( 0.35, 0.7, 0.9 );
         game["strings"]["allies_name"] = maps\mp\gametypes\_teams::getteamname( "allies" );
         game["icons"]["allies"] = maps\mp\gametypes\_teams::getteamicon( "allies" );
@@ -1639,10 +1639,10 @@ callback_startgametype()
         game["icons"]["axis"] = maps\mp\gametypes\_teams::getteamicon( "axis" );
         game["colors"]["axis"] = maps\mp\gametypes\_teams::getteamcolor( "axis" );
 
-        if ( game["colors"]["allies"] == ( 0.0, 0.0, 0.0 ) )
+        if ( game["colors"]["allies"] == ( 0, 0, 0 ) )
             game["colors"]["allies"] = ( 0.5, 0.5, 0.5 );
 
-        if ( game["colors"]["axis"] == ( 0.0, 0.0, 0.0 ) )
+        if ( game["colors"]["axis"] == ( 0, 0, 0 ) )
             game["colors"]["axis"] = ( 0.5, 0.5, 0.5 );
 
         [[ level.onprecachegametype ]]();
@@ -1652,7 +1652,7 @@ callback_startgametype()
         {
             if ( !level.splitscreen )
             {
-                if ( _func_27A() )
+                if ( isdedicatedserver() )
                     level.prematchperiod = maps\mp\gametypes\_tweakables::gettweakablevalue( "game", "graceperiod_ds" );
                 else
                     level.prematchperiod = maps\mp\gametypes\_tweakables::gettweakablevalue( "game", "graceperiod" );
@@ -1662,7 +1662,7 @@ callback_startgametype()
         }
         else
         {
-            if ( _func_27A() )
+            if ( isdedicatedserver() )
                 level.prematchperiod = maps\mp\gametypes\_tweakables::gettweakablevalue( "game", "playerwaittime_ds" );
             else
                 level.prematchperiod = maps\mp\gametypes\_tweakables::gettweakablevalue( "game", "playerwaittime" );
@@ -1910,7 +1910,7 @@ setattackingteam()
 
 callback_codeendgame()
 {
-    setplayerteamrank();
+    endparty();
 
     if ( !level.gameended )
         level thread forceend();
@@ -1921,13 +1921,13 @@ verifydedicatedconfiguration()
     for (;;)
     {
         if ( level.rankedmatch )
-            _func_16A( 0 );
+            exitlevel( 0 );
 
         if ( !getdvarint( "xblive_privatematch" ) )
-            _func_16A( 0 );
+            exitlevel( 0 );
 
         if ( getdvar( "dedicated" ) != "dedicated LAN server" && getdvar( "dedicated" ) != "dedicated internet server" )
-            _func_16A( 0 );
+            exitlevel( 0 );
 
         wait 5;
     }
@@ -2018,7 +2018,7 @@ timelimitclock()
 {
     level endon( "game_ended" );
     wait 0.05;
-    var_0 = spawn( "script_origin", ( 0.0, 0.0, 0.0 ) );
+    var_0 = spawn( "script_origin", ( 0, 0, 0 ) );
     var_0 hide();
 
     while ( game["state"] == "playing" )
@@ -2133,7 +2133,7 @@ startgame()
     if ( var_0 || var_1 )
         thread updategameduration();
 
-    _func_240();
+    lootserviceonstartgame();
 }
 
 wavespawntimer()
@@ -2438,7 +2438,7 @@ endgameovertime( var_0, var_1 )
     level notify( "restarting" );
     game["state"] = "playing";
     setdvar( "ui_game_state", game["state"] );
-    _func_169( 1 );
+    map_restart( 1 );
 }
 
 endgamehalftime( var_0 )
@@ -2519,7 +2519,7 @@ endgamehalftime( var_0 )
     level notify( "restarting" );
     game["state"] = "playing";
     setdvar( "ui_game_state", game["state"] );
-    _func_169( 1 );
+    map_restart( 1 );
 }
 
 updategameduration()
@@ -2652,7 +2652,7 @@ endgame( var_0, var_1, var_2 )
             level notify( "restarting" );
             game["state"] = "playing";
             setdvar( "ui_game_state", "playing" );
-            _func_169( 1 );
+            map_restart( 1 );
             return;
         }
 
@@ -2717,7 +2717,7 @@ endgame( var_0, var_1, var_2 )
 
         setmatchdata( "alliesScore", game["teamScores"]["allies"] );
         setmatchdata( "axisScore", game["teamScores"]["axis"] );
-        _func_242( var_0 );
+        tournamentreportwinningteam( var_0 );
     }
     else
         setmatchdata( "victor", "none" );
@@ -2736,9 +2736,9 @@ endgame( var_0, var_1, var_2 )
 
     if ( maps\mp\_utility::matchmakinggame() )
     {
-        setmatchdata( "playlistVersion", isdedicatedserver() );
-        setmatchdata( "playlistID", getplaylistversion() );
-        setmatchdata( "isDedicated", _func_27A() );
+        setmatchdata( "playlistVersion", getplaylistversion() );
+        setmatchdata( "playlistID", getplaylistid() );
+        setmatchdata( "isDedicated", isdedicatedserver() );
     }
 
     setmatchdata( "levelMaxClients", level.maxclients );
@@ -2750,7 +2750,7 @@ endgame( var_0, var_1, var_2 )
         var_5.pers["segments"] = var_5.segments;
     }
 
-    tournamentreportwinningteam();
+    tournamentreportendofgame();
     var_20 = 0;
 
     if ( maps\mp\_utility::practiceroundgame() )
@@ -2909,7 +2909,7 @@ endgame( var_0, var_1, var_2 )
     }
 
     level notify( "exitLevel_called" );
-    _func_16A( 0 );
+    exitlevel( 0 );
 }
 
 getgamewinner( var_0, var_1 )
@@ -2975,7 +2975,7 @@ getscoreperminute( var_0 )
     if ( isplayer( self ) )
         var_4 = self.score / var_3;
     else
-        var_4 = setclientnamemode( var_0 ) / var_3;
+        var_4 = getteamscore( var_0 ) / var_3;
 
     return var_4;
 }
@@ -2987,7 +2987,7 @@ getscoreremaining( var_0 )
     if ( isplayer( self ) )
         var_2 = var_1 - self.score;
     else
-        var_2 = var_1 - setclientnamemode( var_0 );
+        var_2 = var_1 - getteamscore( var_0 );
 
     return var_2;
 }
@@ -3039,7 +3039,7 @@ processlobbydata()
     maps\mp\_awards::assignawards();
     maps\mp\_scoreboard::processlobbyscoreboards();
     sendclientmatchdata();
-    _func_23E();
+    lootserviceonendgame();
 }
 
 trackleaderboarddeathstats( var_0, var_1 )

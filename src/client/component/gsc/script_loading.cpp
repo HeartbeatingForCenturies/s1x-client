@@ -2,8 +2,10 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 
-#include <utils/io.hpp>
+#include <utils/compression.hpp>
 #include <utils/hook.hpp>
+#include <utils/io.hpp>
+#include <utils/memory.hpp>
 
 #include "component/filesystem.hpp"
 #include "component/console.hpp"
@@ -12,37 +14,31 @@
 
 #include "script_loading.hpp"
 
-#include <xsk/gsc/types.hpp>
-#include <xsk/gsc/interfaces/compiler.hpp>
-#include <xsk/gsc/interfaces/decompiler.hpp>
-#include <xsk/gsc/interfaces/assembler.hpp>
-#include <xsk/gsc/interfaces/disassembler.hpp>
-#include <xsk/utils/compression.hpp>
-#include <xsk/resolver.hpp>
-#include <interface.hpp>
+#include <gsc_interface.hpp>
 
 namespace gsc
 {
 	namespace
 	{
-		auto compiler = ::gsc::compiler();
-		auto decompiler = ::gsc::decompiler();
-		auto assembler = ::gsc::assembler();
-		auto disassembler = ::gsc::disassembler();
-
 		std::unordered_map<std::string, unsigned int> main_handles;
 		std::unordered_map<std::string, unsigned int> init_handles;
 
 		std::unordered_map<std::string, game::ScriptFile*> loaded_scripts;
+		std::unordered_map<std::string, std::string> included_scripts;
+		utils::memory::allocator script_allocator;
+
+		const game::dvar_t* developer_script;
 
 		void clear()
 		{
 			main_handles.clear();
 			init_handles.clear();
 			loaded_scripts.clear();
+			included_scripts.clear();
+			script_allocator.clear();
 		}
 
-		bool read_script_file(const std::string& name, std::string* data)
+		bool read_raw_script_file(const std::string& name, std::string* data)
 		{
 			if (filesystem::read_file(name, data))
 			{
@@ -86,18 +82,44 @@ namespace gsc
 				return itr->second;
 			}
 
-			std::string source_buffer{};
-			if (!read_script_file(real_name + ".gsc", &source_buffer))
-			{
-				return nullptr;
-			}
-
-			std::vector<std::uint8_t> data;
-			data.assign(source_buffer.begin(), source_buffer.end());
-
 			try
 			{
-				compiler->compile(real_name, data);
+				auto& compiler = gsc::cxt->compiler();
+				auto& assembler = gsc::cxt->assembler();
+
+				std::string source_buffer{};
+				if (!read_raw_script_file(real_name + ".gsc", &source_buffer))
+				{
+					return nullptr;
+				}
+
+				std::vector<std::uint8_t> data;
+				data.assign(source_buffer.begin(), source_buffer.end());
+
+				const auto assembly_ptr = compiler.compile(real_name, data);
+				// Pair of two buffers. First is the byte code and second is the stack
+				const auto output_script = assembler.assemble(*assembly_ptr);
+
+				const auto script_file_ptr = static_cast<game::ScriptFile*>(script_allocator.allocate(sizeof(game::ScriptFile)));
+				script_file_ptr->name = file_name;
+
+				script_file_ptr->len = static_cast<int>(output_script.second.size);
+				script_file_ptr->bytecodeLen = static_cast<int>(output_script.first.size);
+
+				const auto stack_size = static_cast<std::uint32_t>(output_script.second.size + 1);
+				const auto byte_code_size = static_cast<std::uint32_t>(output_script.first.size + 1);
+
+				script_file_ptr->buffer = static_cast<char*>(script_allocator.allocate(stack_size));
+				std::memcpy(const_cast<char*>(script_file_ptr->buffer), output_script.second.data, output_script.second.size);
+
+				script_file_ptr->bytecode = static_cast<std::uint8_t*>(game::PMem_AllocFromSource_NoDebug(byte_code_size, 4, 1, 5));
+				std::memcpy(script_file_ptr->bytecode, output_script.first.data, output_script.first.size);
+
+				script_file_ptr->compressedLen = 0;
+
+				loaded_scripts[real_name] = script_file_ptr;
+
+				return script_file_ptr;
 			}
 			catch (const std::exception& ex)
 			{
@@ -106,49 +128,11 @@ namespace gsc
 				console::error("**********************************************\n");
 				return nullptr;
 			}
-
-			auto assembly = compiler->output();
-
-			try
-			{
-				assembler->assemble(real_name, assembly);
-			}
-			catch (const std::exception& ex)
-			{
-				console::error("*********** script compile error *************\n");
-				console::error("failed to assemble '%s':\n%s", real_name.data(), ex.what());
-				console::error("**********************************************\n");
-				return nullptr;
-			}
-
-			const auto script_file_ptr = static_cast<game::ScriptFile*>(game::Hunk_AllocateTempMemoryHighInternal(sizeof(game::ScriptFile)));
-			script_file_ptr->name = file_name;
-
-			const auto stack = assembler->output_stack();
-			script_file_ptr->len = static_cast<int>(stack.size());
-
-			const auto script = assembler->output_script();
-			script_file_ptr->bytecodeLen = static_cast<int>(script.size());
-
-			const auto stack_size = static_cast<std::uint32_t>(stack.size() + 1);
-			const auto byte_code_size = static_cast<std::uint32_t>(script.size() + 1);
-
-			script_file_ptr->buffer = static_cast<char*>(game::Hunk_AllocateTempMemoryHighInternal(stack_size));
-			std::memcpy(const_cast<char*>(script_file_ptr->buffer), stack.data(), stack.size());
-
-			script_file_ptr->bytecode = static_cast<std::uint8_t*>(game::PMem_AllocFromSource_NoDebug(byte_code_size, 4, 1, 5));
-			std::memcpy(script_file_ptr->bytecode, script.data(), script.size());
-
-			script_file_ptr->compressedLen = 0;
-
-			loaded_scripts[real_name] = script_file_ptr;
-
-			return script_file_ptr;
 		}
 
 		std::string get_script_file_name(const std::string& name)
 		{
-			const auto id = xsk::gsc::s1::resolver::token_id(name);
+			const auto id = gsc::cxt->token_id(name);
 			if (!id)
 			{
 				return name;
@@ -157,7 +141,7 @@ namespace gsc
 			return std::to_string(id);
 		}
 
-		std::vector<std::uint8_t> decompile_script_file(const std::string& name, const std::string& real_name)
+		std::pair<xsk::gsc::buffer, xsk::gsc::buffer> read_compiled_script_file(const std::string& name, const std::string& real_name)
 		{
 			const auto* script_file = game::DB_FindXAssetHeader(game::ASSET_TYPE_SCRIPTFILE, name.data(), false).scriptfile;
 			if (!script_file)
@@ -167,17 +151,18 @@ namespace gsc
 
 			console::info("Decompiling scriptfile '%s'\n", real_name.data());
 
-			std::vector<std::uint8_t> stack{script_file->buffer, script_file->buffer + script_file->len};
-			std::vector<std::uint8_t> bytecode{script_file->bytecode, script_file->bytecode + script_file->bytecodeLen};
+			if (const auto itr = included_scripts.find(name); itr != included_scripts.end())
+			{
+				return {{script_file->bytecode, static_cast<std::uint32_t>(script_file->bytecodeLen)}, {reinterpret_cast<std::uint8_t*>(itr->second.data()), itr->second.size()}};
+			}
 
-			auto decompressed_stack = xsk::utils::zlib::decompress(stack, static_cast<std::uint32_t>(stack.size()));
+			const std::string stack{script_file->buffer, static_cast<std::uint32_t>(script_file->len)};
 
-			disassembler->disassemble(name, bytecode, decompressed_stack);
-			auto output = disassembler->output();
+			const auto decompressed_stack = utils::compression::zlib::decompress(stack);
+			const auto result = included_scripts.emplace(std::make_pair(name, decompressed_stack));
+			const auto& itr = result.first;
 
-			decompiler->decompile(name, output);
-
-			return decompiler->output();
+			return {{script_file->bytecode, static_cast<std::uint32_t>(script_file->bytecodeLen)}, {reinterpret_cast<std::uint8_t*>(itr->second.data()), itr->second.size()}};
 		}
 
 		void load_script(const std::string& name)
@@ -187,8 +172,8 @@ namespace gsc
 				return;
 			}
 
-			const auto main_handle = game::Scr_GetFunctionHandle(name.data(), xsk::gsc::s1::resolver::token_id("main"));
-			const auto init_handle = game::Scr_GetFunctionHandle(name.data(), xsk::gsc::s1::resolver::token_id("init"));
+			const auto main_handle = game::Scr_GetFunctionHandle(name.data(), gsc::cxt->token_id("main"));
+			const auto init_handle = game::Scr_GetFunctionHandle(name.data(), gsc::cxt->token_id("init"));
 
 			if (main_handle)
 			{
@@ -285,7 +270,7 @@ namespace gsc
 				for (auto& function_handle : main_handles)
 				{
 					console::info("Executing '%s::main'\n", function_handle.first.data());
-					const auto thread = game::Scr_ExecThread(function_handle.second, 0);
+					const auto thread = game::Scr_ExecThread(static_cast<int>(function_handle.second), 0);
 					game::RemoveRefToObject(thread);
 				}
 			}
@@ -305,19 +290,55 @@ namespace gsc
 			for (auto& function_handle : init_handles)
 			{
 				console::info("Executing '%s::init'\n", function_handle.first.data());
-				const auto thread = game::Scr_ExecThread(function_handle.second, 0);
+				const auto thread = game::Scr_ExecThread(static_cast<int>(function_handle.second), 0);
 				game::RemoveRefToObject(thread);
 			}
+		}
+
+		void scr_begin_load_scripts_stub()
+		{
+			const auto comp_mode = developer_script->current.enabled ?
+				xsk::gsc::build::dev :
+				xsk::gsc::build::prod;
+
+			gsc::cxt->init(comp_mode, [](const std::string& include_name) -> std::pair<xsk::gsc::buffer, xsk::gsc::buffer>
+			{
+				const auto real_name = include_name + ".gsc";
+
+				std::string file_buffer;
+				if (!read_raw_script_file(real_name, &file_buffer) || file_buffer.empty())
+				{
+					const auto name = get_script_file_name(include_name);
+					if (game::DB_XAssetExists(game::ASSET_TYPE_SCRIPTFILE, name.data()))
+					{
+						return read_compiled_script_file(name, real_name);
+					}
+
+					throw std::runtime_error(std::format("Could not load gsc file '{}'", real_name));
+				}
+
+				return {xsk::gsc::buffer(reinterpret_cast<std::uint8_t*>(file_buffer.data()), file_buffer.size()), {}};
+			});
+
+			utils::hook::invoke<void>(SELECT_VALUE(0x1403118E0, 0x1403EDE60));
+		}
+
+		void scr_end_load_scripts_stub()
+		{
+			// Cleanup the compiler
+			gsc::cxt->cleanup();
+
+			utils::hook::invoke<void>(SELECT_VALUE(0x140243780, 0x1403EDF90));
 		}
 	}
 
 	game::ScriptFile* find_script(game::XAssetType type, const char* name, int allow_create_default)
 	{
 		std::string real_name = name;
-		const auto id = static_cast<std::uint16_t>(std::atoi(name));
+		const auto id = static_cast<std::uint16_t>(std::strtol(name, nullptr, 10));
 		if (id)
 		{
-			real_name = xsk::gsc::s1::resolver::token_name(id);
+			real_name = gsc::cxt->token_name(id);
 		}
 
 		auto* script = load_custom_script(name, real_name);
@@ -332,38 +353,25 @@ namespace gsc
 	class loading final : public component_interface
 	{
 	public:
+		void post_load() override
+		{
+			gsc::cxt = std::make_unique<xsk::gsc::s1_pc::context>();
+		}
+
 		void post_unpack() override
 		{
 			// Load our scripts with an uncompressed stack
 			utils::hook::call(SELECT_VALUE(0x14031ABB0, 0x1403F7380), db_get_raw_buffer_stub);
 
+			utils::hook::call(SELECT_VALUE(0x1403309E9, 0x1403309E9), scr_begin_load_scripts_stub); // GScr_LoadScripts
+			utils::hook::call(SELECT_VALUE(0x14023DA84, 0x140330B9C), scr_end_load_scripts_stub); // GScr_LoadScripts
+
+			developer_script = game::Dvar_RegisterBool("developer_script", false, game::DVAR_FLAG_NONE, "Enable developer script comments");
+
 			if (game::environment::is_sp())
 			{
 				return;
 			}
-
-			// Allow custom scripts to include other custom scripts
-			xsk::gsc::s1::resolver::init([](const auto& include_name) -> std::vector<std::uint8_t>
-			{
-				const auto real_name = include_name + ".gsc";
-
-				std::string file_buffer;
-				if (!read_script_file(real_name, &file_buffer) || file_buffer.empty())
-				{
-					const auto name = get_script_file_name(include_name);
-					if (game::DB_XAssetExists(game::ASSET_TYPE_SCRIPTFILE, name.data()))
-					{
-						return decompile_script_file(name, real_name);
-					}
-
-					throw std::runtime_error(std::format("Could not load gsc file '{}'", real_name));
-				}
-
-				std::vector<std::uint8_t> result;
-				result.assign(file_buffer.begin(), file_buffer.end());
-
-				return result;
-			});
 
 			// ProcessScript
 			utils::hook::call(0x1403F7317, find_script);
@@ -380,7 +388,6 @@ namespace gsc
 			{
 				if (free_scripts)
 				{
-					xsk::gsc::s1::resolver::cleanup();
 					clear();
 				}
 			});

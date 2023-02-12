@@ -1,5 +1,5 @@
 // S1 GSC SOURCE
-// Decompiled by https://github.com/xensik/gsc-tool
+// Dumped by https://github.com/xensik/gsc-tool
 
 isswitchingteams()
 {
@@ -104,7 +104,7 @@ handlesuicidedeath( var_0, var_1 )
         [[ level.onsuicidedeath ]]( self );
 
     if ( isdefined( self.friendlydamage ) )
-        self _meth_826E( &"MP_FRIENDLY_FIRE_WILL_NOT" );
+        self iprintlnbold( &"MP_FRIENDLY_FIRE_WILL_NOT" );
 
     self.pers["suicideSpawnDelay"] = maps\mp\gametypes\_tweakables::gettweakablevalue( "game", "suicidespawndelay" );
 }
@@ -303,7 +303,7 @@ isplayerweapon( var_0 )
     if ( weaponclass( var_0 ) == "turret" )
         return 0;
 
-    if ( objective_current( var_0 ) == "primary" || objective_current( var_0 ) == "altmode" )
+    if ( weaponinventorytype( var_0 ) == "primary" || weaponinventorytype( var_0 ) == "altmode" )
         return 1;
 
     return 0;
@@ -326,7 +326,7 @@ callback_playergrenadesuicide( var_0, var_1, var_2, var_3, var_4, var_5, var_6, 
             var_8 = 1;
 
         if ( var_8 )
-            var_0 _meth_82C8();
+            var_0 laststanddie();
 
         [[ level.callbackplayerlaststand ]]( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, 0 );
     }
@@ -393,9 +393,9 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
         if ( isdefined( common_scripts\utility::getfx( "exo_knife_blood" ) ) )
         {
             if ( isdefined( var_7 ) && isdefined( var_6 ) && isdefined( gethitloctag( var_7 ) ) )
-                announcement( var_2 gettagorigin( gethitloctag( var_7 ) ), var_6 );
+                playimpactheadfatalfx( var_2 gettagorigin( gethitloctag( var_7 ) ), var_6 );
             else
-                announcement( var_2 gettagorigin( "j_neck" ), anglestoforward( var_2 gettagangles( "j_neck" ) ) );
+                playimpactheadfatalfx( var_2 gettagorigin( "j_neck" ), anglestoforward( var_2 gettagangles( "j_neck" ) ) );
         }
     }
 
@@ -581,7 +581,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     }
 
     if ( !maps\mp\_utility::practiceroundgame() )
-        canspawn( var_2, var_1, var_5, var_4 );
+        obituary( var_2, var_1, var_5, var_4 );
 
     var_24 = 0;
     var_2 logprintplayerdeath( self.lifeid, var_1, var_3, var_4, var_5, var_13, var_7 );
@@ -613,7 +613,7 @@ playerkilled_internal( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, v
     else
     {
         if ( var_4 == "MOD_GRENADE" && var_0 == var_1 || var_4 == "MOD_IMPACT" || var_4 == "MOD_GRENADE_SPLASH" || var_4 == "MOD_EXPLOSIVE" )
-            addattacker( var_2, var_1, var_0, var_5, var_3, ( 0.0, 0.0, 0.0 ), var_6, var_7, var_8, var_4 );
+            addattacker( var_2, var_1, var_0, var_5, var_3, ( 0, 0, 0 ), var_6, var_7, var_8, var_4 );
 
         var_24 = 1;
 
@@ -1313,9 +1313,9 @@ dofinalkillcam()
                 case "sentry_minigun_mp":
                     var_3 maps\mp\gametypes\_missions::processchallenge( "ch_absentee" );
                     break;
-                case "ac130_25mm_mp":
-                case "ac130_105mm_mp":
                 case "ac130_40mm_mp":
+                case "ac130_105mm_mp":
+                case "ac130_25mm_mp":
                     var_3 maps\mp\gametypes\_missions::processchallenge( "ch_deathfromabove" );
                     break;
                 case "remotemissile_projectile_mp":
@@ -1387,32 +1387,32 @@ getkillcamentity( var_0, var_1, var_2 )
     {
         case "boost_slam_mp":
             return var_1;
-        case "bomb_site_mp":
-        case "bouncingbetty_mp":
-        case "explosive_drone_mp":
-        case "orbital_carepackage_pod_mp":
-        case "orbital_carepackage_droppod_mp":
-        case "artillery_mp":
-        case "stealth_bomb_mp":
-        case "agent_mp":
-        case "refraction_turret_mp":
-        case "orbital_carepackage_pod_plane_mp":
-        case "remotemissile_projectile_cluster_child_mp":
         case "iw5_dlcgun12loot6_mp":
+        case "remotemissile_projectile_cluster_child_mp":
+        case "orbital_carepackage_pod_plane_mp":
+        case "refraction_turret_mp":
+        case "agent_mp":
+        case "stealth_bomb_mp":
+        case "artillery_mp":
+        case "orbital_carepackage_droppod_mp":
+        case "orbital_carepackage_pod_mp":
+        case "explosive_drone_mp":
+        case "bouncingbetty_mp":
+        case "bomb_site_mp":
             return var_1.killcament;
         case "killstreak_laser2_mp":
             if ( isdefined( var_1.samturret ) && isdefined( var_1.samturret.killcament ) )
                 return var_1.samturret.killcament;
 
             break;
-        case "ball_drone_gun_mp":
         case "ball_drone_projectile_mp":
+        case "ball_drone_gun_mp":
             if ( isplayer( var_0 ) && isdefined( var_0.balldrone ) && isdefined( var_0.balldrone.turret ) && isdefined( var_0.balldrone.turret.killcament ) )
                 return var_0.balldrone.turret.killcament;
 
             break;
-        case "ugv_missile_mp":
         case "drone_assault_remote_turret_mp":
+        case "ugv_missile_mp":
             if ( isdefined( var_1.killcament ) )
                 return var_1.killcament;
             else
@@ -1422,9 +1422,9 @@ getkillcamentity( var_0, var_1, var_2 )
                 return var_1;
             else
                 return undefined;
-        case "killstreak_solar_mp":
-        case "dam_turret_mp":
         case "warbird_missile_mp":
+        case "dam_turret_mp":
+        case "killstreak_solar_mp":
             if ( isdefined( var_1 ) && isdefined( var_1.killcament ) )
                 return var_1.killcament;
 
@@ -1436,9 +1436,9 @@ getkillcamentity( var_0, var_1, var_2 )
                 return undefined;
         case "orbital_laser_fov_mp":
             return undefined;
-        case "sentry_minigun_mp":
-        case "remote_energy_turret_mp":
         case "killstreakmahem_mp":
+        case "remote_energy_turret_mp":
+        case "sentry_minigun_mp":
             if ( isdefined( var_1 ) && isdefined( var_1.remotecontrolled ) )
                 return undefined;
 
@@ -1448,13 +1448,13 @@ getkillcamentity( var_0, var_1, var_2 )
                 return var_1.killcament;
 
             break;
-        case "ac130_25mm_mp":
-        case "ac130_105mm_mp":
-        case "ac130_40mm_mp":
-        case "ugv_turret_mp":
-        case "remote_turret_mp":
-        case "detroit_tram_turret_mp":
         case "killstreak_terrace_mp":
+        case "detroit_tram_turret_mp":
+        case "remote_turret_mp":
+        case "ugv_turret_mp":
+        case "ac130_40mm_mp":
+        case "ac130_105mm_mp":
+        case "ac130_25mm_mp":
             return undefined;
         case "iw5_dlcgun12loot8_mp":
             if ( isdefined( var_1.killcament ) )
@@ -1592,8 +1592,8 @@ ishardwrireprotected( var_0 )
 
     switch ( var_0 )
     {
-        case "killstreak_strike_missile_gas_mp":
         case "mp_lab_gas":
+        case "killstreak_strike_missile_gas_mp":
             return 1;
     }
 
@@ -2144,8 +2144,8 @@ shouldweaponfeedback( var_0 )
 {
     switch ( var_0 )
     {
-        case "artillery_mp":
         case "stealth_bomb_mp":
+        case "artillery_mp":
             return 0;
     }
 
@@ -2237,12 +2237,12 @@ is_countered_by_hardwired( var_0 )
 {
     switch ( var_0 )
     {
-        case "stun_grenade_mp":
-        case "paint_grenade_mp":
-        case "emp_grenade_mp":
-        case "stun_grenade_var_mp":
-        case "emp_grenade_var_mp":
         case "paint_grenade_var_mp":
+        case "emp_grenade_var_mp":
+        case "stun_grenade_var_mp":
+        case "emp_grenade_mp":
+        case "paint_grenade_mp":
+        case "stun_grenade_mp":
             return 1;
     }
 
@@ -2267,7 +2267,7 @@ finishplayerdamagewrapper( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_
     if ( var_11 || maps\mp\_utility::isrocketcorpse() )
     {
         if ( !isdefined( var_7 ) )
-            var_7 = ( 0.0, 0.0, 0.0 );
+            var_7 = ( 0, 0, 0 );
 
         if ( !isdefined( var_1 ) && !isdefined( var_0 ) )
         {
@@ -2391,7 +2391,7 @@ callback_playerlaststand( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7
             var_11.iconname = level.specialty_finalstand_icon;
         }
 
-        var_11.glowcolor = ( 1.0, 0.0, 0.0 );
+        var_11.glowcolor = ( 1, 0, 0 );
         var_11.sound = "mp_last_stand";
         var_11.duration = 2.0;
         self.health = 1;
@@ -2573,14 +2573,14 @@ laststandtimer( var_0, var_1 )
         }
 
         wait(var_0 / 3);
-        var_3.color = ( 1.0, 0.64, 0.0 );
+        var_3.color = ( 1, 0.64, 0 );
 
         while ( var_2.inuse )
             wait 0.05;
 
         maps\mp\_utility::playdeathsound();
         wait(var_0 / 3);
-        var_3.color = ( 1.0, 0.0, 0.0 );
+        var_3.color = ( 1, 0, 0 );
 
         while ( var_2.inuse )
             wait 0.05;
@@ -2731,29 +2731,29 @@ gethitlocheight( var_0 )
 {
     switch ( var_0 )
     {
-        case "head":
-        case "helmet":
         case "neck":
+        case "helmet":
+        case "head":
             return 60;
-        case "gun":
-        case "torso_upper":
-        case "right_arm_upper":
-        case "left_arm_upper":
-        case "right_arm_lower":
-        case "left_arm_lower":
-        case "right_hand":
         case "left_hand":
+        case "right_hand":
+        case "left_arm_lower":
+        case "right_arm_lower":
+        case "left_arm_upper":
+        case "right_arm_upper":
+        case "torso_upper":
+        case "gun":
             return 48;
         case "torso_lower":
             return 40;
-        case "right_leg_upper":
         case "left_leg_upper":
+        case "right_leg_upper":
             return 32;
-        case "right_leg_lower":
         case "left_leg_lower":
+        case "right_leg_lower":
             return 10;
-        case "right_foot":
         case "left_foot":
+        case "right_foot":
             return 5;
     }
 
@@ -3058,7 +3058,7 @@ reviveholdthink_cleanup( var_0, var_1, var_2 )
 {
     common_scripts\utility::waittill_any_ents( self, "death", var_2, "death" );
 
-    if ( !_func_294( var_2 ) )
+    if ( !isremovedentity( var_2 ) )
         var_2 delete();
 
     if ( isdefined( var_0 ) && maps\mp\_utility::isreallyalive( var_0 ) )
@@ -3240,17 +3240,17 @@ _obituary( var_0, var_1, var_2, var_3 )
 
         if ( var_7 == "spectator" )
         {
-            var_6 _meth_826E( &"MP_OBITUARY_NEUTRAL", var_1.name, var_0.name );
+            var_6 iprintln( &"MP_OBITUARY_NEUTRAL", var_1.name, var_0.name );
             continue;
         }
 
         if ( var_7 == var_4 )
         {
-            var_6 _meth_826E( &"MP_OBITUARY_ENEMY", var_1.name, var_0.name );
+            var_6 iprintln( &"MP_OBITUARY_ENEMY", var_1.name, var_0.name );
             continue;
         }
 
-        var_6 _meth_826E( &"MP_OBITUARY_FRIENDLY", var_1.name, var_0.name );
+        var_6 iprintln( &"MP_OBITUARY_FRIENDLY", var_1.name, var_0.name );
     }
 }
 
@@ -3358,10 +3358,10 @@ processdamagetaken( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_
 
         switch ( var_13 )
         {
-            case "paint_grenade_mp":
-            case "smoke_grenade_mp":
-            case "paint_grenade_var_mp":
             case "smoke_grenade_var_mp":
+            case "paint_grenade_var_mp":
+            case "smoke_grenade_mp":
+            case "paint_grenade_mp":
                 return;
         }
 
@@ -3467,23 +3467,23 @@ handlemissiledamage( var_0, var_1, var_2 )
 
     switch ( var_0 )
     {
-        case "bomb_site_mp":
-        case "remotemissile_projectile_mp":
-        case "remotemissile_projectile_cluster_parent_mp":
-        case "remotemissile_projectile_gas_mp":
-        case "orbital_carepackage_pod_mp":
-        case "orbital_carepackage_droppod_mp":
-        case "stinger_mp":
-        case "stealth_bomb_mp":
-        case "orbital_carepackage_pod_plane_mp":
-        case "remotemissile_projectile_cluster_child_mp":
-        case "dam_turret_mp":
-        case "warbird_missile_mp":
-        case "remotemissile_projectile_cluster_child_hellfire_mp":
-        case "remotemissile_projectile_secondary_mp":
-        case "airstrike_missile_mp":
-        case "orbitalsupport_105mm_mp":
         case "orbitalsupport_missile_mp":
+        case "orbitalsupport_105mm_mp":
+        case "airstrike_missile_mp":
+        case "remotemissile_projectile_secondary_mp":
+        case "remotemissile_projectile_cluster_child_hellfire_mp":
+        case "warbird_missile_mp":
+        case "dam_turret_mp":
+        case "remotemissile_projectile_cluster_child_mp":
+        case "orbital_carepackage_pod_plane_mp":
+        case "stealth_bomb_mp":
+        case "stinger_mp":
+        case "orbital_carepackage_droppod_mp":
+        case "orbital_carepackage_pod_mp":
+        case "remotemissile_projectile_gas_mp":
+        case "remotemissile_projectile_cluster_parent_mp":
+        case "remotemissile_projectile_mp":
+        case "bomb_site_mp":
             self.largeprojectiledamage = 1;
             var_3 = self.maxhealth + 1;
             break;
@@ -3504,16 +3504,16 @@ handlemissiledamage( var_0, var_1, var_2 )
 
             var_3 = self.maxhealth * var_5;
             break;
-        case "turretheadrocket_mp":
-        case "ugv_missile_mp":
-        case "assaultdrone_c4_mp":
-        case "killstreakmahem_mp":
         case "killstreak_orbital_laser_mp":
+        case "killstreakmahem_mp":
+        case "assaultdrone_c4_mp":
+        case "ugv_missile_mp":
+        case "turretheadrocket_mp":
             self.largeprojectiledamage = 0;
             var_3 = self.maxhealth + 1;
             break;
-        case "orbitalsupport_40mm_mp":
         case "orbitalsupport_40mmbuddy_mp":
+        case "orbitalsupport_40mm_mp":
             self.largeprojectiledamage = 0;
             var_3 *= 2;
             break;
@@ -3535,9 +3535,9 @@ handlegrenadedamage( var_0, var_1, var_2 )
     {
         switch ( var_3 )
         {
-            case "frag_grenade_mp":
-            case "semtex_mp":
             case "explosive_drone_mp":
+            case "semtex_mp":
+            case "frag_grenade_mp":
                 var_2 *= 4;
                 break;
             default:
@@ -3600,7 +3600,7 @@ onkillstreakkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7 )
         if ( var_0 == self.owner )
             return;
 
-        if ( !_func_285( self.owner, var_0 ) )
+        if ( !isalliedsentient( self.owner, var_0 ) )
             var_8 = var_0;
     }
 
