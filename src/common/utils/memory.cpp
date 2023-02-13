@@ -43,7 +43,7 @@ namespace utils
 	{
 		std::lock_guard _(this->mutex_);
 
-		const auto data = memory::allocate(length);
+		auto* data = memory::allocate(length);
 		this->pool_.push_back(data);
 		return data;
 	}
@@ -57,7 +57,7 @@ namespace utils
 	{
 		std::lock_guard _(this->mutex_);
 
-		const auto data = memory::duplicate_string(string);
+		auto* data = memory::duplicate_string(string);
 		this->pool_.push_back(data);
 		return data;
 	}
@@ -69,7 +69,7 @@ namespace utils
 
 	char* memory::duplicate_string(const std::string& string)
 	{
-		const auto new_string = allocate_array<char>(string.size() + 1);
+		auto* new_string = allocate_array<char>(string.size() + 1);
 		std::memcpy(new_string, string.data(), string.size());
 		return new_string;
 	}

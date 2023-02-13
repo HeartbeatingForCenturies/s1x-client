@@ -3,12 +3,12 @@
 #include "game/game.hpp"
 
 #include "console.hpp"
-#include "command.hpp"
 #include "network.hpp"
 #include "party.hpp"
 #include "scheduler.hpp"
 
 #include <utils/string.hpp>
+#include <utils/cryptography.hpp>
 
 #include <discord_rpc.h>
 
@@ -17,6 +17,19 @@ namespace discord
 	namespace
 	{
 		DiscordRichPresence discord_presence;
+
+		void join_game(const char* join_secret)
+		{
+			game::Cbuf_AddText(0, utils::string::va("connect %s\n", join_secret));
+		}
+
+		void join_request(const DiscordUser* request)
+		{
+#ifdef _DEBUG
+			console::info("Discord: Join request from %s (%s)\n", request->username, request->userId);
+#endif
+			Discord_Respond(request->userId, DISCORD_REPLY_IGNORE);
+		}
 
 		void update_discord()
 		{
@@ -70,6 +83,13 @@ namespace discord
 				{
 					discord_presence.state = host_name;
 					discord_presence.partyMax = party::server_client_count();
+
+					std::hash<game::netadr_s> hash_fn;
+					static const auto nonce = utils::cryptography::random::get_integer();
+
+					const auto& address = party::get_target();
+					discord_presence.partyId = utils::string::va("%zu", hash_fn(address) ^ nonce);
+					discord_presence.joinSecret = network::net_adr_to_string(address);
 				}
 
 				if (!discord_presence.startTimestamp)
@@ -101,13 +121,13 @@ namespace discord
 			handlers.ready = ready;
 			handlers.errored = errored;
 			handlers.disconnected = errored;
-			handlers.joinGame = nullptr;
+			handlers.joinGame = join_game;
 			handlers.spectateGame = nullptr;
-			handlers.joinRequest = nullptr;
+			handlers.joinRequest = join_request;
 
 			Discord_Initialize("823223724013912124", &handlers, 1, nullptr);
 
-			scheduler::once([]()
+			scheduler::once([]
 			{
 				scheduler::once(update_discord, scheduler::pipeline::async);
 				scheduler::loop(update_discord, scheduler::pipeline::async, 15s);
@@ -118,7 +138,7 @@ namespace discord
 
 		void pre_destroy() override
 		{
-			if (!initialized_ || game::environment::is_dedi())
+			if (!initialized_)
 			{
 				return;
 			}

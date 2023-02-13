@@ -170,7 +170,6 @@ namespace dvar_cheats
 			utils::hook::jump(0x1404C3A9A, dvar_flag_checks_stub, true); // check extra dvar flags when setting values
 
 			utils::hook::nop(0x1402E2E03, 5); // remove error in PlayerCmd_SetClientDvar if setting a non-network dvar
-			utils::hook::set<uint8_t>(0x1402E2DCF, 0xEB);
 			// don't check flags on the dvars, send any existing dvar instead
 			utils::hook::jump(0x1402E2E4A, player_cmd_set_client_dvar, true); // send non-network dvars as string
 			utils::hook::call(0x1401BB782, cg_set_client_dvar_from_server);

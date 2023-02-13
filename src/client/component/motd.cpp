@@ -26,7 +26,7 @@ namespace motd
 		{
 			return motd_future.get().value_or(motd_resource);
 		}
-		catch (std::exception&)
+		catch (...)
 		{
 		}
 

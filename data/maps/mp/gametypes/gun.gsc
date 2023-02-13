@@ -1,5 +1,5 @@
 // S1 GSC SOURCE
-// Decompiled by https://github.com/xensik/gsc-tool
+// Dumped by https://github.com/xensik/gsc-tool
 
 main()
 {
@@ -7,10 +7,8 @@ main()
     maps\mp\gametypes\_callbacksetup::setupcallbacks();
     maps\mp\gametypes\_globallogic::setupcallbacks();
     setguns();
-
-
     maps\mp\_utility::registertimelimitdvar( level.gametype, 10 );
-    setDvar( "scr_gun_scorelimit", level.gun_guns.size );
+    setdvar( "scr_gun_scorelimit", level.gun_guns.size );
     maps\mp\_utility::registerscorelimitdvar( level.gametype, level.gun_guns.size );
     level thread reinitializescorelimitonmigration();
     maps\mp\_utility::registerroundlimitdvar( level.gametype, 1 );
@@ -38,7 +36,7 @@ main()
     if ( level.matchrules_damagemultiplier )
         level.modifyplayerdamage = maps\mp\gametypes\_damage::gamemodemodifyplayerdamage;
 
-    setteamscore( "ffa" );
+    setteammode( "ffa" );
     game["dialog"]["gametype"] = "gg_intro";
     game["dialog"]["defense_obj"] = "gbl_start";
     game["dialog"]["offense_obj"] = "gbl_start";
@@ -53,40 +51,38 @@ initializematchrules()
 {
     maps\mp\_utility::setcommonrulesfrommatchrulesdata( 1 );
     level.matchrules_randomize = getmatchrulesdata( "gunData", "randomize" );
-    setDvar( "scr_gun_scorelimit", level.gun_guns.size );
+    setdvar( "scr_gun_scorelimit", level.gun_guns.size );
     maps\mp\_utility::registerscorelimitdvar( level.gametype, level.gun_guns.size );
-    setDvar( "scr_gun_winlimit", 1 );
+    setdvar( "scr_gun_winlimit", 1 );
     maps\mp\_utility::registerwinlimitdvar( "gun", 1 );
-    setDvar( "scr_gun_roundlimit", 1 );
+    setdvar( "scr_gun_roundlimit", 1 );
     maps\mp\_utility::registerroundlimitdvar( "gun", 1 );
-    setDvar( "scr_gun_halftime", 0 );
+    setdvar( "scr_gun_halftime", 0 );
     maps\mp\_utility::registerhalftimedvar( "gun", 0 );
-    setDvar( "scr_gun_playerrespawndelay", 0 );
-    setDvar( "scr_gun_waverespawndelay", 0 );
-    setDvar( "scr_player_forcerespawn", 1 );
-    setDvar( "scr_setback_levels", getmatchrulesdata( "gunData", "setbackLevels" ) );
+    setdvar( "scr_gun_playerrespawndelay", 0 );
+    setdvar( "scr_gun_waverespawndelay", 0 );
+    setdvar( "scr_player_forcerespawn", 1 );
+    setdvar( "scr_setback_levels", getmatchrulesdata( "gunData", "setbackLevels" ) );
 }
 
 reinitializescorelimitonmigration()
 {
-    setDvar( "scr_gun_scorelimit", level.gun_guns.size );
+    setdvar( "scr_gun_scorelimit", level.gun_guns.size );
     maps\mp\_utility::registerscorelimitdvar( level.gametype, level.gun_guns.size );
 }
 
 onstartgametype()
 {
-    getteamplayersalive( "auto_change" );
+    setclientnamemode( "auto_change" );
     maps\mp\_utility::setobjectivetext( "allies", &"OBJECTIVES_DM" );
     maps\mp\_utility::setobjectivetext( "axis", &"OBJECTIVES_DM" );
-
     maps\mp\_utility::setobjectivescoretext( "allies", &"OBJECTIVES_DM_SCORE" );
     maps\mp\_utility::setobjectivescoretext( "axis", &"OBJECTIVES_DM_SCORE" );
-
     maps\mp\_utility::setobjectivehinttext( "allies", &"OBJECTIVES_DM_HINT" );
     maps\mp\_utility::setobjectivehinttext( "axis", &"OBJECTIVES_DM_HINT" );
     initspawns();
-    allowed = [];
-    maps\mp\gametypes\_gameobjects::main( allowed );
+    var_0 = [];
+    maps\mp\gametypes\_gameobjects::main( var_0 );
     level.quickmessagetoall = 1;
     level.blockweapondrops = 1;
     level thread onplayerconnect();
@@ -94,8 +90,8 @@ onstartgametype()
 
 initspawns()
 {
-    level.spawnmins = ( 0.0, 0.0, 0.0 );
-    level.spawnmaxs = ( 0.0, 0.0, 0.0 );
+    level.spawnmins = ( 0, 0, 0 );
+    level.spawnmaxs = ( 0, 0, 0 );
     level.spawn_name = "mp_dm_spawn";
     maps\mp\gametypes\_spawnlogic::addspawnpoints( "allies", level.spawn_name );
     maps\mp\gametypes\_spawnlogic::addspawnpoints( "axis", level.spawn_name );
@@ -199,17 +195,17 @@ onplayerscore( var_0, var_1, var_2 )
     return 0;
 }
 
-onplayerkilled( var_0, attacker, var_2, sMeansOfDeath, sWeapon, var_5, var_6, var_7, var_8, var_9 )
+onplayerkilled( var_0, var_1, var_2, var_3, var_4, var_5, var_6, var_7, var_8, var_9 )
 {
-    if ( !isdefined( attacker ) )
+    if ( !isdefined( var_1 ) )
         return;
 
-    if ( sMeansOfDeath == "MOD_TRIGGER_HURT" && !isplayer( attacker ) )
-        attacker = self;
+    if ( var_3 == "MOD_TRIGGER_HURT" && !isplayer( var_1 ) )
+        var_1 = self;
 
-    if ( sMeansOfDeath == "MOD_FALLING" || isplayer( attacker ) )
+    if ( var_3 == "MOD_FALLING" || isplayer( var_1 ) )
     {
-        if ( sMeansOfDeath == "MOD_FALLING" || attacker == self || maps\mp\_utility::ismeleemod( sMeansOfDeath ) && sWeapon != "riotshield_mp" || sWeapon == "boost_slam_mp" || sWeapon == "iw5_dlcgun12loot8_mp" )
+        if ( var_3 == "MOD_FALLING" || var_1 == self || maps\mp\_utility::ismeleemod( var_3 ) && var_4 != "riotshield_mp" || var_4 == "boost_slam_mp" || var_4 == "iw5_dlcgun12loot8_mp" )
         {
             self playlocalsound( "mp_war_objective_lost" );
             self.gungameprevgunindex = self.gungamegunindex;
@@ -222,53 +218,49 @@ onplayerkilled( var_0, attacker, var_2, sMeansOfDeath, sWeapon, var_5, var_6, va
                 maps\mp\_utility::setextrascore1( self.mysetbacks );
                 self.showsetbacksplash = 1;
 
-                if ( maps\mp\_utility::ismeleemod( sMeansOfDeath ) || sWeapon == "boost_slam_mp" || sWeapon == "iw5_dlcgun12loot8_mp" )
+                if ( maps\mp\_utility::ismeleemod( var_3 ) || var_4 == "boost_slam_mp" || var_4 == "iw5_dlcgun12loot8_mp" )
                 {
-                    attacker.stabs++;
-                    attacker.assists = attacker.stabs;
-                    attacker thread maps\mp\_events::setbackenemygunlevelevent();
+                    var_1.stabs++;
+                    var_1.assists = var_1.stabs;
+                    var_1 thread maps\mp\_events::setbackenemygunlevelevent();
 
                     if ( self.gungameprevgunindex == level.gun_guns.size - 1 )
                     {
-                        attacker thread maps\mp\_events::setbackfirstplayergunlevelevent();
-                        attacker maps\mp\_utility::leaderdialogonplayer( "humiliation", "status" );
+                        var_1 thread maps\mp\_events::setbackfirstplayergunlevelevent();
+                        var_1 maps\mp\_utility::leaderdialogonplayer( "humiliation", "status" );
                     }
                 }
             }
         }
-        else if ( sMeansOfDeath == "MOD_PISTOL_BULLET" || sMeansOfDeath == "MOD_RIFLE_BULLET" || sMeansOfDeath == "MOD_HEAD_SHOT" || sMeansOfDeath == "MOD_PROJECTILE" || sMeansOfDeath == "MOD_PROJECTILE_SPLASH" || sMeansOfDeath == "MOD_EXPLOSIVE" || sMeansOfDeath == "MOD_IMPACT" || sMeansOfDeath == "MOD_GRENADE" || sMeansOfDeath == "MOD_GRENADE_SPLASH" || maps\mp\_utility::ismeleemod( sMeansOfDeath ) && sWeapon == "riotshield_mp" )
+        else if ( var_3 == "MOD_PISTOL_BULLET" || var_3 == "MOD_RIFLE_BULLET" || var_3 == "MOD_HEAD_SHOT" || var_3 == "MOD_PROJECTILE" || var_3 == "MOD_PROJECTILE_SPLASH" || var_3 == "MOD_EXPLOSIVE" || var_3 == "MOD_IMPACT" || var_3 == "MOD_GRENADE" || var_3 == "MOD_GRENADE_SPLASH" || maps\mp\_utility::ismeleemod( var_3 ) && var_4 == "riotshield_mp" )
         {
-            if ( isdefined( attacker.lastkillweapon ) && attacker.lastkillweapon == sWeapon )
-            {
+            if ( isdefined( var_1.lastkillweapon ) && var_1.lastkillweapon == var_4 )
                 return;
-            }
 
             var_10 = level.gun_guns;
 
             if ( level.matchrules_randomize )
-                var_10 = attacker.gunlist;
+                var_10 = var_1.gunlist;
 
-            var_11 = var_10[attacker.gungamegunindex];
+            var_11 = var_10[var_1.gungamegunindex];
 
-            if ( !issubstr( sWeapon, maps\mp\_utility::getbaseweaponname( var_11 ) ) )
-            {
+            if ( !issubstr( var_4, maps\mp\_utility::getbaseweaponname( var_11 ) ) )
                 return;
-            }
 
-            attacker.lastkillweapon = sWeapon;
+            var_1.lastkillweapon = var_4;
 
-            if ( attacker.lastleveluptime + 3000 > gettime() )
-                attacker thread maps\mp\_events::quickgunlevelevent();
+            if ( var_1.lastleveluptime + 3000 > gettime() )
+                var_1 thread maps\mp\_events::quickgunlevelevent();
 
-            attacker.lastleveluptime = gettime();
-            attacker.gungameprevgunindex = attacker.gungamegunindex;
-            attacker.gungamegunindex++;
-            attacker thread maps\mp\_events::increasegunlevelevent();
+            var_1.lastleveluptime = gettime();
+            var_1.gungameprevgunindex = var_1.gungamegunindex;
+            var_1.gungamegunindex++;
+            var_1 thread maps\mp\_events::increasegunlevelevent();
 
-            if ( attacker.gungamegunindex == level.gun_guns.size - 1 )
+            if ( var_1.gungamegunindex == level.gun_guns.size - 1 )
             {
                 maps\mp\_utility::playsoundonplayers( "mp_enemy_obj_captured" );
-                level thread maps\mp\_utility::teamplayercardsplash( "callout_top_gun_rank", attacker );
+                level thread maps\mp\_utility::teamplayercardsplash( "callout_top_gun_rank", var_1 );
                 var_12 = gettime();
 
                 if ( level.lastguntimevo + 4500 < var_12 )
@@ -278,8 +270,8 @@ onplayerkilled( var_0, attacker, var_2, sMeansOfDeath, sWeapon, var_5, var_6, va
                 }
             }
 
-            if ( attacker.gungamegunindex < level.gun_guns.size )
-                attacker givenextgun( 0, sWeapon );
+            if ( var_1.gungamegunindex < level.gun_guns.size )
+                var_1 givenextgun( 0, var_4 );
         }
     }
 }
@@ -292,9 +284,7 @@ givenextgun( var_0, var_1 )
     var_2 = addattachments( var_2 );
 
     while ( !self loadweapons( var_2 ) )
-    {
         waitframe();
-    }
 
     if ( isdefined( var_1 ) )
         self takeweapon( var_1 );
@@ -319,13 +309,13 @@ getnextgun()
 {
     var_0 = level.gun_guns;
     var_1 = [];
-    newWeapon = undefined;
+    var_2 = undefined;
 
     if ( level.matchrules_randomize )
         var_0 = self.gunlist;
 
-    newWeapon = var_0[self.gungamegunindex];
-    var_1[var_1.size] = newWeapon;
+    var_2 = var_0[self.gungamegunindex];
+    var_1[var_1.size] = var_2;
 
     if ( self.gungamegunindex + 1 < var_0.size )
         var_1[var_1.size] = var_0[self.gungamegunindex + 1];
@@ -334,22 +324,22 @@ getnextgun()
         var_1[var_1.size] = var_0[self.gungamegunindex - 1];
 
     self loadweapons( var_1 );
-    return newWeapon;
+    return var_2;
 }
 
-addattachments( weaponName  )
+addattachments( var_0 )
 {
     if ( getdvarint( "scr_gun_loot_variants", 0 ) == 1 )
     {
-        var_1 = tablelookup( "mp/statstable.csv", 4, weaponName , 40 );
+        var_1 = tablelookup( "mp/statstable.csv", 4, var_0, 40 );
 
         if ( isdefined( var_1 ) && var_1 != "" )
-            var_2 = maps\mp\gametypes\_class::buildweaponname( weaponName , var_1, "none", "none", 0, 0 );
+            var_2 = maps\mp\gametypes\_class::buildweaponname( var_0, var_1, "none", "none", 0, 0 );
         else
-            var_2 = maps\mp\gametypes\_class::buildweaponname( weaponName , "none", "none", "none", 0, 0 );
+            var_2 = maps\mp\gametypes\_class::buildweaponname( var_0, "none", "none", "none", 0, 0 );
     }
     else
-        var_2 = maps\mp\gametypes\_class::buildweaponname( weaponName , "none", "none", "none", 0, 0 );
+        var_2 = maps\mp\gametypes\_class::buildweaponname( var_0, "none", "none", "none", 0, 0 );
 
     return var_2;
 }
@@ -357,14 +347,14 @@ addattachments( weaponName  )
 ontimelimit()
 {
     level.finalkillcam_winner = "none";
-    winners = gethighestprogressedplayers();
+    var_0 = gethighestprogressedplayers();
 
-    if ( !isdefined( winners ) || !winners.size )
+    if ( !isdefined( var_0 ) || !var_0.size )
         thread maps\mp\gametypes\_gamelogic::endgame( "tie", game["end_reason"]["time_limit_reached"] );
-    else if ( winners.size == 1 )
-        thread maps\mp\gametypes\_gamelogic::endgame( winners[0], game["end_reason"]["time_limit_reached"] );
-    else if ( winners[winners.size - 1].gungamegunindex > winners[winners.size - 2].gungamegunindex )
-        thread maps\mp\gametypes\_gamelogic::endgame( winners[winners.size - 1], game["end_reason"]["time_limit_reached"] );
+    else if ( var_0.size == 1 )
+        thread maps\mp\gametypes\_gamelogic::endgame( var_0[0], game["end_reason"]["time_limit_reached"] );
+    else if ( var_0[var_0.size - 1].gungamegunindex > var_0[var_0.size - 2].gungamegunindex )
+        thread maps\mp\gametypes\_gamelogic::endgame( var_0[var_0.size - 1], game["end_reason"]["time_limit_reached"] );
     else
         thread maps\mp\gametypes\_gamelogic::endgame( "tie", game["end_reason"]["time_limit_reached"] );
 }

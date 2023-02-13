@@ -38,9 +38,9 @@ namespace fastfiles
 
 			std::string buffer;
 			buffer.append(header.scriptfile->name, std::strlen(header.scriptfile->name) + 1);
-			buffer.append(reinterpret_cast<char*>(&header.scriptfile->compressedLen), 4);
-			buffer.append(reinterpret_cast<char*>(&header.scriptfile->len), 4);
-			buffer.append(reinterpret_cast<char*>(&header.scriptfile->bytecodeLen), 4);
+			buffer.append(reinterpret_cast<char*>(&header.scriptfile->compressedLen), sizeof(int));
+			buffer.append(reinterpret_cast<char*>(&header.scriptfile->len), sizeof(int));
+			buffer.append(reinterpret_cast<char*>(&header.scriptfile->bytecodeLen), sizeof(int));
 			buffer.append(header.scriptfile->buffer, header.scriptfile->compressedLen);
 			buffer.append(reinterpret_cast<char*>(header.scriptfile->bytecode), header.scriptfile->bytecodeLen);
 
