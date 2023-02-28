@@ -14,10 +14,10 @@
 
 #include "script_loading.hpp"
 
-#include <gsc_interface.hpp>
-
 namespace gsc
 {
+	std::unique_ptr<xsk::gsc::s1_pc::context> gsc_ctx;
+
 	namespace
 	{
 		std::unordered_map<std::string, unsigned int> main_handles;
@@ -82,8 +82,8 @@ namespace gsc
 
 			try
 			{
-				auto& compiler = gsc::cxt->compiler();
-				auto& assembler = gsc::cxt->assembler();
+				auto& compiler = gsc_ctx->compiler();
+				auto& assembler = gsc_ctx->assembler();
 
 				std::string source_buffer{};
 				if (!read_raw_script_file(real_name + ".gsc", &source_buffer))
@@ -140,7 +140,7 @@ namespace gsc
 
 		std::string get_script_file_name(const std::string& name)
 		{
-			const auto id = gsc::cxt->token_id(name);
+			const auto id = gsc_ctx->token_id(name);
 			if (!id)
 			{
 				return name;
@@ -177,8 +177,8 @@ namespace gsc
 				return;
 			}
 
-			const auto main_handle = game::Scr_GetFunctionHandle(name.data(), gsc::cxt->token_id("main"));
-			const auto init_handle = game::Scr_GetFunctionHandle(name.data(), gsc::cxt->token_id("init"));
+			const auto main_handle = game::Scr_GetFunctionHandle(name.data(), gsc_ctx->token_id("main"));
+			const auto init_handle = game::Scr_GetFunctionHandle(name.data(), gsc_ctx->token_id("init"));
 
 			if (main_handle)
 			{
@@ -306,7 +306,7 @@ namespace gsc
 				xsk::gsc::build::dev :
 				xsk::gsc::build::prod;
 
-			gsc::cxt->init(comp_mode, [](const std::string& include_name) -> std::pair<xsk::gsc::buffer, std::vector<std::uint8_t>>
+			gsc_ctx->init(comp_mode, [](const std::string& include_name) -> std::pair<xsk::gsc::buffer, std::vector<std::uint8_t>>
 			{
 				const auto real_name = get_raw_script_file_name(include_name);
 
@@ -334,7 +334,7 @@ namespace gsc
 		void scr_end_load_scripts_stub()
 		{
 			// Cleanup the compiler
-			gsc::cxt->cleanup();
+			gsc_ctx->cleanup();
 
 			utils::hook::invoke<void>(SELECT_VALUE(0x140243780, 0x1403EDF90));
 		}
@@ -346,7 +346,7 @@ namespace gsc
 		const auto id = static_cast<std::uint16_t>(std::strtol(name, nullptr, 10));
 		if (id)
 		{
-			real_name = gsc::cxt->token_name(id);
+			real_name = gsc_ctx->token_name(id);
 		}
 
 		auto* script = load_custom_script(name, real_name);
@@ -363,7 +363,7 @@ namespace gsc
 	public:
 		void post_load() override
 		{
-			gsc::cxt = std::make_unique<xsk::gsc::s1_pc::context>();
+			gsc_ctx = std::make_unique<xsk::gsc::s1_pc::context>();
 		}
 
 		void post_unpack() override
