@@ -1,5 +1,5 @@
 #pragma once
-#include <s1/s1_pc.hpp>
+#include <xsk/gsc/engine/s1_pc.hpp>
 
 namespace gsc
 {
