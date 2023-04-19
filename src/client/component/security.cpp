@@ -40,6 +40,19 @@ namespace security
 			a.popad64();
 			a.jmp(0x14044DE51);
 		}
+
+		void sv_execute_client_message_stub(game::mp::client_t* client, game::msg_t* msg)
+		{
+			if ((client->reliableSequence - client->reliableAcknowledge) < 0)
+			{
+				client->reliableAcknowledge = client->reliableSequence;
+				console::info("Negative reliableAcknowledge from %s - cl->reliableSequence is %i, reliableAcknowledge is %i\n",
+				              client->name, client->reliableSequence, client->reliableAcknowledge);
+				return;
+			}
+
+			utils::hook::invoke<void>(0x14043AA90, client, msg);
+		}
 	}
 
 	class component final : public component_interface
@@ -54,6 +67,9 @@ namespace security
 
 			// Patch entity overflow
 			utils::hook::jump(0x14044DE3A, assemble(remap_cached_entities_stub), true);
+
+			// It is possible to make the server hang if left unchecked
+			utils::hook::call(0x140443051, sv_execute_client_message_stub);
 		}
 	};
 }

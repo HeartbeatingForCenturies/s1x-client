@@ -5,7 +5,6 @@
 
 #include "command.hpp"
 #include "console.hpp"
-#include "network.hpp"
 #include "scheduler.hpp"
 #include "filesystem.hpp"
 #include "fastfiles.hpp"
@@ -192,20 +191,6 @@ namespace patches
 
 			cmd_lui_notify_server_hook.invoke<void>(ent);
 		}
-
-		void sv_execute_client_message_stub(game::mp::client_t* client, game::msg_t* msg)
-		{
-			if (client->reliableAcknowledge < 0)
-			{
-				client->reliableAcknowledge = client->reliableSequence;
-				console::info("Negative reliableAcknowledge from %s - cl->reliableSequence is %i, reliableAcknowledge is %i\n",
-					client->name, client->reliableSequence, client->reliableAcknowledge);
-				network::send(client->header.remoteAddress, "error", "EXE_LOSTRELIABLECOMMANDS", '\n');
-				return;
-			}
-
-			reinterpret_cast<void(*)(game::mp::client_t*, game::msg_t*)>(0x14043AA90)(client, msg);
-		}
 	}
 
 	class component final : public component_interface
@@ -335,9 +320,6 @@ namespace patches
       
 			// Prevent clients from ending the game as non host by sending 'end_game' lui notification
 			cmd_lui_notify_server_hook.create(0x1402E9390, cmd_lui_notify_server_stub);
-
-			// Prevent clients from sending invalid reliableAcknowledge
-			utils::hook::call(0x140443051, sv_execute_client_message_stub);
 		}
 
 		static void patch_sp()
