@@ -19,7 +19,8 @@ namespace dvars
 
 	game::dvar_t* g_playerEjection = nullptr;
 	game::dvar_t* g_playerCollision = nullptr;
-	game::dvar_t* g_surfacePenetration = nullptr;
+
+	game::dvar_t* bg_surfacePenetration = nullptr;
 
 	game::dvar_t* pm_bouncing = nullptr;
 	game::dvar_t* g_dump_scripts = nullptr;
