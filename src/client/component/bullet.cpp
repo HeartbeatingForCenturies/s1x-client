@@ -14,9 +14,9 @@ namespace bullet
 
 		float bg_get_surface_penetration_depth_stub(game::Weapon weapon, bool is_alternate, int surfaceType)
 		{
-			if (dvars::bg_surfacePenetration->current.value > 0.0f)
+			if (dvars::g_surfacePenetration->current.value > 0.0f)
 			{
-				return dvars::bg_surfacePenetration->current.value;
+				return dvars::g_surfacePenetration->current.value;
 			}
 
 			return bg_get_surface_penetration_depth_hook.invoke<float>(weapon, is_alternate, surfaceType);
@@ -33,7 +33,7 @@ namespace bullet
 				return;
 			}
 
-			dvars::bg_surfacePenetration = game::Dvar_RegisterFloat("bg_surfacePenetration", 0.0f,
+			dvars::g_surfacePenetration = game::Dvar_RegisterFloat("g_surfacePenetration", 0.0f,
 				0.0f, std::numeric_limits<float>::max(), game::DVAR_FLAG_SAVED,
 				"Set to a value greater than 0 to override the surface penetration depth");
 			bg_get_surface_penetration_depth_hook.create(0x1401641A0, &bg_get_surface_penetration_depth_stub);
